@@ -227,9 +227,10 @@ export function SearchableSelect<T extends object>({
   ...props
 }: MultiSelectOptions<T>) {
 
-  if (!form)
+  if (!form) {
     throw new Error("MultiSelect component requires inertia useForm hook")
-
+  }
+  
   const { value, error, handleChange } = handleFormData(props.name, form) || {}
 
   // Get label for a value

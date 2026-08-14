@@ -18,7 +18,7 @@ export default function ShopSetup() {
           >
             <ArrowLeft aria-hidden="true" className="size-6" />
           </button>
-          <div className="flex-grow text-center font-headline-md text-headline-md font-bold text-primary dark:text-primary">
+          <div className="grow text-center font-headline-md text-headline-md font-bold text-primary dark:text-primary">
             Craft &amp; Care
           </div>
           <button

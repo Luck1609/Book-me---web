@@ -21,6 +21,7 @@ export type AuthLayoutProps = {
   backgroundImage?: string;
   description?: string;
   icon?: ReactNode;
+  asDirectChild?: boolean;
   classNames?: {
     wrapper?: string;
     container?: string;
