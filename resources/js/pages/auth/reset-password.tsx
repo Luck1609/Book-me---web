@@ -1,96 +1,70 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import { Head, useForm } from '@inertiajs/react';
+import type { FormEvent } from 'react';
+import { PasswordResetIcon } from '@/assets/icons';
+import background from '@/assets/images/password-reset.webp';
+import { Password } from '@/components/form/input';
+import SubmitButton from '@/components/form/submit-button';
+import AuthLayout from '@/layouts/auth-layout';
 import { update } from '@/routes/password';
 
-type Props = {
-    token: string;
-    email: string;
-    passwordRules: string;
-};
 
-export default function ResetPassword({ token, email, passwordRules }: Props) {
-    return (
-        <>
-            <Head title="Reset password" />
+export default function ResetPassword() {
+  const form = useForm({
+    email: "",
+    password: "",
+    password_confirmation: "",
+  })
 
-            <Form
-                {...update.form()}
-                transform={(data) => ({ ...data, token, email })}
-                resetOnSuccess={['password', 'password_confirmation']}
-            >
-                {({ processing, errors }) => (
-                    <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                name="email"
-                                autoComplete="email"
-                                value={email}
-                                className="mt-1 block w-full"
-                                readOnly
-                            />
-                            <InputError
-                                message={errors.email}
-                                className="mt-2"
-                            />
-                        </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                autoFocus
-                                placeholder="Password"
-                                passwordrules={passwordRules}
-                            />
-                            <InputError message={errors.password} />
-                        </div>
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    form.post(update().url)
+  }
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">
-                                Confirm password
-                            </Label>
-                            <PasswordInput
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                placeholder="Confirm password"
-                                passwordrules={passwordRules}
-                            />
-                            <InputError
-                                message={errors.password_confirmation}
-                                className="mt-2"
-                            />
-                        </div>
+  return (
+    <>
+      <Head title="Reset Password" />
 
-                        <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={processing}
-                            data-test="reset-password-button"
-                        >
-                            {processing && <Spinner />}
-                            Reset password
-                        </Button>
-                    </div>
-                )}
-            </Form>
-        </>
-    );
+      <AuthLayout
+        classNames={{
+          wrapper: "border rounded-xl overflow-hidden",
+          container: "sm:w-105 items-center p-5"
+        }}
+        icon={
+          <PasswordResetIcon className="size-56" />
+        }
+        title="Reset password"
+        description="Please enter your new password below"
+        backgroundImage={background}
+      >
+        <form className="w-full" onSubmit={handleSubmit}>
+          <div className="grid gap-6">
+
+            <Password
+              name="password"
+              tabIndex={2}
+              label="Password"
+              placeholder="**********"
+              form={form}
+            />
+
+            <Password
+              name="password_confirmation"
+              tabIndex={2}
+              label="Password confirmation"
+              placeholder="***********"
+              form={form}
+            />
+
+            <SubmitButton
+              label="Reset Pasword"
+              className="w-full"
+              form={form}
+              tabIndex={5}
+            />
+          </div>
+        </form>
+      </AuthLayout>
+    </>
+  );
 }
-
-ResetPassword.layout = {
-    title: 'Reset password',
-    description: 'Please enter your new password below',
-};

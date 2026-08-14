@@ -1,120 +1,112 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Head, Link, useForm } from '@inertiajs/react';
+import type { FormEvent } from 'react';
+import { SignupIcon } from '@/assets/icons';
+import background from "@/assets/images/login.webp"
+import { Input, Password } from '@/components/form/input';
+import SubmitButton from '@/components/form/submit-button';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+import SocialAuthButtons, { AlternateLogin } from './social-buttons';
 
-type Props = {
-    passwordRules: string;
-};
 
-export default function Register({ passwordRules }: Props) {
-    return (
-        <>
-            <Head title="Register" />
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password', 'password_confirmation']}
-                disableWhileProcessing
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="name"
-                                    name="name"
-                                    placeholder="Full name"
-                                />
-                                <InputError
-                                    message={errors.name}
-                                    className="mt-2"
-                                />
-                            </div>
+export default function Register() {
+  const form = useForm({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: ""
+  })
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="email"
-                                    name="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <PasswordInput
-                                    id="password"
-                                    required
-                                    tabIndex={3}
-                                    autoComplete="new-password"
-                                    name="password"
-                                    placeholder="Password"
-                                    passwordrules={passwordRules}
-                                />
-                                <InputError message={errors.password} />
-                            </div>
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    form.post(store().url)
+  }
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
-                                <PasswordInput
-                                    id="password_confirmation"
-                                    required
-                                    tabIndex={4}
-                                    autoComplete="new-password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm password"
-                                    passwordrules={passwordRules}
-                                />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
-                            </div>
+  return (
+    <>
+      <Head title="Register" />
 
-                            <Button
-                                type="submit"
-                                className="mt-2 w-full"
-                                tabIndex={5}
-                                data-test="register-user-button"
-                            >
-                                {processing && <Spinner />}
-                                Create account
-                            </Button>
-                        </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
-                                Log in
-                            </TextLink>
-                        </div>
-                    </>
-                )}
-            </Form>
-        </>
-    );
+      <AuthLayout
+        classNames={{
+          wrapper: "border rounded-xl overflow-hidden",
+          container: "sm:w-160 items-center p-5"
+        }}
+        icon={
+          <SignupIcon className="size-56" />
+        }
+        title="Create an account"
+        description="Enter your details below to create your account"
+        backgroundImage={background}
+      >
+        <form className="w-full" onSubmit={handleSubmit}>
+          <div className="grid lg:grid-cols-2 gap-6">
+            <Input
+              name="name"
+              label="Name"
+              placeholder="Nathan Luck"
+              form={form}
+              tabIndex={1}
+            />
+
+            <Input
+              type="email"
+              name="email"
+              label="Email address"
+              placeholder="email@example.com"
+              form={form}
+              tabIndex={2}
+            />
+
+            <Password
+              name="password"
+              tabIndex={3}
+              label={
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                </div>
+              }
+              placeholder="Enter your password"
+              form={form}
+            />
+
+            <Password
+              name="password_confirmation"
+              tabIndex={4}
+              label={
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password confirmation</Label>
+                </div>
+              }
+              placeholder="Enter your password"
+              form={form}
+            />
+
+            <div className="flex justify-center lg:col-span-2">
+              <SubmitButton
+                label="Log in"
+                className="w-2/3"
+                form={form}
+                tabIndex={5}
+              />
+            </div>
+          </div>
+
+          <AlternateLogin />
+
+          <SocialAuthButtons />
+
+          <div className="text-center text-sm text-muted-foreground mt-4">
+            Don't have an account?{' '}
+            <Link href={login()} tabIndex={5} className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </div>
+        </form>
+      </AuthLayout>
+    </>
+  );
 }
-
-Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
-};

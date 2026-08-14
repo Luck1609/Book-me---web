@@ -1,117 +1,117 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasskeyVerify from '@/components/passkey-verify';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+import { Head, Link, useForm } from '@inertiajs/react';
+import type { FormEvent } from 'react';
+import { MobileLoginIcon } from '@/assets/icons';
+import background from '@/assets/images/book.webp';
+import { Checkbox } from '@/components/form/checkbox';
+import { Input, Password } from '@/components/form/input';
+import SubmitButton from '@/components/form/submit-button';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import SocialAuthButtons, { AlternateLogin } from './social-buttons';
 
-type Props = {
-    status?: string;
-    canResetPassword: boolean;
-};
 
-export default function Login({ status, canResetPassword }: Props) {
-    return (
-        <>
-            <Head title="Log in" />
+export default function Login() {
+  const form = useForm({
+    email: "",
+    password: ""
+  })
 
-            <PasskeyVerify />
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    form.post(store().url)
+  }
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Forgot your password?
-                                        </TextLink>
-                                    )}
-                                </div>
-                                <PasswordInput
-                                    id="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
+  return (
+    <>
+      <Head title="Log in" />
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox
-                                    id="remember"
-                                    name="remember"
-                                    tabIndex={3}
-                                />
-                                <Label htmlFor="remember">Remember me</Label>
-                            </div>
+      <AuthLayout
+        classNames={{
+          wrapper: "border rounded-xl overflow-hidden",
+          container: "sm:w-130 items-center p-5"
+        }}
+        icon={
+          <MobileLoginIcon className="size-56" />
+        }
+        title="Welcome Back"
+        description="Login and let's jump back in where you left off"
+        backgroundImage={background}
+      >
+        <form className="w-full" onSubmit={handleSubmit}>
+          <div className="grid gap-6">
+            <Input
+              type="email"
+              name="email"
+              label="Email address"
+              placeholder="email@example.com"
+              form={form}
+              tabIndex={1}
+            />
 
-                            <Button
-                                type="submit"
-                                className="mt-4 w-full"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
-                        </div>
-
-                        <div className="text-center text-sm text-muted-foreground">
-                            Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
-                                Sign up
-                            </TextLink>
-                        </div>
-                    </>
-                )}
-            </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+            <Password
+              name="password"
+              tabIndex={2}
+              label={
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
                 </div>
-            )}
-        </>
-    );
-}
+              }
+              placeholder="Enter your password"
+              form={form}
+            />
 
-Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
-};
+            <div className="flex items-center justify-between space-x-3">
+              <div className="lg:w-2/3">
+                <Checkbox
+                  name="remember"
+                  tabIndex={4}
+                  isBoolean
+                  label="Remember me"
+                  form={form}
+                  classNames={{
+                    field: {
+                      wrapper: "flex items-center space-x-3 border-none has-data-[state=checked]:border-none has-data-[state=checked]:bg-background",
+                      container: "p-0!"
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="lg:w-1/3">
+                <Link
+                  href={request()}
+                  className="font-medium text-primary text-sm hover:underline"
+                // tabIndex={3}
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+
+            <SubmitButton
+              label="Log in"
+              className="w-full"
+              form={form}
+              tabIndex={5}
+            />
+          </div>
+
+          <AlternateLogin />
+
+          <SocialAuthButtons />
+
+          <div className="text-center text-sm text-muted-foreground mt-4">
+            Don't have an account?{' '}
+            <Link href={register()} tabIndex={5} className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </div>
+        </form>
+      </AuthLayout>
+    </>
+  );
+}
