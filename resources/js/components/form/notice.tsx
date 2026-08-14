@@ -8,7 +8,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import Loader from "../loader";
 
 
 type Props = {
@@ -56,12 +55,12 @@ export function Notice({ title, description, open, toggler, type, classNames, ..
           <AlertDialogCancel variant="destructive" className={classNames?.footer?.cancelButton} onClick={toggler}>Close</AlertDialogCancel>
           {
             type === 'notice' && (
-              <AlertDialogAction 
-              className={classNames?.footer?.continueButton} 
+              <AlertDialogAction
+              className={classNames?.footer?.continueButton}
               onClick={(props as { action: () => void }).action}
               disabled={props.isLoading}
               >
-                {props.isLoading && <Loader />}
+                {/* {props.isLoading && <Loader />} */}
                 {props.isLoading ? 'Submitting...' : 'Continue'}
               </AlertDialogAction>
             )

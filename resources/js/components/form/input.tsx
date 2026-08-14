@@ -3,11 +3,11 @@ import { Eye, EyeClosed } from "lucide-react"
 import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/types/useHttp';
 import * as React from "react"
 
-import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
+import { InputComponent } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 import { cn, handleFormData } from "@/lib/utils"
 import type { Icon } from "@/types";
-import { InputComponent } from "../ui/input";
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 
 
 type Props<T extends object> = Omit<React.ComponentProps<"input">, 'form'> & {

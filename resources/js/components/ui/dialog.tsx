@@ -2,7 +2,10 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 import * as React from "react"
 
+import Heading from "@/components/heading"
 import { cn } from "@/lib/utils"
+import { Children } from "@/types"
+import { NoticeModalConfig } from "@/contexts/notice-context"
 
 function Dialog({
   ...props
@@ -119,6 +122,117 @@ function DialogDescription({
   )
 }
 
+export type ModalProps = {
+  open: boolean;
+  dialogToggler: () => void
+  title?: string;
+  modalType?: 'default' | 'custom'
+  description?: string;
+  trigger?: {
+    label: React.ReactNode
+  }
+} & Pick<NoticeModalConfig, 'classNames'>
+
+const Modal = ({ children, trigger, title, description, ...props }: Children<ModalProps>) => {
+  return (
+    <>
+      {
+        props.modalType === "default"
+          ? (
+            <Dialog open={props.open} onOpenChange={props.dialogToggler}>
+              {
+                trigger && <DialogTrigger onClick={props.dialogToggler} className={props?.classNames?.trigger}>{trigger.label}</DialogTrigger>
+              }
+              <DialogContent
+                className={cn("overflow-y-auto max-h-full", props?.classNames?.content)}
+              >
+                {
+                  title && (
+                    <DialogHeader className={cn("", props?.classNames?.heading?.header)}>
+                      <DialogTitle className={cn("", props?.classNames?.heading?.title)}>{title}</DialogTitle>
+                      {
+                        description && (
+                          <DialogDescription className={cn("", props?.classNames?.heading?.description)}>{description}</DialogDescription>
+                        )
+                      }
+                    </DialogHeader>
+                  )
+                }
+
+                {children}
+              </DialogContent>
+            </Dialog>
+          )
+          : (
+            !props.open 
+              ? <></>
+              : (
+                <div className="fixed inset-0 z-50 flex items-center justify-center" aria-modal="true" role="dialog">
+                  <div className="absolute inset-0 bg-black/50" onClick={props.dialogToggler} />
+
+                  <div
+                    className={cn(
+                      "relative z-10 w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl overflow-y-auto max-h-[90vh]",
+                      props?.classNames?.content
+                    )}
+                  >
+                    {trigger && (
+                      <button
+                        onClick={props.dialogToggler}
+                        className={props?.classNames?.trigger}
+                      >
+                        {trigger.label}
+                      </button>
+                    )}
+
+                    {title && (
+                      <Heading title={title} description={description} />
+                    )}
+
+                    {children}
+                  </div>
+                </div>
+              )
+          )
+      }
+
+
+    </>
+  )
+}
+
+const CustomModal = ({ children, trigger, title, description, ...props }: Children<ModalProps>) => {
+  if (!props.open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" aria-modal="true" role="dialog">
+      <div className="absolute inset-0 bg-black/50" onClick={props.dialogToggler} />
+
+      <div
+        className={cn(
+          "relative z-10 w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl overflow-y-auto max-h-[90vh]",
+          props?.classNames?.content
+        )}
+      >
+        {trigger && (
+          <button
+            onClick={props.dialogToggler}
+            className={props?.classNames?.trigger}
+          >
+            {trigger.label}
+          </button>
+        )}
+
+        {title && (
+          <Heading title={title} description={description} />
+        )}
+
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export {
   Dialog,
   DialogClose,
@@ -130,4 +244,6 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  Modal,
+  CustomModal
 }

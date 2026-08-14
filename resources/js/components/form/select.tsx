@@ -48,8 +48,9 @@ export function Select<T extends object>({
   ...props
 }: Options<T>) {
 
-  if (!form)
+  if (!form) {
     throw new Error("Select component requires inertia useForm hook")
+  }
 
   const { value, error: formError, handleChange, validate, touch, invalid } = handleFormData(props.name, form) || {}
   const error = formError

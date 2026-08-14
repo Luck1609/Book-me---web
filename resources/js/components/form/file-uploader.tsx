@@ -5,14 +5,15 @@ import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/typ
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import { useNotice } from '@/contexts/notice-context'
-import useHelper from '@/hooks/use-helper'
+// import useHelper from '@/hooks/use-helper'
 import { cn, handleFormData } from '@/lib/utils'
-import media from '@/routes/media'
 import type { Icon, Media } from '@/types'
 
 import { Button } from '../ui/button'
 import { Label } from '../ui/label'
+import { useNotice } from '@/contexts/notice-context'
+import useHelper from '@/hooks/use-helper'
+import media from '@/routes/media'
 
 
 type IconStyles = {
@@ -80,9 +81,11 @@ function validateFiles(files: File[], maxSize: number = DEFAULT_MAX_SIZE, accept
     if (file.size > maxSize) {
       return { valid: [], errorMessage: `"${file.name}" exceeds the maximum size of ${maxSizeMB}MB.` };
     }
+
     if (!allowedTypes.includes(file.type.toLowerCase())) {
       return { valid: [], errorMessage: `"${file.name}" has an unsupported file type. Allowed: ${extensions}` };
     }
+
     valid.push(file);
   }
 
@@ -115,8 +118,8 @@ export default function FileUploader<T extends object>({
     if (touched?.() && validate) {
       validate()
     }
-  // value is the only signal we care about — touched/validate are stable in behaviour
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // value is the only signal we care about — touched/validate are stable in behaviour
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   const files = (value as (File | Media)[]) || []
@@ -124,13 +127,16 @@ export default function FileUploader<T extends object>({
   const [isDragging, setIsDragging] = useState(false);
 
   const handleFileSelect = (selectedFiles: FileList | null) => {
-    if (!selectedFiles) return;
+    if (!selectedFiles) {
+      return;
+    }
 
     const newFiles = Array.from(selectedFiles);
     const { valid, errorMessage } = validateFiles(newFiles, maxSize, accept);
 
     if (errorMessage) {
       (form as any).setError(props.name, errorMessage);
+
       return;
     }
 
@@ -208,8 +214,9 @@ export default function FileUploader<T extends object>({
     ...props
   }
 
-  if (!form)
+  if (!form) {
     throw new Error("File uploader requires inertia useForm hook")
+  }
 
   // console.log('Selected fiel details', files)
 
@@ -265,7 +272,7 @@ export default function FileUploader<T extends object>({
               ) : null
           )
       }
-      
+
       {/* Validation error display */}
       {hasError && (
         <small className={cn("text-red-500 text-sm mt-1", classNames?.wrapper)}>
@@ -328,9 +335,9 @@ function UploaderButton<T extends object>({
 
         <div className={cn("space-y-1 relative group", classNames?.header?.wrapper)}>
           {
-            props?.defaultComponent 
+            props?.defaultComponent
               ? <>
-                { props.defaultComponent }
+                {props.defaultComponent}
               </>
               : (
                 <>
@@ -419,10 +426,11 @@ function getFileIcon(file: Media | File, className?: string) {
       );
     }
   }
-  
+
   // For File type, create preview for images
   if (!isMedia && fileType?.startsWith('image/')) {
     const imageUrl = URL.createObjectURL(file);
+
     return (
       <img
         src={imageUrl}
@@ -456,7 +464,9 @@ function getFileIcon(file: Media | File, className?: string) {
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) {
+    return '0 Bytes';
+  }
 
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];

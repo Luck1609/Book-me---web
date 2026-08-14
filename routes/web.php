@@ -8,4 +8,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 });
 
+
+Route::prefix('media')->name('media.')->group(function () {
+    Route::get('/preview/{id}', function (string $id) {
+        // $media = Media::findOrFail($id);
+
+        // return $media->getPath();
+    })->name('preview');
+
+    Route::get('/download/{id}', function (string $id) {
+        // $media = Media::findOrFail($id);
+
+        // return response()->download($media->getPath(), $media->file_name);
+    })->name('download');
+
+    Route::delete('{id}', function (string $id) {
+        // $media = Media::findOrFail($id);
+        // $media->delete();
+    })->name('destroy');
+});
+
 require __DIR__.'/settings.php';
