@@ -4,10 +4,10 @@ import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/typ
 import * as React from "react"
 
 import { InputComponent } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label"
 import { cn, handleFormData } from "@/lib/utils"
 import type { Icon } from "@/types";
-import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 
 
 type Props<T extends object> = Omit<React.ComponentProps<"input">, 'form'> & {
