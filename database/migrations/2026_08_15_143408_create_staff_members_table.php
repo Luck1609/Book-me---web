@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('passkeys', function (Blueprint $table) {
+        Schema::create('staff_members', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('provider_profile_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('credential_id')->unique();
-            $table->json('credential');
-            $table->timestamp('last_used_at')->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->string('photo_path')->nullable();
+            $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
-
-            $table->index('user_id');
+            $table->index(['provider_profile_id', 'is_active']);
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('passkeys');
+        Schema::dropIfExists('staff_members');
     }
 };
