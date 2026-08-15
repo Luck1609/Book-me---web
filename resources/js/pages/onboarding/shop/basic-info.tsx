@@ -4,10 +4,13 @@ import { Input } from '@/components/form/input';
 import { Select } from '@/components/form/select';
 import { Textarea } from '@/components/form/textarea';
 
-export default function BasicInfo({ form }: { form: InertiaFormProps }) {
+export default function BasicInfo({
+  form,
+}: {
+  form: InertiaFormProps<Record<string, any>>;
+}) {
   return (
-    <div className="w-full grid gap-y-6 bg-card relative p-6 lg:p-8 rounded-xl">
-
+    <div className="relative grid w-full gap-y-6 rounded-xl bg-card p-6 lg:p-8">
       <div className="w-1/2">
         <FileUploader
           name="avatar"
@@ -16,22 +19,26 @@ export default function BasicInfo({ form }: { form: InertiaFormProps }) {
         />
       </div>
 
-
-      <div className="grid lg:grid-cols-3 gap-3">
+      <div className="grid gap-3 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Input name="name" label="Shop Name" placeholder="e.g. The Craft Barbershop" form={form} />
+          <Input
+            name="name"
+            label="Shop Name"
+            placeholder="e.g. The Craft Barbershop"
+            form={form}
+          />
         </div>
 
         <Select
-          name="category"
+          name="category_id"
           label="Business category"
           placeholder="Select category"
           form={form}
           options={[
-            { label: "Barbershop", value: "barber" },
-            { label: "Hair Salon", value: "salon" },
-            { label: "Spa &amp; Wellness", value: "spa" },
-            { label: "Tattoo Studio", value: "tattoo" },
+            { label: 'Barbershop', value: 'barber' },
+            { label: 'Hair Salon', value: 'salon' },
+            { label: 'Spa &amp; Wellness', value: 'spa' },
+            { label: 'Tattoo Studio', value: 'tattoo' },
           ]}
         />
       </div>
@@ -43,7 +50,6 @@ export default function BasicInfo({ form }: { form: InertiaFormProps }) {
         form={form}
         rows={5}
       />
-
     </div>
   );
 }

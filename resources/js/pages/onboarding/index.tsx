@@ -37,42 +37,136 @@ const formSteps: { title: string; description: string }[] = [
   },
 ];
 
+type ServiceFormData = {
+  image: File | null;
+  name: string;
+  price: number | string;
+  min_duration: string;
+  max_duration: string;
+  description: string;
+};
+
+type OnboardingFormData = {
+  type: string;
+  avatar: File | null;
+  name: string;
+  category_id: string;
+  description: string;
+  region_id: string;
+  district_id: string;
+  city: string;
+  address: string;
+  working_days: string[];
+  opens_at: string;
+  closes_at: string;
+  includes_holidays: string;
+  services: ServiceFormData[];
+};
+
 enum NavAction {
   INCRMENT = 'increment',
   DECRMENT = 'decrement',
 }
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(4);
-  const form = useForm({
-    type: "",
+  const [step, setStep] = useState(0);
+  const form = useForm<OnboardingFormData>({
+    type: '',
 
     avatar: null,
-    name: "",
-    category_id: "",
-    description: "",
+    name: '',
+    category_id: '',
+    description: '',
 
-    region_id: "",
-    district_id: "",
-    city: "",
-    address: "",
+    region_id: '',
+    district_id: '',
+    city: '',
+    address: '',
 
     working_days: [],
-    opens_at: "",
-    closes_at: "",
-    includes_holidays: false,
+    opens_at: '',
+    closes_at: '',
+    includes_holidays: '',
 
     services: [
       {
         image: null,
-        name: "",
-        price: 0.00,
-        min_duration: "",
-        max_duration: "",
-        description: "",
-      }
-    ]
+        name: '',
+        price: 0,
+        min_duration: '',
+        max_duration: '',
+        description: '',
+      },
+    ],
   });
+
+  const hasValue = (value: unknown): boolean => {
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
+
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    return value !== null && value !== undefined;
+  };
+
+  const isStepValid = (currentStep: number): boolean => {
+    switch (currentStep) {
+      case 0:
+        return hasValue(form.data.type);
+      case 1:
+        return [
+          form.data.name,
+          form.data.category_id,
+          form.data.description,
+        ].every(hasValue);
+      case 2:
+        return [
+          form.data.region_id,
+          form.data.district_id,
+          form.data.city,
+          form.data.address,
+        ].every(hasValue);
+      case 3:
+        return (
+          hasValue(form.data.working_days) &&
+          hasValue(form.data.opens_at) &&
+          hasValue(form.data.closes_at) &&
+          (form.data.includes_holidays === '0' ||
+            form.data.includes_holidays === '1')
+        );
+      case 4: {
+        const service = form.data.services[0];
+
+        if (!service) {
+          return false;
+        }
+
+        const price = Number(service.price);
+        const minimumDuration = Number(service.min_duration);
+        const maximumDuration = Number(service.max_duration);
+
+        return (
+          [
+            service.name,
+            service.price,
+            service.min_duration,
+            service.max_duration,
+            service.description,
+          ].every(hasValue) &&
+          price > 0 &&
+          minimumDuration > 0 &&
+          maximumDuration >= minimumDuration
+        );
+      }
+      default:
+        return false;
+    }
+  };
+
+  const canContinue = isStepValid(step);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,6 +176,10 @@ export default function OnboardingForm() {
 
   const handleNavigation = (action: NavAction) => {
     if (action === NavAction.INCRMENT) {
+      if (!canContinue) {
+        return;
+      }
+
       setStep((currentStep) => currentStep + 1);
     }
 
@@ -101,24 +199,30 @@ export default function OnboardingForm() {
       <div className="flex min-h-screen flex-col items-center justify-center bg-background p-margin-mobile text-on-background md:p-margin-desktop">
         <form
           onSubmit={handleSubmit}
-          className="mx-auto flex flex-1 w-full max-w-4xl flex-col items-center gap-y-10"
+          className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center gap-y-10"
         >
-          <div className="w-full">
-            <div className="mb-1 flex items-center justify-between">
-              <span className="font-label-md text-label-md text-on-surface-variant uppercase">
-                Step {step + 1} of {formSteps.length}
-              </span>
-              <span className="font-label-md text-label-md text-primary">
-                Shop Setup
-              </span>
-            </div>
+          {
+            form.data.type === "provider" && (
+              <div className="w-full">
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="font-label-md text-label-md text-on-surface-variant uppercase">
+                    Step {step + 1} of {formSteps.length}
+                  </span>
+                  <span className="font-label-md text-label-md text-primary">
+                    Shop Setup
+                  </span>
+                </div>
 
-            <Progress value={step / formSteps.length * 100} className="h-3 bg-slate-200" />
-          </div>
+                <Progress
+                  value={(step / formSteps.length) * 100}
+                  className="h-3 bg-slate-200"
+                />
+              </div>
+            )
+          }
 
-
-          <div className="w-full flex flex-1 items-center">
-            <div className="w-full grid gap-y-10">
+          <div className="flex w-full flex-1 items-center">
+            <div className="grid w-full gap-y-10">
               <div className="w-full text-center">
                 <h1 className="mb-stack-sm font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">
                   {formSteps[step].title}
@@ -147,6 +251,7 @@ export default function OnboardingForm() {
               <Button
                 id="continue-btn"
                 onClick={() => handleNavigation(NavAction.INCRMENT)}
+                disabled={!canContinue}
               >
                 <span>Continue</span>
                 <ChevronRight />
@@ -161,7 +266,7 @@ export default function OnboardingForm() {
   );
 }
 
-const getForm = (step: number, form: InertiaFormProps) => {
+const getForm = (step: number, form: InertiaFormProps<OnboardingFormData>) => {
   switch (step) {
     case 0:
       return <AccountSelection form={form} />;
