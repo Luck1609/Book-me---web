@@ -1,16 +1,16 @@
 import type { InertiaFormProps } from "@inertiajs/react"
-import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/types/useHttp';
+import type { UseHttpPrecognitiveProps } from "node_modules/@inertiajs/react/types/useHttp";
 import type { Checkbox as CheckboxPrimitive } from "radix-ui"
 import * as React from "react"
 
-import { CheckboxComponent } from "@/components/ui/checkbox";
+import { Checkbox as CheckboxComponent } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
 import { cn, handleFormData } from "@/lib/utils"
 import type { SelectOptions } from "@/types";
 
 
 
-type Props<T extends object> = Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, 'form'> & {
+type Props<T extends object> = Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "form"> & {
   description?: string | React.ReactNode;
   name: string;
   label?: React.ReactNode;
@@ -22,6 +22,7 @@ type Props<T extends object> = Omit<React.ComponentProps<typeof CheckboxPrimitiv
     description?: string;
     error?: string;
     wrapper?: string;
+    container?: string;
     field?: {
       wrapper?: string;
       content?: string
@@ -32,11 +33,11 @@ type Props<T extends object> = Omit<React.ComponentProps<typeof CheckboxPrimitiv
     }
   }
   form: InertiaFormProps<T> | UseHttpPrecognitiveProps<T>
-  orientation?: 'vertical' | 'horizontal'
+  orientation?: "vertical" | "horizontal"
 }
 
 
-export function Checkbox<T extends object>({ classNames, label, name, form, isBoolean, options, ...props }: Props<T>) {
+export function Checkbox<T extends object>({ classNames, label, name, form, isBoolean = false, options, ...props }: Props<T>) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let componentProps = (_option?: SelectOptions) => props
@@ -82,21 +83,21 @@ export function Checkbox<T extends object>({ classNames, label, name, form, isBo
   }
 
   return (
-    <FieldSet className={cn('w-full', classNames?.wrapper)}>
+    <FieldSet className={cn("w-full", classNames?.wrapper)}>
       {
         isBoolean ? (
           // Boolean mode: single checkbox
           <FieldLabel htmlFor={name} className={cn("relative", classNames?.field?.wrapper)}>
-            <Field orientation={props?.orientation ?? 'horizontal'} className={cn('', classNames?.field?.container)}>
+            <Field orientation={props?.orientation ?? "horizontal"} className={cn("", classNames?.field?.container)}>
               <CheckboxComponent
                 id={name}
                 name={name}
                 {...componentProps()}
               />
-              <FieldContent className={cn('', classNames?.field?.content)}>
-                {label && <span className={cn('', classNames?.field?.label)}>{label}</span>}
+              <FieldContent className={cn("", classNames?.field?.content)}>
+                {label && <span className={cn("", classNames?.field?.label)}>{label}</span>}
                 {props?.description && (
-                  <FieldDescription className={cn('', classNames?.field?.description)}>
+                  <FieldDescription className={cn("", classNames?.field?.description)}>
                     {props.description}
                   </FieldDescription>
                 )}
@@ -108,40 +109,42 @@ export function Checkbox<T extends object>({ classNames, label, name, form, isBo
           <>
             {
               label ?
-                typeof (label) === 'string'
-                  ? <FieldLegend variant="label" className={cn('font-medium', classNames?.label)}>{label}</FieldLegend>
+                typeof (label) === "string"
+                  ? <FieldLegend variant="label" className={cn("font-medium", classNames?.label)}>{label}</FieldLegend>
                   : label
                 : null
             }
             {
-              props?.description && <FieldDescription className={cn('', classNames?.description)}>
+              props?.description && <FieldDescription className={cn("", classNames?.description)}>
                 {props.description}
               </FieldDescription>
             }
 
-            {
-              options?.map((option, index) => (
-                <FieldLabel key={`${index}-${option.value}`} htmlFor={option.value} className={cn("relative", classNames?.field?.wrapper)}>
-                  <Field orientation={props?.orientation ?? 'horizontal'} className={cn('', classNames?.field?.container)}>
-                    <CheckboxComponent
-                      id={option.value}
-                      name={option.value}
-                      {...componentProps(option)}
-                    />
-                    <FieldContent className={cn('', classNames?.field?.content)}>
-                      <span className={cn('', classNames?.field?.label)}>{option.label}</span>
-                      {
-                        option.description && (
-                          <FieldDescription className={cn('', classNames?.field?.description)}>
-                            {option.description}
-                          </FieldDescription>
-                        )
-                      }
-                    </FieldContent>
-                  </Field>
-                </FieldLabel>
-              ))
-            }
+            <div className={cn("", classNames?.container)}>
+              {
+                options?.map((option, index) => (
+                  <FieldLabel key={`${index}-${option.value}`} htmlFor={option.value} className={cn("relative ", classNames?.field?.wrapper)}>
+                    <Field orientation={props?.orientation ?? "horizontal"} className={cn("", classNames?.field?.container)}>
+                      <CheckboxComponent
+                        id={option.value}
+                        name={option.value}
+                        {...componentProps(option)}
+                      />
+                      <FieldContent className={cn("", classNames?.field?.content)}>
+                        <span className={cn("", classNames?.field?.label)}>{option.label}</span>
+                        {
+                          option.description && (
+                            <FieldDescription className={cn("", classNames?.field?.description)}>
+                              {option.description}
+                            </FieldDescription>
+                          )
+                        }
+                      </FieldContent>
+                    </Field>
+                  </FieldLabel>
+                ))
+              }
+            </div>
           </>
         )
       }

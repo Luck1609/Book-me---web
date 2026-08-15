@@ -1,20 +1,21 @@
 import type { InertiaFormProps } from '@inertiajs/react'
 import { User, Store } from 'lucide-react'
 import { Checkbox } from '@/components/form/checkbox'
+import { cn } from '@/lib/utils'
 
 export default function AccountSelection({ form }: {form: InertiaFormProps}) {
   return (
-    <div>
+    <>
       <Checkbox
         name="type"
         form={form}
         options={[
           {
             label: <div className="flex flex-col items-center">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+              <div className={cn("mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary", form.data.type === "client" ? "bg-primary/10" : "")}>
                 <User aria-hidden="true" className="size-8" />
               </div>
-              <h2 className="mb-2 font-headline-md text-headline-md text-primary text-center">
+              <h2 className="mb-2 font-md text-md text-primary text-center">
                 I am a Client
               </h2>
             </div>,
@@ -23,11 +24,11 @@ export default function AccountSelection({ form }: {form: InertiaFormProps}) {
           },
           {
             label: <div className="flex flex-col items-center">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+              <div className={cn("mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary", form.data.type === "provider" ? "bg-primary/10" : "")}>
                 <Store aria-hidden="true" className="size-8" />
               </div>
-              <h2 className="mb-2 font-headline-md text-headline-md text-primary text-center">
-                I am a Service Provcider
+              <h2 className="mb-2 font-md text-md text-primary text-center">
+                I am a Service Provider
               </h2>
             </div>,
             value: "provider",
@@ -35,14 +36,16 @@ export default function AccountSelection({ form }: {form: InertiaFormProps}) {
           },
         ]}
         classNames={{
-          wrapper: "flex flex-row",
+          container: "flex flex-row gap-5",
           field: {
-            container: "bg-card p-8! border rounded-xl",
-            description: "text-center text-sm border-red-300"
+            wrapper: "bg-card lg:p-8",
+            container: "p-0! bg-overflow-hidden",
+            label: "overflow-hidden border-none",
+            description: "text-center text-sm"
           }
         }}
       />
-    </div>
+    </>
   )
 }
 

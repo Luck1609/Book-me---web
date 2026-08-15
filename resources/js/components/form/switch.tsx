@@ -6,7 +6,7 @@ import type { UseHttpPrecognitiveProps } from "node_modules/@inertiajs/react/typ
 import * as React from "react"
 
 import { Label } from "@/components/ui/label"
-import { SwitchComponent } from '@/components/ui/switch';
+import { Switch as SwitchComponent } from '@/components/ui/switch';
 import { cn, handleFormData } from "@/lib/utils"
 
 

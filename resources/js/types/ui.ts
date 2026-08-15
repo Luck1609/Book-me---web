@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { ComponentType, ReactNode, SVGProps } from "react";
+import type { ComponentType, JSX, ReactNode, SVGProps } from "react";
 import type { BreadcrumbItem } from "@/types/navigation";
 
 export type AppLayoutProps = {
@@ -29,3 +29,5 @@ export type AuthLayoutProps = {
 };
 
 export type Icon = LucideIcon | ComponentType<SVGProps<SVGSVGElement>> | null;
+
+export type Children<T = null> = { children: ReactNode | JSX.Element } & T;

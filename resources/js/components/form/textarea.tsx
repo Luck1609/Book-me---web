@@ -4,7 +4,7 @@ import type { InertiaFormProps } from "@inertiajs/react"
 import type { UseHttpPrecognitiveProps } from "node_modules/@inertiajs/react/types/useHttp"
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label"
-import { TextareaComponent } from "@/components/ui/textarea";
+import { Textarea as TextareaComponent } from "@/components/ui/textarea";
 import { cn, handleFormData } from "@/lib/utils"
 import type { Icon } from "@/types";
 
@@ -77,6 +77,7 @@ export function Textarea<T extends object>({ classNames, label, name, form, icon
           id={name}
           name={name}
           {...componentProps}
+          className={cn("border-none shadow-none", componentProps?.className)}
         />
 
         {

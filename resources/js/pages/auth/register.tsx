@@ -1,12 +1,14 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { SignupIcon } from '@/assets/icons';
-import background from "@/assets/images/login.webp"
+import background from '@/assets/images/book.webp';
+import { Checkbox } from '@/components/form/checkbox';
 import { Input, Password } from '@/components/form/input';
 import SubmitButton from '@/components/form/submit-button';
 import { Label } from '@/components/ui/label';
-import { login } from '@/routes';
-import { store } from '@/routes/register';
+import { register } from '@/routes';
+import { store } from '@/routes/login';
+import { request } from '@/routes/password';
 import SocialAuthButtons, { AlternateLogin } from './social-buttons';
 
 
@@ -26,7 +28,7 @@ export default function Register() {
 
   return (
     <>
-      <Head title="Register" />
+      <Head title="Log in" />
 
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="grid lg:grid-cols-2 gap-6">
@@ -44,17 +46,13 @@ export default function Register() {
             label="Email address"
             placeholder="email@example.com"
             form={form}
-            tabIndex={2}
+            tabIndex={1}
           />
 
           <Password
             name="password"
-            tabIndex={3}
-            label={
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-              </div>
-            }
+            tabIndex={2}
+            label="Password"
             placeholder="Enter your password"
             form={form}
           />
@@ -62,18 +60,15 @@ export default function Register() {
           <Password
             name="password_confirmation"
             tabIndex={4}
-            label={
-              <div className="flex items-center">
-                <Label htmlFor="password">Password confirmation</Label>
-              </div>
-            }
+            label="Password confirmation"
             placeholder="Enter your password"
             form={form}
           />
 
+
           <div className="flex justify-center lg:col-span-2">
             <SubmitButton
-              label="Log in"
+              label="Create my account"
               className="w-2/3"
               form={form}
               tabIndex={5}
@@ -87,7 +82,7 @@ export default function Register() {
 
         <div className="text-center text-sm text-muted-foreground mt-4">
           Don't have an account?{' '}
-          <Link href={login()} tabIndex={5} className="text-primary hover:underline">
+          <Link href={register()} tabIndex={5} className="text-primary hover:underline">
             Sign up
           </Link>
         </div>

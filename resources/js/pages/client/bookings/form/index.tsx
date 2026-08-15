@@ -28,7 +28,7 @@ export default function Booking() {
           >
             <ArrowLeft aria-hidden="true" className="size-6 text-primary" />
           </button>
-          <h1 className="font-headline-md text-headline-md font-bold text-primary">
+          <h1 className="font-md text-md font-bold text-primary">
             The Classic Cut
           </h1>
           <div className="w-10"></div>
@@ -72,7 +72,7 @@ export default function Booking() {
                         aria-hidden="true"
                         className="size-6 text-primary"
                       />
-                      <span className="font-headline-md text-headline-md text-primary">
+                      <span className="font-md text-md text-primary">
                         $30
                       </span>
                     </div>
@@ -93,7 +93,7 @@ export default function Booking() {
                         aria-hidden="true"
                         className="size-6 text-primary"
                       />
-                      <span className="font-headline-md text-headline-md text-primary">
+                      <span className="font-md text-md text-primary">
                         $20
                       </span>
                     </div>
@@ -114,7 +114,7 @@ export default function Booking() {
                         aria-hidden="true"
                         className="size-6 text-primary"
                       />
-                      <span className="font-headline-md text-headline-md text-primary">
+                      <span className="font-md text-md text-primary">
                         $45
                       </span>
                     </div>
@@ -274,7 +274,7 @@ export default function Booking() {
                 Haircut • Oct 6, 01:00 PM
               </p>
             </div>
-            <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-12 py-4 font-headline-md text-headline-md font-bold text-on-primary shadow-[0_12px_24px_rgba(15,23,42,0.08)] transition-all hover:opacity-90 active:scale-95 md:w-auto">
+            <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-12 py-4 font-md text-md font-bold text-on-primary shadow-[0_12px_24px_rgba(15,23,42,0.08)] transition-all hover:opacity-90 active:scale-95 md:w-auto">
               Confirm Booking{' '}
               <ChevronRight aria-hidden="true" className="size-6" />
             </button>

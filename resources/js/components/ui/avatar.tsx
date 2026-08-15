@@ -1,10 +1,9 @@
 import * as React from "react"
 import { Avatar as AvatarPrimitive } from "radix-ui"
 
-import { cn, getColor } from "@/lib/utils"
-import { useInitials } from "@/hooks/use-initials"
+import { cn } from "@/lib/utils"
 
-function AvatarComponent({
+function Avatar({
   className,
   size = "default",
   ...props
@@ -16,8 +15,7 @@ function AvatarComponent({
       data-slot="avatar"
       data-size={size}
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-xl select-none data-[size=lg]:size-10 data-[size=sm]:size-6",
-        // "group/avatar relative flex size-8 shrink-0 rounded-xl select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
         className
       )}
       {...props}
@@ -33,7 +31,7 @@ function AvatarImage({
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn(
-        "aspect-square size-full rounded-xl object-cover",
+        "aspect-square size-full rounded-full object-cover",
         className
       )}
       {...props}
@@ -49,7 +47,7 @@ function AvatarFallback({
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "flex size-full items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
+        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
         className
       )}
       {...props}
@@ -99,42 +97,6 @@ function AvatarGroupCount({
       )}
       {...props}
     />
-  )
-}
-
-
-type Props = {
-  src?: string;
-  alt?: string;
-  name: string;
-  className?: string;
-  classNames?: {
-    image?: string;
-    fallback?: string;
-  }
-  hasInitials?: boolean;
-}
-
-function Avatar({
-  src,
-  alt,
-  name,
-  className,
-  classNames,
-  hasInitials = false
-}: Props) {
-  const getInitials = useInitials()
-
-  return (
-    
-    <AvatarComponent className={cn("w-16 h-16", className)}>
-      {
-        src && (
-          <AvatarImage src={src} alt={alt ?? name} className={cn("", classNames?.image)} />
-        )
-      }
-      <AvatarFallback className={cn("text-white", getColor(name), classNames?.fallback)}>{hasInitials ? name : getInitials(name)}</AvatarFallback>
-    </AvatarComponent>
   )
 }
 

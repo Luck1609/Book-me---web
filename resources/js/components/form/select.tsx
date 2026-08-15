@@ -18,7 +18,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { cn, handleFormData } from "@/lib/utils"
 import type { Icon, SelectOptions } from "@/types"
-import { SelectContent, SelectItem, SelectTrigger, SelectValue, SelectComponent } from '../ui/select';
+import { SelectContent, SelectItem, SelectTrigger, SelectValue, Select as SelectComponent } from '../ui/select';
 
 
 type Options<T extends object> = Omit<React.ComponentProps<"select">, 'form'> & {
@@ -65,7 +65,7 @@ export function Select<T extends object>({
   return (
     <div className={cn("w-full", classNames?.wrapper)}>
       {label && typeof (label) === 'string'
-        ? <Label className={classNames?.label}>{label}</Label>
+        ? <Label className={cn("mb-1", classNames?.label)}>{label}</Label>
         : label
       }
 
@@ -73,11 +73,13 @@ export function Select<T extends object>({
         value={value as string}
         onValueChange={handleValueChange}
       >
-        <SelectTrigger className={cn(
-          'w-full flex items-center py-2.5',
-          SelectIcon ? 'space-x-3' : '',
-          className ?? ''
-        )}>
+        <SelectTrigger
+          className={cn(
+            'w-full flex items-center py-2.5 h-11!',
+            SelectIcon ? 'space-x-3' : '',
+            className ?? ''
+          )}
+        >
           {SelectIcon && <SelectIcon />}
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -230,7 +232,7 @@ export function SearchableSelect<T extends object>({
   if (!form) {
     throw new Error("MultiSelect component requires inertia useForm hook")
   }
-  
+
   const { value, error, handleChange } = handleFormData(props.name, form) || {}
 
   // Get label for a value

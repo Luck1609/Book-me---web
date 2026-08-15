@@ -1,7 +1,9 @@
-import React from 'react'
+import SuccessIcon from '@/assets/icons/success'
 
 export default function ShopSetupSuccessful() {
   return (
-    <div>ShopSetupSuccessful</div>
+    <div>
+      <SuccessIcon className="size-120" />
+    </div>
   )
 }

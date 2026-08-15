@@ -91,7 +91,7 @@ export default function MyBookings() {
             <div className="flex transform flex-col gap-4 rounded-xl border border-outline-variant/30 bg-surface p-6 shadow-[0_2px_4px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(15,23,42,0.08)]">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-headline-md text-headline-md text-primary">
+                  <h3 className="font-md text-md text-primary">
                     Gentleman's Cut
                   </h3>
                   <p className="font-body-md text-on-surface-variant">
@@ -143,7 +143,7 @@ export default function MyBookings() {
             <div className="flex transform flex-col gap-4 rounded-xl border border-outline-variant/30 bg-surface p-6 shadow-[0_2px_4px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(15,23,42,0.08)]">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-headline-md text-headline-md text-primary">
+                  <h3 className="font-md text-md text-primary">
                     Beard Sculpting
                   </h3>
                   <p className="font-body-md text-on-surface-variant">
@@ -196,7 +196,7 @@ export default function MyBookings() {
             <div className="flex flex-col gap-4 rounded-xl border border-outline-variant/30 bg-surface/60 p-6 opacity-80 grayscale-[0.2]">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-headline-md text-headline-md text-on-surface-variant">
+                  <h3 className="font-md text-md text-on-surface-variant">
                     Signature Fade
                   </h3>
                   <p className="font-body-md text-on-surface-variant">
@@ -233,7 +233,7 @@ export default function MyBookings() {
             <div className="flex flex-col gap-4 rounded-xl border border-outline-variant/30 bg-surface/60 p-6 opacity-80 grayscale-[0.2]">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-headline-md text-headline-md text-on-surface-variant">
+                  <h3 className="font-md text-md text-on-surface-variant">
                     Hot Towel Shave
                   </h3>
                   <p className="font-body-md text-on-surface-variant">

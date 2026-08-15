@@ -25,7 +25,7 @@ export default function FindShop() {
         <header className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-surface px-margin-mobile shadow-sm">
           <div className="flex items-center gap-2">
             <MapPin aria-hidden="true" className="size-6 text-primary" />
-            <span className="font-headline-md text-headline-md tracking-tight text-primary">
+            <span className="font-md text-md tracking-tight text-primary">
               Craft & Care
             </span>
           </div>
@@ -71,7 +71,7 @@ export default function FindShop() {
 
           <section className="mb-stack-lg">
             <div className="mb-stack-md flex items-end justify-between">
-              <h2 className="font-headline-md text-headline-md text-primary">
+              <h2 className="font-md text-md text-primary">
                 Featured Shops
               </h2>
               <a
@@ -124,7 +124,7 @@ export default function FindShop() {
                     />
                   </div>
                   <div className="flex flex-col justify-center">
-                    <h4 className="font-headline-md text-headline-md text-primary">
+                    <h4 className="font-md text-md text-primary">
                       Pure Aesthetic
                     </h4>
                     <p className="font-caption text-caption text-on-surface-variant">
@@ -150,7 +150,7 @@ export default function FindShop() {
                     />
                   </div>
                   <div className="flex flex-col justify-center">
-                    <h4 className="font-headline-md text-headline-md text-primary">
+                    <h4 className="font-md text-md text-primary">
                       Onyx Sanctuary
                     </h4>
                     <p className="font-caption text-caption text-on-surface-variant">
@@ -172,7 +172,7 @@ export default function FindShop() {
           </section>
 
           <section className="mb-stack-lg">
-            <h2 className="mb-stack-md font-headline-md text-headline-md text-primary">
+            <h2 className="mb-stack-md font-md text-md text-primary">
               Nearby Shops
             </h2>
             <div className="space-y-4">
@@ -186,7 +186,7 @@ export default function FindShop() {
                     />
                   </div>
                   <div>
-                    <h5 className="font-headline-md text-headline-md leading-tight text-primary">
+                    <h5 className="font-md text-md leading-tight text-primary">
                       Heritage Grooming
                     </h5>
                     <div className="mt-1 flex items-center gap-2 font-caption text-caption text-on-surface-variant">
@@ -204,7 +204,7 @@ export default function FindShop() {
                       aria-hidden="true"
                       className="size-[18px] fill-current"
                     />
-                    <span className="font-headline-md text-headline-md">
+                    <span className="font-md text-md">
                       4.7
                     </span>
                   </div>
@@ -224,7 +224,7 @@ export default function FindShop() {
                     />
                   </div>
                   <div>
-                    <h5 className="font-headline-md text-headline-md leading-tight text-primary">
+                    <h5 className="font-md text-md leading-tight text-primary">
                       Velvet & Vine
                     </h5>
                     <div className="mt-1 flex items-center gap-2 font-caption text-caption text-on-surface-variant">
@@ -242,7 +242,7 @@ export default function FindShop() {
                       aria-hidden="true"
                       className="size-[18px] fill-current"
                     />
-                    <span className="font-headline-md text-headline-md">
+                    <span className="font-md text-md">
                       4.9
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export default function FindShop() {
                     />
                   </div>
                   <div>
-                    <h5 className="font-headline-md text-headline-md leading-tight text-primary">
+                    <h5 className="font-md text-md leading-tight text-primary">
                       Studio Zero
                     </h5>
                     <div className="mt-1 flex items-center gap-2 font-caption text-caption text-on-surface-variant">
@@ -280,7 +280,7 @@ export default function FindShop() {
                       aria-hidden="true"
                       className="size-[18px] fill-current"
                     />
-                    <span className="font-headline-md text-headline-md">
+                    <span className="font-md text-md">
                       4.6
                     </span>
                   </div>
