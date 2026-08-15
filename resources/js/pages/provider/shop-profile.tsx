@@ -40,7 +40,7 @@ export default function ShopProfile() {
               />
             </div>
             <div>
-              <h2 className="font-headline-md text-headline-md text-primary">
+              <h2 className="font-md text-md text-primary">
                 The Master Barber
               </h2>
               <p className="font-label-md text-label-md text-on-surface-variant">
@@ -84,7 +84,7 @@ export default function ShopProfile() {
         </aside>
 
         <header className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-surface px-margin-mobile shadow-sm md:hidden">
-          <h1 className="font-headline-md text-headline-md text-primary">
+          <h1 className="font-md text-md text-primary">
             Craft &amp; Care
           </h1>
           <div className="flex gap-4">
@@ -186,7 +186,7 @@ export default function ShopProfile() {
                         <Scissors aria-hidden="true" className="size-6" />
                       </div>
                       <div>
-                        <h4 className="font-headline-md text-headline-md text-sm">
+                        <h4 className="font-md text-md text-sm">
                           Signature Haircut
                         </h4>
                         <p className="font-caption text-caption text-on-surface-variant">
@@ -195,7 +195,7 @@ export default function ShopProfile() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-headline-md font-bold">$65.00</span>
+                      <span className="text-md font-bold">$65.00</span>
                       <div className="mt-1 flex gap-2">
                         <button className="text-xl text-outline hover:text-primary">
                           <Pencil aria-hidden="true" className="size-6" />
@@ -213,7 +213,7 @@ export default function ShopProfile() {
                         <UserRound aria-hidden="true" className="size-6" />
                       </div>
                       <div>
-                        <h4 className="font-headline-md text-headline-md text-sm">
+                        <h4 className="font-md text-md text-sm">
                           Luxury Hot Shave
                         </h4>
                         <p className="font-caption text-caption text-on-surface-variant">
@@ -222,7 +222,7 @@ export default function ShopProfile() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-headline-md font-bold">$40.00</span>
+                      <span className="text-md font-bold">$40.00</span>
                       <div className="mt-1 flex gap-2">
                         <button className="text-xl text-outline hover:text-primary">
                           <Pencil aria-hidden="true" className="size-6" />

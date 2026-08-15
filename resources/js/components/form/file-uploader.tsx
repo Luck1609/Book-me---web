@@ -6,14 +6,14 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 // import useHelper from '@/hooks/use-helper'
-import { cn, handleFormData } from '@/lib/utils'
-import type { Icon, Media } from '@/types'
 
-import { Button } from '../ui/button'
-import { Label } from '../ui/label'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import { useNotice } from '@/contexts/notice-context'
 import useHelper from '@/hooks/use-helper'
+import { cn, handleFormData } from '@/lib/utils'
 import media from '@/routes/media'
+import type { Icon, Media } from '@/types'
 
 
 type IconStyles = {
@@ -222,7 +222,7 @@ export default function FileUploader<T extends object>({
 
   return (
     <>
-      {label && <Label>{label}</Label>}
+      {label && <Label className="mb-1">{label}</Label>}
 
       <input
         ref={fileInputRef}

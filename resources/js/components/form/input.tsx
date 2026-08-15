@@ -3,7 +3,7 @@ import { Eye, EyeClosed } from "lucide-react"
 import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/types/useHttp';
 import * as React from "react"
 
-import { InputComponent } from "@/components/ui/input";
+import { Input as InputComponent } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label"
 import { cn, handleFormData } from "@/lib/utils"
@@ -78,6 +78,7 @@ export function Input<T extends object>({ classNames, label, name, form, icons, 
           id={name}
           name={name}
           {...componentProps}
+          className={cn("border-none shadow-none", componentProps.className)}
         />
 
         {
@@ -123,6 +124,7 @@ export function Password<T extends object>(options: Props<T>) {
   const componentProps = {
     type: showText ? 'text' : 'password',
     ...props,
+    className: cn("border-none", props.className),
     icons: {
       ...icons,
       prependIcon: Icon,

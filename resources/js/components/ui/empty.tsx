@@ -1,15 +1,13 @@
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { Icon } from "@/types"
-import { ReactNode } from "react"
 
 function Empty({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="empty"
       className={cn(
-        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12",
+        "flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-lg border-dashed p-12 text-center text-balance",
         className
       )}
       {...props}
@@ -21,10 +19,7 @@ function EmptyHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="empty-header"
-      className={cn(
-        "flex max-w-sm flex-col items-center gap-2 text-center",
-        className
-      )}
+      className={cn("flex max-w-sm flex-col items-center gap-2", className)}
       {...props}
     />
   )
@@ -64,7 +59,10 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="empty-title"
-      className={cn("text-lg font-medium tracking-tight", className)}
+      className={cn(
+        "font-heading text-lg font-medium tracking-tight",
+        className
+      )}
       {...props}
     />
   )
@@ -96,43 +94,6 @@ function EmptyContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-
-type Props = {
-  title: string;
-  description: string;
-  icon?: Icon
-  action?: ReactNode
-  classNames?: {
-    wrapper?: string;
-    header?: string;
-    icon?: {
-      wrapper?: string;
-      item?: string;
-    };
-    title?: string;
-    description?: string;
-  }
-}
-
-function EmptyComponent({ title, description, icon: EmptyIcon, action, classNames }: Props) {
-  return (
-    <Empty className={cn("border-2", classNames?.wrapper)}>
-      <EmptyHeader className={cn("", classNames?.header)}>
-        {
-          EmptyIcon && <div className={cn("", classNames?.icon?.wrapper)}>
-            <EmptyIcon  className={cn("", classNames?.icon?.item)} />
-          </div>
-        }
-        <EmptyTitle className={cn("", classNames?.title)}>{title}</EmptyTitle>
-        <EmptyDescription className={cn("", classNames?.description)}>
-          {description}
-        </EmptyDescription>
-      </EmptyHeader>
-      {action && action}
-    </Empty>
-  )
-}
-
 export {
   Empty,
   EmptyHeader,
@@ -140,5 +101,4 @@ export {
   EmptyDescription,
   EmptyContent,
   EmptyMedia,
-  EmptyComponent
 }

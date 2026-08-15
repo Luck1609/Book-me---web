@@ -94,7 +94,7 @@ export default function ClientDetails() {
                     aria-hidden="true"
                     className="size-6 text-secondary"
                   />
-                  <h3 className="font-headline-md text-headline-md text-primary">
+                  <h3 className="font-md text-md text-primary">
                     Grooming Profile
                   </h3>
                 </div>
@@ -137,7 +137,7 @@ export default function ClientDetails() {
                     <p className="font-label-md text-label-md uppercase opacity-70">
                       Total Spend
                     </p>
-                    <p className="font-display-lg text-display-lg">$1,420.00</p>
+                    <p className="font-display-lg text-lg">$1,420.00</p>
                   </div>
                   <p className="mt-2 font-body-md text-body-md opacity-80">
                     Last visit: 12 days ago
@@ -145,7 +145,7 @@ export default function ClientDetails() {
                 </div>
                 <div className="flex h-[calc(50%-12px)] flex-col justify-center rounded-xl bg-secondary-container p-stack-md">
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="font-headline-md text-headline-md text-on-secondary-fixed-variant">
+                    <span className="font-md text-md text-on-secondary-fixed-variant">
                       Next Booking
                     </span>
                     <Calendar
@@ -181,12 +181,12 @@ export default function ClientDetails() {
                     <span className="font-label-md text-[12px] leading-none uppercase">
                       Oct
                     </span>
-                    <span className="font-headline-md text-headline-md leading-none">
+                    <span className="font-md text-md leading-none">
                       08
                     </span>
                   </div>
                   <div>
-                    <h4 className="font-headline-md text-headline-md text-primary">
+                    <h4 className="font-md text-md text-primary">
                       Full Service Grooming
                     </h4>
                     <p className="font-body-md text-body-md text-on-surface-variant">
@@ -204,7 +204,7 @@ export default function ClientDetails() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display-lg text-headline-md text-primary">
+                    <p className="font-display-lg text-md text-primary">
                       $120
                     </p>
                     <span className="flex items-center justify-end gap-1 font-label-md text-caption text-green-600">
@@ -228,12 +228,12 @@ export default function ClientDetails() {
                     <span className="font-label-md text-[12px] leading-none uppercase">
                       Sep
                     </span>
-                    <span className="font-headline-md text-headline-md leading-none">
+                    <span className="font-md text-md leading-none">
                       12
                     </span>
                   </div>
                   <div>
-                    <h4 className="font-headline-md text-headline-md text-primary">
+                    <h4 className="font-md text-md text-primary">
                       Executive Haircut
                     </h4>
                     <p className="font-body-md text-body-md text-on-surface-variant">
@@ -251,7 +251,7 @@ export default function ClientDetails() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display-lg text-headline-md text-primary">
+                    <p className="font-display-lg text-md text-primary">
                       $85
                     </p>
                     <span className="flex items-center justify-end gap-1 font-label-md text-caption text-green-600">
@@ -275,12 +275,12 @@ export default function ClientDetails() {
                     <span className="font-label-md text-[12px] leading-none uppercase">
                       Aug
                     </span>
-                    <span className="font-headline-md text-headline-md leading-none">
+                    <span className="font-md text-md leading-none">
                       15
                     </span>
                   </div>
                   <div>
-                    <h4 className="font-headline-md text-headline-md text-primary">
+                    <h4 className="font-md text-md text-primary">
                       Beard & Sculpt
                     </h4>
                     <p className="font-body-md text-body-md text-on-surface-variant">
@@ -298,7 +298,7 @@ export default function ClientDetails() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display-lg text-headline-md text-primary">
+                    <p className="font-display-lg text-md text-primary">
                       $45
                     </p>
                     <span className="flex items-center justify-end gap-1 font-label-md text-caption text-green-600">

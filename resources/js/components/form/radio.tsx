@@ -4,7 +4,7 @@ import type { RadioGroup as RadioGroupPrimitive } from "radix-ui"
 import * as React from "react"
 
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
-import { RadioGroupComponent, RadioGroupItem } from '@/components/ui/radio-group';
+import { RadioGroup as RadioGroupComponent, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn, handleFormData } from "@/lib/utils"
 import type { SelectOptions } from "@/types";
 

@@ -93,7 +93,7 @@ export default function AppointmentDetails() {
                     ></div>
                     <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 to-transparent p-stack-md">
                       <div className="text-white">
-                        <h3 className="font-headline-md text-headline-md">
+                        <h3 className="font-md text-md">
                           The Master Suite
                         </h3>
                         <p className="font-body-md text-body-md opacity-90">
@@ -153,7 +153,7 @@ export default function AppointmentDetails() {
               <div className="rounded-xl border border-outline-variant/30 bg-surface p-stack-lg shadow-[0_2px_4px_rgba(15,23,42,0.04)]">
                 <div className="flex flex-col gap-gutter md:flex-row">
                   <div className="flex-grow">
-                    <h4 className="mb-2 font-headline-md text-headline-md">
+                    <h4 className="mb-2 font-md text-md">
                       Location
                     </h4>
                     <p className="font-body-lg text-body-lg font-bold">
@@ -199,7 +199,7 @@ export default function AppointmentDetails() {
                     />
                   </div>
                   <div>
-                    <p className="font-headline-md text-headline-md">
+                    <p className="font-md text-md">
                       Julian Sterling
                     </p>
                     <p className="font-body-md text-body-md text-on-surface-variant">
@@ -220,7 +220,7 @@ export default function AppointmentDetails() {
               </div>
 
               <div className="rounded-xl bg-primary p-stack-lg text-on-primary shadow-[0_12px_24px_rgba(15,23,42,0.08)]">
-                <h4 className="mb-stack-md font-headline-md text-headline-md text-white">
+                <h4 className="mb-stack-md font-md text-md text-white">
                   Manage Booking
                 </h4>
                 <div className="flex flex-col gap-stack-sm">

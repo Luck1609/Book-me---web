@@ -27,7 +27,7 @@ export default function Dashboard() {
         <header className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-surface px-margin-mobile shadow-sm md:px-margin-desktop">
           <div className="flex items-center gap-3">
             <MapPin aria-hidden="true" className="size-6 text-primary" />
-            <h1 className="font-headline-md text-headline-md text-primary">
+            <h1 className="font-md text-md text-primary">
               Craft &amp; Care
             </h1>
           </div>
@@ -59,7 +59,7 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <h2 className="font-headline-md text-headline-md text-primary">
+                <h2 className="font-md text-md text-primary">
                   The Master Barber
                 </h2>
                 <p className="font-caption text-on-surface-variant">
@@ -116,7 +116,7 @@ export default function Dashboard() {
                   <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
                     Total Bookings
                   </p>
-                  <p className="font-display-lg text-display-lg text-primary">
+                  <p className="font-display-lg text-lg text-primary">
                     12
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export default function Dashboard() {
                   <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
                     Revenue Today
                   </p>
-                  <p className="font-display-lg text-display-lg text-primary">
+                  <p className="font-display-lg text-lg text-primary">
                     $450
                   </p>
                 </div>
@@ -133,7 +133,7 @@ export default function Dashboard() {
                   <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
                     Efficiency Rate
                   </p>
-                  <p className="font-display-lg text-display-lg text-primary">
+                  <p className="font-display-lg text-lg text-primary">
                     94%
                   </p>
                 </div>
@@ -141,7 +141,7 @@ export default function Dashboard() {
                   <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
                     Active Clients
                   </p>
-                  <p className="font-display-lg text-display-lg text-primary">
+                  <p className="font-display-lg text-lg text-primary">
                     8
                   </p>
                 </div>
@@ -150,7 +150,7 @@ export default function Dashboard() {
 
             <section>
               <div className="mb-stack-md flex items-center justify-between">
-                <h2 className="font-headline-md text-headline-md text-primary">
+                <h2 className="font-md text-md text-primary">
                   Today's Schedule
                 </h2>
                 <div className="flex gap-2">
@@ -171,7 +171,7 @@ export default function Dashboard() {
                         <p className="font-label-md text-label-md text-on-surface-variant">
                           09:00 AM — 09:45 AM
                         </p>
-                        <h3 className="font-headline-md text-headline-md text-on-surface">
+                        <h3 className="font-md text-md text-on-surface">
                           Marcus Thorne
                         </h3>
                         <p className="font-body-md text-on-surface-variant">
@@ -199,7 +199,7 @@ export default function Dashboard() {
                             10:00 AM — 11:00 AM
                           </p>
                         </div>
-                        <h3 className="font-headline-md text-headline-md text-primary">
+                        <h3 className="font-md text-md text-primary">
                           John Doe
                         </h3>
                         <p className="font-body-md text-on-surface-variant">
@@ -207,7 +207,7 @@ export default function Dashboard() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-headline-md text-headline-md text-primary">
+                        <p className="font-md text-md text-primary">
                           $65.00
                         </p>
                         <button className="mt-2 font-label-md text-label-md text-primary underline hover:text-on-surface-variant">
@@ -226,7 +226,7 @@ export default function Dashboard() {
                         <p className="font-label-md text-label-md text-on-surface-variant">
                           11:30 AM — 12:15 PM
                         </p>
-                        <h3 className="font-headline-md text-headline-md text-primary">
+                        <h3 className="font-md text-md text-primary">
                           Sarah Williams
                         </h3>
                         <p className="font-body-md text-on-surface-variant">
@@ -249,7 +249,7 @@ export default function Dashboard() {
                         <p className="font-label-md text-label-md text-on-surface-variant">
                           01:00 PM — 02:00 PM
                         </p>
-                        <h3 className="font-headline-md text-headline-md text-primary">
+                        <h3 className="font-md text-md text-primary">
                           Robert Chen
                         </h3>
                         <p className="font-body-md text-on-surface-variant">

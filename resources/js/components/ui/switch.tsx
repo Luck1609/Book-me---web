@@ -1,90 +1,33 @@
+"use client"
+
 import * as React from "react"
-import type { FormComponentRef } from '@inertiajs/core';
-import * as SwitchPrimitives from "@radix-ui/react-switch"
+import { Switch as SwitchPrimitive } from "radix-ui"
 
-import { cn, handleFormData } from "@/lib/utils"
-import { Label } from "./label"
-import { InertiaFormProps, useFormContext } from "@inertiajs/react"
+import { cn } from "@/lib/utils"
 
-export function SwitchComponent({
+function Switch({
   className,
+  size = "default",
   ...props
-}: React.ComponentProps<typeof SwitchPrimitives.Root>) {
+}: React.ComponentProps<typeof SwitchPrimitive.Root> & {
+  size?: "sm" | "default"
+}) {
   return (
-    <SwitchPrimitives.Root
+    <SwitchPrimitive.Root
       data-slot="switch"
+      data-size={size}
       className={cn(
-        "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
+        "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=default]:h-[18.4px] data-[size=default]:w-[32px] data-[size=sm]:h-[14px] data-[size=sm]:w-[24px] dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:bg-primary data-unchecked:bg-input dark:data-unchecked:bg-input/80 data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}
       {...props}
     >
-      <SwitchPrimitives.Thumb
-        className={cn(
-          "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0"
-        )}
+      <SwitchPrimitive.Thumb
+        data-slot="switch-thumb"
+        className="pointer-events-none block rounded-full bg-background ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 group-data-[size=default]/switch:data-checked:translate-x-[calc(100%-2px)] group-data-[size=sm]/switch:data-checked:translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground group-data-[size=default]/switch:data-unchecked:translate-x-0 group-data-[size=sm]/switch:data-unchecked:translate-x-0 dark:data-unchecked:bg-foreground"
       />
-    </SwitchPrimitives.Root>
+    </SwitchPrimitive.Root>
   )
 }
 
-
-
-type Props<T extends object> = Omit<React.ComponentProps<typeof SwitchPrimitives.Root>, 'form'> & {
-  label?: string | React.ReactNode;
-  name: string;
-  classNames?: {
-    label?: string;
-    error?: string;
-    wrapper?: string;
-  }
-  form?: InertiaFormProps<T>
-}
-
-
-export function Switch<T extends object>({ classNames, label, name, form, ...props }: Props<T>) {
-  const formContext = useFormContext() as FormComponentRef
-
-  let componentProps = { ...props }
-  let error = null;
-
-  if (form) {
-    const { value, error: formError, handleChange } = handleFormData(name, form) || {}
-    error = formError
-
-    componentProps = {
-      checked: value as boolean,
-      onCheckedChange: (checked: boolean) => {
-        form.setData(name as any, checked as any)
-      },
-      ...props
-    }
-  }
-
-  return (
-    <div className={cn('w-full space-y-1.5 relative', classNames?.wrapper)}>
-      <div className="flex items-center gap-2">
-        <SwitchComponent
-          id={name}
-          name={name}
-          {...componentProps}
-        />
-
-        {
-          label ?
-            typeof (label) === 'string'
-              ? <Label htmlFor={name} className={cn('font-medium cursor-pointer', classNames?.label)}>{label}</Label>
-              : label
-            : null
-        }
-      </div>
-
-      {form
-        ? form.hasErrors && error && <small className={cn("text-red-500 text-sm", classNames?.error)}>{error as string}</small>
-        : formContext
-          ? (formContext as FormComponentRef).invalid(name) && <small className={cn("text-red-500 text-sm", classNames?.error)}>{(formContext as FormComponentRef).errors?.[name]}</small>
-          : null
-      }
-    </div>
-  )
-}
+export { Switch }

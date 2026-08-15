@@ -29,7 +29,7 @@ export default function SocialAuthButtons({ className }: { className?: string; }
     <div className={cn("w-full mx-auto flex justify-center gap-5", className)}>
       {
         strategies.map((strategy) => (
-          <Button key={strategy.value} variant="outline" className="size-12">
+          <Button key={strategy.value} variant="outline" size="icon-lg">
             <img src={strategy.logo} className="size-6" />
           </Button>
         ))
