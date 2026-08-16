@@ -69,7 +69,7 @@ enum NavAction {
 }
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(4);
   const form = useForm<OnboardingFormData>({
     type: '',
 
