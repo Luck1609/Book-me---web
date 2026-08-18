@@ -37,38 +37,38 @@ use Spatie\Permission\Traits\HasRoles;
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
-    /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasRoles, HasUuids, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+  /** @use HasFactory<UserFactory> */
+  use HasApiTokens, HasFactory, HasRoles, HasUuids, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
-    public $incrementing = false;
+  public $incrementing = false;
 
-    protected $keyType = 'string';
+  protected $keyType = 'string';
 
-    protected $attributes = [
-        'is_active' => true,
+  protected $attributes = [
+    'is_active' => true,
+  ];
+
+  /**
+   * Get the attributes that should be cast.
+   *
+   * @return array<string, string>
+   */
+  protected function casts(): array
+  {
+    return [
+      'email_verified_at' => 'datetime',
+      'phone_verified_at' => 'datetime',
+      'password' => 'hashed',
+      'is_active' => 'boolean',
+      'two_factor_confirmed_at' => 'datetime',
     ];
+  }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'phone_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-            'two_factor_confirmed_at' => 'datetime',
-        ];
-    }
-
-    /**
-     * @return HasOne<ProviderProfile, $this>
-     */
-    public function providerProfile(): HasOne
-    {
-        return $this->hasOne(ProviderProfile::class);
-    }
+  /**
+   * @return HasOne<ProviderProfile, $this>
+   */
+  public function providerProfile(): HasOne
+  {
+    return $this->hasOne(ProviderProfile::class);
+  }
 }

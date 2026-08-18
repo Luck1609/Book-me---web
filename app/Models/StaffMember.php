@@ -10,23 +10,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StaffMember extends Model
 {
-    /** @use HasFactory<StaffMemberFactory> */
-    use HasFactory, HasUuids;
+  /** @use HasFactory<StaffMemberFactory> */
+  use HasFactory, HasUuids;
 
-    protected $fillable = ['provider_profile_id', 'name', 'phone', 'photo_path', 'is_active'];
+  protected $fillable = ['provider_profile_id', 'name', 'phone', 'photo_path', 'is_active'];
 
-    protected $attributes = ['is_active' => true];
+  protected $attributes = ['is_active' => true];
 
-    protected function casts(): array
-    {
-        return ['is_active' => 'boolean'];
-    }
+  protected function casts(): array
+  {
+    return ['is_active' => 'boolean'];
+  }
 
-    /**
-     * @return BelongsTo<ProviderProfile, $this>
-     */
-    public function providerProfile(): BelongsTo
-    {
-        return $this->belongsTo(ProviderProfile::class);
-    }
+  /**
+   * @return BelongsTo<ProviderProfile, $this>
+   */
+  public function providerProfile(): BelongsTo
+  {
+    return $this->belongsTo(ProviderProfile::class);
+  }
 }

@@ -13,59 +13,58 @@ use Illuminate\Support\Facades\Gate;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): AnonymousResourceCollection
-    {
-        Gate::authorize('viewAny', Service::class);
+  /**
+   * Display a listing of the resource.
+   */
+  public function index(): AnonymousResourceCollection
+  {
+    Gate::authorize('viewAny', Service::class);
 
-        return ServiceResource::collection(
-            request()->user()->providerProfile->services()->latest()->paginate(),
-        );
-    }
+    return ServiceResource::collection(
+      request()->user()->providerProfile->services()->latest()->paginate(),
+    );
+  }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreServiceRequest $request): JsonResponse
-    {
-        Gate::authorize('create', Service::class);
-        $service = $request->user()->providerProfile->services()->create($request->validated());
+  /**
+   * Store a newly created resource in storage.
+   */
+  public function store(StoreServiceRequest $request): JsonResponse
+  {
+    Gate::authorize('create', Service::class);
+    $service = $request->user()->providerProfile->services()->create($request->validated());
 
-        return response()->json(['data' => new ServiceResource($service), 'message' => 'Service created successfully.'], 201);
-    }
+    return response()->json(['data' => new ServiceResource($service), 'message' => 'Service created successfully.'], 201);
+  }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Service $service): ServiceResource
-    {
-        Gate::authorize('view', $service);
+  /**
+   * Display the specified resource.
+   */
+  public function show(Service $service): ServiceResource
+  {
+    Gate::authorize('view', $service);
 
-        return new ServiceResource($service);
-    }
+    return new ServiceResource($service);
+  }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateServiceRequest $request, Service $service): ServiceResource
-    {
-        Gate::authorize('update', $service);
-        Gate::authorize('update', $service);
-        $service->update($request->validated());
+  /**
+   * Update the specified resource in storage.
+   */
+  public function update(UpdateServiceRequest $request, Service $service): ServiceResource
+  {
+    Gate::authorize('update', $service);
+    $service->update($request->validated());
 
-        return new ServiceResource($service->fresh());
-    }
+    return new ServiceResource($service->fresh());
+  }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Service $service): JsonResponse
-    {
-        Gate::authorize('delete', $service);
-        $service->delete();
+  /**
+   * Remove the specified resource from storage.
+   */
+  public function destroy(Service $service): JsonResponse
+  {
+    Gate::authorize('delete', $service);
+    $service->delete();
 
-        return response()->json(status: 204);
-    }
+    return response()->json(status: 204);
+  }
 }
