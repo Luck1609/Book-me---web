@@ -2,13 +2,9 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { SignupIcon } from '@/assets/icons';
 import background from '@/assets/images/book.webp';
-import { Checkbox } from '@/components/form/checkbox';
 import { Input, Password } from '@/components/form/input';
 import SubmitButton from '@/components/form/submit-button';
-import { Label } from '@/components/ui/label';
 import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
 import SocialAuthButtons, { AlternateLogin } from './social-buttons';
 
 
@@ -23,7 +19,7 @@ export default function Register() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    form.post(store().url)
+    form.post(register().url)
   }
 
   return (
@@ -82,7 +78,7 @@ export default function Register() {
 
         <div className="text-center text-sm text-muted-foreground mt-4">
           Don't have an account?{' '}
-          <Link href={register()} tabIndex={5} className="text-primary hover:underline">
+          <Link href={register()} tabIndex={5} className="text-primary hover:underline font-semibold">
             Sign up
           </Link>
         </div>

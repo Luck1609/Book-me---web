@@ -93,7 +93,7 @@ export default function Login() {
 
         <div className="text-center text-sm text-muted-foreground mt-4">
           Don't have an account?{' '}
-          <Link href={register()} tabIndex={5} className="text-primary hover:underline">
+          <Link href={register()} tabIndex={5} className="text-primary hover:underline font-semibold">
             Sign up
           </Link>
         </div>
