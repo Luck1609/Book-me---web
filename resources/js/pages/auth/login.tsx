@@ -1,7 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
-import { MobileLoginIcon } from '@/assets/icons';
-import background from '@/assets/images/book.webp';
 import { Checkbox } from '@/components/form/checkbox';
 import { Input, Password } from '@/components/form/input';
 import SubmitButton from '@/components/form/submit-button';
@@ -11,30 +9,30 @@ import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import SocialAuthButtons, { AlternateLogin } from './social-buttons';
 
-
 export default function Login() {
   const form = useForm({
-    email: "",
-    password: ""
-  })
-
+    email: '',
+    password: '',
+    remember: false,
+  });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.post(store().url)
-  }
+    e.preventDefault();
+    form.post(store().url);
+  };
 
   return (
     <>
       <Head title="Log in" />
 
       <form className="w-full" onSubmit={handleSubmit}>
-        <div className="grid gap-6">
+        <div className="grid gap-5">
           <Input
             type="email"
             name="email"
             label="Email address"
             placeholder="email@example.com"
+            autoComplete="email"
             form={form}
             tabIndex={1}
           />
@@ -42,46 +40,40 @@ export default function Login() {
           <Password
             name="password"
             tabIndex={2}
-            label={
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-              </div>
-            }
+            label={<Label htmlFor="password">Password</Label>}
             placeholder="Enter your password"
+            autoComplete="current-password"
             form={form}
           />
 
-          <div className="flex items-center justify-between space-x-3">
-            <div className="lg:w-2/3">
-              <Checkbox
-                name="remember"
-                tabIndex={4}
-                isBoolean
-                label="Remember me"
-                form={form}
-                classNames={{
-                  field: {
-                    wrapper: "flex items-center space-x-3 border-none has-data-[state=checked]:border-none has-data-[state=checked]:bg-background",
-                    container: "p-0!"
-                  }
-                }}
-              />
-            </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Checkbox
+              name="remember"
+              tabIndex={3}
+              isBoolean
+              label="Remember me"
+              form={form}
+              classNames={{
+                field: {
+                  wrapper:
+                    'flex items-center space-x-3 border-none has-data-[state=checked]:border-none has-data-[state=checked]:bg-background',
+                  container: 'p-0!',
+                },
+              }}
+            />
 
-            <div className="lg:w-1/3">
-              <Link
-                href={request()}
-                className="font-medium text-primary text-sm hover:underline"
-              // tabIndex={3}
-              >
-                Forgot password?
-              </Link>
-            </div>
+            <Link
+              href={request()}
+              className="text-sm font-semibold text-[#0f8a62] transition-colors hover:text-[#0b7653] hover:underline"
+              tabIndex={4}
+            >
+              Forgot password?
+            </Link>
           </div>
 
           <SubmitButton
             label="Log in"
-            className="w-full"
+            className="w-full rounded-xl bg-[#0f8a62] text-white shadow-[0_10px_22px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
             form={form}
             tabIndex={5}
           />
@@ -91,26 +83,24 @@ export default function Login() {
 
         <SocialAuthButtons />
 
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          Don't have an account?{' '}
-          <Link href={register()} tabIndex={5} className="text-primary hover:underline font-semibold">
-            Sign up
+        <p className="mt-6 text-center text-sm text-[#718282]">
+          New to Book Me?{' '}
+          <Link
+            href={register()}
+            tabIndex={6}
+            className="font-bold text-[#0f8a62] transition-colors hover:text-[#0b7653] hover:underline"
+          >
+            Create an account
           </Link>
-        </div>
+        </p>
       </form>
     </>
   );
 }
 
-
 Login.layout = {
-  classNames: {
-    wrapper: "border rounded-xl overflow-hidden",
-    container: "sm:w-130 items-center p-5"
-  },
-  icon: <MobileLoginIcon className="size-56" />,
   asDirectChild: false,
-  title: "Welcome Back",
-  description: "Login and let's jump back in where you left off",
-  backgroundImage: background
-}
+  title: 'Welcome back',
+  description:
+    'Log in to keep your schedule moving and your day feeling clear.',
+};

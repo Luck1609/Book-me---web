@@ -1,12 +1,21 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import type { InertiaFormProps } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  ShieldCheck,
+} from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { store } from '@/actions/App/Http/Controllers/OnboardingController';
+import { AppLogo } from '@/components/app-logo';
 import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { home, login, privacy, terms } from '@/routes';
 import AccountSelection from './account-selection';
 import BasicInfo from './shop/basic-info';
 import LocationDetails from './shop/location-details';
@@ -70,7 +79,7 @@ enum NavAction {
 }
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(0);
   const form = useForm<OnboardingFormData>({
     type: '',
 
@@ -170,6 +179,7 @@ export default function OnboardingForm() {
   };
 
   const canContinue = isStepValid(step);
+  const progressValue = ((step + 1) / formSteps.length) * 100;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -197,71 +207,177 @@ export default function OnboardingForm() {
 
   return (
     <>
-      <Head title="Account Selection" />
+      <Head title="Set up your Book Me profile" />
 
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-margin-mobile text-on-background md:p-margin-desktop">
-        <form
-          onSubmit={handleSubmit}
-          className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center gap-y-10"
-        >
-          {form.data.type === 'provider' && (
-            <div className="w-full">
-              <div className="mb-1 flex items-center justify-between">
-                <span className="font-label-md text-label-md text-on-surface-variant uppercase">
-                  Step {step + 1} of {formSteps.length}
-                </span>
-                <span className="font-label-md text-label-md text-primary">
-                  Shop Setup
-                </span>
-              </div>
+      <div className="relative min-h-screen overflow-hidden bg-[#fbfcfa] text-[#17343c] selection:bg-[#bce9d4] selection:text-[#17343c]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 size-[30rem] rounded-full bg-[#dff4eb] blur-3xl" />
+          <div className="absolute bottom-0 -left-48 size-[28rem] rounded-full bg-[#fff0d6] blur-3xl" />
+        </div>
 
-              <Progress
-                value={(step / formSteps.length) * 100}
-                className="h-3 bg-slate-200"
-              />
+        <header className="relative z-10 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
+          <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+            <Link href={home()} aria-label="Book Me home">
+              <AppLogo />
+            </Link>
+            <div className="flex items-center gap-2 text-xs text-[#7a8989] sm:gap-3 sm:text-sm">
+              <span className="hidden sm:inline">Already have an account?</span>
+              <Link
+                className="inline-flex items-center gap-1.5 font-bold text-[#0f8a62] hover:text-[#0b7653]"
+                href={login()}
+              >
+                Log in <ArrowRight aria-hidden="true" className="size-3.5" />
+              </Link>
             </div>
-          )}
+          </div>
+        </header>
 
-          <div className="flex w-full flex-1 items-center">
-            <div className="grid w-full gap-y-10">
-              <div className="w-full text-center">
-                <h1 className="mb-stack-sm font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">
-                  {formSteps[step].title}
+        <main className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
+          <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-stretch">
+            <aside className="hidden flex-col justify-between rounded-[26px] bg-[#17343c] p-7 text-white shadow-[0_24px_55px_rgba(34,60,70,0.12)] lg:flex">
+              <div>
+                <div className="flex size-11 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8]">
+                  <ShieldCheck aria-hidden="true" className="size-5" />
+                </div>
+                <p className="mt-8 text-[11px] font-bold tracking-[0.14em] text-[#72d5ac] uppercase">
+                  Welcome to Book Me
+                </p>
+                <h1 className="mt-4 text-3xl leading-[1.05] font-bold tracking-[-0.055em]">
+                  One thoughtful step at a time.
                 </h1>
-                <p className="font-body-md text-body-md text-on-surface-variant">
-                  {formSteps[step].description}
+                <p className="mt-5 text-sm leading-6 text-[#aec0be]">
+                  A few details now means a much smoother booking experience for
+                  you and your clients later.
                 </p>
               </div>
 
-              {getForm(step, form)}
-            </div>
-          </div>
+              <div className="mt-12 space-y-3">
+                {formSteps.map((item, index) => {
+                  const isCurrent = index === step;
+                  const isComplete = index < step;
 
-          <div className="flex w-full justify-between">
-            <Button
-              variant="secondary"
-              id="back-btn"
-              onClick={() => handleNavigation(NavAction.DECRMENT)}
-              // disabled={step > 0}
+                  return (
+                    <div
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition ${isCurrent ? 'bg-white/[0.1] text-white' : 'text-[#7e9b99]'}`}
+                      key={item.title}
+                    >
+                      <span
+                        className={`flex size-7 items-center justify-center rounded-full text-[10px] font-bold ${isComplete ? 'bg-[#72d5ac] text-[#17343c]' : isCurrent ? 'bg-[#0f8a62] text-white' : 'border border-white/15 text-[#7e9b99]'}`}
+                      >
+                        {isComplete ? (
+                          <Check
+                            aria-hidden="true"
+                            className="size-3.5"
+                            strokeWidth={3}
+                          />
+                        ) : (
+                          index + 1
+                        )}
+                      </span>
+                      <span className="text-xs font-semibold">
+                        {item.title.split('?')[0]}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-12 flex items-center gap-2 border-t border-white/10 pt-5 text-[11px] text-[#9bb4b2]">
+                <Clock3
+                  aria-hidden="true"
+                  className="size-3.5 text-[#ffce8e]"
+                />
+                Usually takes about 10 minutes
+              </div>
+            </aside>
+
+            <form
+              onSubmit={handleSubmit}
+              className="flex min-w-0 flex-col gap-5"
             >
-              <ChevronLeft />
-              <span>Back</span>
-            </Button>
+              <div className="rounded-[26px] border border-[#e1ebe5] bg-white p-5 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-7">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-bold tracking-[0.12em] text-[#0f8a62] uppercase">
+                      Profile setup
+                    </p>
+                    <p className="mt-2 text-sm font-bold text-[#53696b]">
+                      Step {step + 1} of {formSteps.length}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-[#e3f6ee] px-3 py-1.5 text-[10px] font-bold text-[#0f8a62]">
+                    {Math.round(progressValue)}% complete
+                  </span>
+                </div>
+                <Progress
+                  value={progressValue}
+                  className="mt-5 h-2 bg-[#eaf0ec]"
+                />
+              </div>
 
-            {step + 1 !== formSteps.length ? (
-              <Button
-                id="continue-btn"
-                onClick={() => handleNavigation(NavAction.INCRMENT)}
-                disabled={!canContinue}
-              >
-                <span>Continue</span>
-                <ChevronRight />
-              </Button>
-            ) : (
-              <SubmitButton label="Complete setup" form={form} />
-            )}
+              <div className="flex-1 rounded-[26px] border border-[#e1ebe5] bg-white p-5 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-8 lg:p-10">
+                <div className="max-w-2xl">
+                  <h2 className="text-3xl leading-[1.05] font-bold tracking-[-0.055em] text-[#17343c] sm:text-4xl">
+                    {formSteps[step].title}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-[#718081] sm:text-base">
+                    {formSteps[step].description}
+                  </p>
+                </div>
+
+                <div className="mt-8">{getForm(step, form)}</div>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 rounded-[26px] border border-[#e1ebe5] bg-white p-4 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-5">
+                <Button
+                  className="rounded-full border border-[#dce6e1] bg-white px-5 text-[#53696b] hover:bg-[#f3f8f5]"
+                  disabled={step === 0}
+                  id="back-btn"
+                  onClick={() => handleNavigation(NavAction.DECRMENT)}
+                  variant="secondary"
+                >
+                  <ChevronLeft className="size-4" />
+                  <span>Back</span>
+                </Button>
+
+                {step + 1 !== formSteps.length ? (
+                  <Button
+                    className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
+                    disabled={!canContinue}
+                    id="continue-btn"
+                    onClick={() => handleNavigation(NavAction.INCRMENT)}
+                  >
+                    <span>Continue</span>
+                    <ChevronRight className="size-4" />
+                  </Button>
+                ) : (
+                  <SubmitButton
+                    className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
+                    label="Complete setup"
+                    form={form}
+                  />
+                )}
+              </div>
+            </form>
           </div>
-        </form>
+          <p className="mt-8 text-center text-xs leading-5 text-[#91a09f]">
+            By continuing, you agree to our{' '}
+            <Link
+              className="font-semibold text-[#0f8a62] hover:underline"
+              href={privacy()}
+            >
+              Privacy Policy
+            </Link>{' '}
+            and{' '}
+            <Link
+              className="font-semibold text-[#0f8a62] hover:underline"
+              href={terms()}
+            >
+              Terms and Conditions
+            </Link>
+            .
+          </p>
+        </main>
       </div>
     </>
   );

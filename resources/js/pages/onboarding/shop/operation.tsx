@@ -15,6 +15,7 @@ export default function Operations({
         label="Select working days"
         description="How many days do you work within the week?"
         form={form}
+        multiple
         options={[
           { label: 'Sunday', value: 'sunday' },
           { label: 'Monday', value: 'monday' },

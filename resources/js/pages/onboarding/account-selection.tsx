@@ -13,6 +13,7 @@ export default function AccountSelection({
       <Checkbox
         name="type"
         form={form}
+        multiple={false}
         options={[
           {
             label: (
