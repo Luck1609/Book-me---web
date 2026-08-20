@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Onboarding\StoreProviderOnboardingRequest;
+use Illuminate\Http\RedirectResponse;
 
 class OnboardingController extends Controller
 {
-  public function index()
-  {
-    return inertia('onboarding/index');
-  }
+    public function index(): mixed
+    {
+        return inertia('onboarding/index');
+    }
 
-  public function store()
+    public function store(StoreProviderOnboardingRequest $request): RedirectResponse
+    {
+        $request->validated();
+
+        return back();
+    }
 }

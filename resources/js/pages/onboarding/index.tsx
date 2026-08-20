@@ -3,6 +3,7 @@ import type { InertiaFormProps } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { store } from '@/actions/App/Http/Controllers/OnboardingController';
 import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -98,7 +99,9 @@ export default function OnboardingForm() {
         description: '',
       },
     ],
-  });
+  })
+    .withPrecognition(store())
+    .validateFiles();
 
   const hasValue = (value: unknown): boolean => {
     if (Array.isArray(value)) {
@@ -201,25 +204,23 @@ export default function OnboardingForm() {
           onSubmit={handleSubmit}
           className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center gap-y-10"
         >
-          {
-            form.data.type === "provider" && (
-              <div className="w-full">
-                <div className="mb-1 flex items-center justify-between">
-                  <span className="font-label-md text-label-md text-on-surface-variant uppercase">
-                    Step {step + 1} of {formSteps.length}
-                  </span>
-                  <span className="font-label-md text-label-md text-primary">
-                    Shop Setup
-                  </span>
-                </div>
-
-                <Progress
-                  value={(step / formSteps.length) * 100}
-                  className="h-3 bg-slate-200"
-                />
+          {form.data.type === 'provider' && (
+            <div className="w-full">
+              <div className="mb-1 flex items-center justify-between">
+                <span className="font-label-md text-label-md text-on-surface-variant uppercase">
+                  Step {step + 1} of {formSteps.length}
+                </span>
+                <span className="font-label-md text-label-md text-primary">
+                  Shop Setup
+                </span>
               </div>
-            )
-          }
+
+              <Progress
+                value={(step / formSteps.length) * 100}
+                className="h-3 bg-slate-200"
+              />
+            </div>
+          )}
 
           <div className="flex w-full flex-1 items-center">
             <div className="grid w-full gap-y-10">
@@ -241,7 +242,7 @@ export default function OnboardingForm() {
               variant="secondary"
               id="back-btn"
               onClick={() => handleNavigation(NavAction.DECRMENT)}
-            // disabled={step > 0}
+              // disabled={step > 0}
             >
               <ChevronLeft />
               <span>Back</span>

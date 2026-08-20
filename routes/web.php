@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\OnboardingController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
 Route::inertia('/onboarding', 'onboarding/index')
     ->middleware(['auth', 'verified'])
     ->name('onboarding');
+Route::post('/onboarding', [OnboardingController::class, 'store'])
+    ->middleware(['auth', 'verified', 'precognitive'])
+    ->name('onboarding.store');
 
 Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::inertia('/verify-account', 'auth/account-verification')->name('account-verification');
