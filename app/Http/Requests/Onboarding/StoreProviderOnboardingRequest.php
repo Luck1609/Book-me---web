@@ -14,8 +14,9 @@ class StoreProviderOnboardingRequest extends FormRequest
    */
   public function authorize(): bool
   {
-    return $this->user()?->hasRole('service_provider') === true
-      && ! $this->user()->providerProfile()->exists();
+    return true;
+    // return $this->user()?->hasRole('service_provider') === true
+    //   && ! $this->user()->providerProfile()->exists();
   }
 
   /**
@@ -26,7 +27,7 @@ class StoreProviderOnboardingRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'type' => ['required', 'in:provider'],
+      'type' => ['required', 'in:provider,client'],
       'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
       'name' => ['required', 'string', 'max:255'],
       'category_id' => ['required', 'uuid', 'exists:categories,id'],

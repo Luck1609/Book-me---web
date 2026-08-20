@@ -1,4 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import { User } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { Input, Password } from '@/components/form/input';
 import SubmitButton from '@/components/form/submit-button';
@@ -24,6 +25,7 @@ export default function Register() {
 
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="grid gap-5 sm:grid-cols-2">
+
           <Input
             name="name"
             label="Full name"
@@ -31,6 +33,12 @@ export default function Register() {
             autoComplete="name"
             form={form}
             tabIndex={1}
+            icons={{
+              prefixIcon: User
+            }}
+            classNames={{
+              wrapper: "sm:col-span-2"
+            }}
           />
 
           <Input
@@ -41,6 +49,9 @@ export default function Register() {
             autoComplete="email"
             form={form}
             tabIndex={2}
+            classNames={{
+              wrapper: "sm:col-span-2"
+            }}
           />
 
           <Password
@@ -50,6 +61,9 @@ export default function Register() {
             placeholder="Create a password"
             autoComplete="new-password"
             form={form}
+            classNames={{
+              prependIcon: "z-1"
+            }}
           />
 
           <Password
@@ -59,6 +73,9 @@ export default function Register() {
             placeholder="Repeat your password"
             autoComplete="new-password"
             form={form}
+            classNames={{
+              prependIcon: "z-1"
+            }}
           />
 
           <div className="sm:col-span-2">

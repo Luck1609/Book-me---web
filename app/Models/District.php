@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Region extends Model
+class District extends Model
 {
   use HasUuids, HasSlug;
 
@@ -25,8 +26,8 @@ class Region extends Model
       ->saveSlugsTo('slug');
   }
 
-  public function districts() : HasMany
+  public function districts(): BelongsTo
   {
-    return $this->hasMany(District::class);
+    return $this->belongsTo(Region::class);
   }
 }

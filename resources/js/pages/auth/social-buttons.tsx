@@ -34,11 +34,12 @@ export default function SocialAuthButtons({
           key={strategy.value}
           type="button"
           variant="outline"
-          size="icon-lg"
+          // size="icon-lg"
           aria-label={`Continue with ${strategy.label}`}
-          className="rounded-xl border-[#dfe9e4] bg-white shadow-none hover:border-[#b5dfcb] hover:bg-[#f3faf6]"
+          className="border-[#dfe9e4] bg-white shadow-none hover:border-[#b5dfcb] hover:bg-[#f3faf6]"
         >
           <img src={strategy.logo} alt="" className="size-5" />
+          <span className="font-medium">{ strategy.label }</span>
         </Button>
       ))}
     </div>

@@ -72,12 +72,13 @@ export function Textarea<T extends object>({ classNames, label, name, form, icon
           : null
       }
 
-      <InputGroup>
+      <InputGroup className="w-full min-h-16 rounded-xl p-0">
         <TextareaComponent
           id={name}
           name={name}
           {...componentProps}
-          className={cn("border-none shadow-none", componentProps?.className)}
+          className={cn("w-full rounded-xl", componentProps?.className)}
+          rows={componentProps.rows}
         />
 
         {

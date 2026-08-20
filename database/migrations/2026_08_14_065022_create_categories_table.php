@@ -22,7 +22,7 @@ return new class extends Migration
     });
 
     Schema::table('categories', function (Blueprint $table) {
-      $table->foreignUuid('parent_id')->after('descripton')->constrained('categories')->nullOnDelete();
+      $table->foreignUuid('parent_id')->nullable()->after('descripton')->constrained('categories')->nullOnDelete();
     });
   }
 

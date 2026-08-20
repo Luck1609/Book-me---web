@@ -46,7 +46,7 @@ export default function Login() {
             form={form}
           />
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="grid lg:grid-cols-2 gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Checkbox
               name="remember"
               tabIndex={3}
@@ -64,7 +64,7 @@ export default function Login() {
 
             <Link
               href={request()}
-              className="text-sm font-semibold text-[#0f8a62] transition-colors hover:text-[#0b7653] hover:underline"
+              className="text-sm text-right font-semibold text-[#0f8a62] transition-colors hover:text-[#0b7653] hover:underline"
               tabIndex={4}
             >
               Forgot password?

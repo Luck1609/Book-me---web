@@ -1,21 +1,17 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import type { InertiaFormProps } from '@inertiajs/react';
-import {
-  ArrowRight,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Clock3,
-  ShieldCheck,
-} from 'lucide-react';
-import { useState } from 'react';
+import type {
+  InertiaFormProps,
+  InertiaPrecognitiveFormProps,
+} from '@inertiajs/react';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { store } from '@/actions/App/Http/Controllers/OnboardingController';
-import { AppLogo } from '@/components/app-logo';
 import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { home, login, privacy, terms } from '@/routes';
+import { cn, getNestedValue } from '@/lib/utils';
+import { privacy, terms } from '@/routes';
 import AccountSelection from './account-selection';
 import BasicInfo from './shop/basic-info';
 import LocationDetails from './shop/location-details';
@@ -57,7 +53,7 @@ type ServiceFormData = {
 };
 
 type OnboardingFormData = {
-  type: string;
+  type: 'client' | 'provider';
   avatar: File | null;
   name: string;
   category_id: string;
@@ -74,9 +70,44 @@ type OnboardingFormData = {
 };
 
 enum NavAction {
-  INCRMENT = 'increment',
-  DECRMENT = 'decrement',
+  INCREMENT = 'increment',
+  DECREMENT = 'decrement',
 }
+
+type OnboardingField = string;
+type OnboardingForm = InertiaPrecognitiveFormProps<OnboardingFormData>;
+
+const requiredFieldsByStep: Record<number, OnboardingField[]> = {
+  0: ['type'],
+  1: ['name', 'category_id', 'description'],
+  2: ['region_id', 'district_id', 'city', 'address'],
+  3: ['working_days', 'opens_at', 'closes_at', 'includes_holidays'],
+  4: [
+    'services.0.name',
+    'services.0.price',
+    'services.0.min_duration',
+    'services.0.max_duration',
+    'services.0.description',
+  ],
+};
+
+const getFieldsForStep = (
+  currentStep: number,
+  avatar: File | null,
+  serviceImage: File | null,
+): OnboardingField[] => {
+  const fields = [...(requiredFieldsByStep[currentStep] ?? [])];
+
+  if (currentStep === 1 && avatar) {
+    fields.push('avatar');
+  }
+
+  if (currentStep === 4 && serviceImage) {
+    fields.push('services.0.image');
+  }
+
+  return fields;
+};
 
 export default function OnboardingForm() {
   const [step, setStep] = useState(0);
@@ -110,75 +141,54 @@ export default function OnboardingForm() {
     ],
   })
     .withPrecognition(store())
+    .setValidationTimeout(500)
     .validateFiles();
 
-  const hasValue = (value: unknown): boolean => {
-    if (Array.isArray(value)) {
-      return value.length > 0;
+  const formRef = useRef<OnboardingForm>(form);
+  const previousData = useRef<OnboardingFormData | null>(null);
+  const avatar = form.data.avatar;
+  const serviceImage = form.data.services[0]?.image ?? null;
+
+  const fieldsForStep = useMemo(
+    () => getFieldsForStep(step, avatar, serviceImage),
+    [step, avatar, serviceImage],
+  );
+
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
+
+  useEffect(() => {
+    const previous = previousData.current;
+    previousData.current = form.data;
+
+    if (!previous) {
+      return;
     }
 
-    if (typeof value === 'string') {
-      return value.trim().length > 0;
-    }
+    const changedFields = fieldsForStep.filter(
+      (field) =>
+        getNestedValue(previous, field) !== getNestedValue(form.data, field),
+    );
 
-    return value !== null && value !== undefined;
-  };
+    changedFields.forEach((field) => {
+      const currentForm = formRef.current;
 
-  const isStepValid = (currentStep: number): boolean => {
-    switch (currentStep) {
-      case 0:
-        return hasValue(form.data.type);
-      case 1:
-        return [
-          form.data.name,
-          form.data.category_id,
-          form.data.description,
-        ].every(hasValue);
-      case 2:
-        return [
-          form.data.region_id,
-          form.data.district_id,
-          form.data.city,
-          form.data.address,
-        ].every(hasValue);
-      case 3:
-        return (
-          hasValue(form.data.working_days) &&
-          hasValue(form.data.opens_at) &&
-          hasValue(form.data.closes_at) &&
-          (form.data.includes_holidays === '0' ||
-            form.data.includes_holidays === '1')
-        );
-      case 4: {
-        const service = form.data.services[0];
+      currentForm.touch(field as never);
+      currentForm.validate(field as never, {
+        only: [field] as never[],
+      });
+    });
+  }, [step, fieldsForStep, form.data]);
 
-        if (!service) {
-          return false;
-        }
-
-        const price = Number(service.price);
-        const minimumDuration = Number(service.min_duration);
-        const maximumDuration = Number(service.max_duration);
-
-        return (
-          [
-            service.name,
-            service.price,
-            service.min_duration,
-            service.max_duration,
-            service.description,
-          ].every(hasValue) &&
-          price > 0 &&
-          minimumDuration > 0 &&
-          maximumDuration >= minimumDuration
-        );
-      }
-      default:
-        return false;
-    }
-  };
-
-  const canContinue = isStepValid(step);
+  const isStepValid = fieldsForStep.every(
+    (field) => form.valid(field as never) && !form.invalid(field as never),
+  );
+  const stepHasErrors = fieldsForStep.some((field) =>
+    form.invalid(field as never),
+  );
+  const canContinue = !form.validating && isStepValid;
+  const showProgressBar = form.data.type === 'provider';
   const progressValue = ((step + 1) / formSteps.length) * 100;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -188,7 +198,7 @@ export default function OnboardingForm() {
   };
 
   const handleNavigation = (action: NavAction) => {
-    if (action === NavAction.INCRMENT) {
+    if (action === NavAction.INCREMENT) {
       if (!canContinue) {
         return;
       }
@@ -196,7 +206,7 @@ export default function OnboardingForm() {
       setStep((currentStep) => currentStep + 1);
     }
 
-    if (action === NavAction.DECRMENT) {
+    if (action === NavAction.DECREMENT) {
       if (step === 0) {
         return;
       }
@@ -205,18 +215,20 @@ export default function OnboardingForm() {
     }
   };
 
+  console.log("Onboarding form details", form.data)
+
   return (
     <>
       <Head title="Set up your Book Me profile" />
 
       <div className="relative min-h-screen overflow-hidden bg-[#fbfcfa] text-[#17343c] selection:bg-[#bce9d4] selection:text-[#17343c]">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 size-[30rem] rounded-full bg-[#dff4eb] blur-3xl" />
-          <div className="absolute bottom-0 -left-48 size-[28rem] rounded-full bg-[#fff0d6] blur-3xl" />
+          <div className="absolute -top-40 -right-40 size-120 rounded-full bg-[#dff4eb] blur-3xl" />
+          <div className="absolute bottom-0 -left-48 size-112 rounded-full bg-[#fff0d6] blur-3xl" />
         </div>
 
-        <header className="relative z-10 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
-          <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+        {/* <header className="relative z-10 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
+          <div className="mx-auto flex h-19 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
             <Link href={home()} aria-label="Book Me home">
               <AppLogo />
             </Link>
@@ -230,89 +242,95 @@ export default function OnboardingForm() {
               </Link>
             </div>
           </div>
-        </header>
+        </header> */}
 
-        <main className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-          <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-stretch">
-            <aside className="hidden flex-col justify-between rounded-[26px] bg-[#17343c] p-7 text-white shadow-[0_24px_55px_rgba(34,60,70,0.12)] lg:flex">
-              <div>
-                <div className="flex size-11 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8]">
-                  <ShieldCheck aria-hidden="true" className="size-5" />
-                </div>
-                <p className="mt-8 text-[11px] font-bold tracking-[0.14em] text-[#72d5ac] uppercase">
-                  Welcome to Book Me
-                </p>
-                <h1 className="mt-4 text-3xl leading-[1.05] font-bold tracking-[-0.055em]">
-                  One thoughtful step at a time.
-                </h1>
-                <p className="mt-5 text-sm leading-6 text-[#aec0be]">
-                  A few details now means a much smoother booking experience for
-                  you and your clients later.
-                </p>
-              </div>
-
-              <div className="mt-12 space-y-3">
-                {formSteps.map((item, index) => {
-                  const isCurrent = index === step;
-                  const isComplete = index < step;
-
-                  return (
-                    <div
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition ${isCurrent ? 'bg-white/[0.1] text-white' : 'text-[#7e9b99]'}`}
-                      key={item.title}
-                    >
-                      <span
-                        className={`flex size-7 items-center justify-center rounded-full text-[10px] font-bold ${isComplete ? 'bg-[#72d5ac] text-[#17343c]' : isCurrent ? 'bg-[#0f8a62] text-white' : 'border border-white/15 text-[#7e9b99]'}`}
-                      >
-                        {isComplete ? (
-                          <Check
-                            aria-hidden="true"
-                            className="size-3.5"
-                            strokeWidth={3}
-                          />
-                        ) : (
-                          index + 1
-                        )}
-                      </span>
-                      <span className="text-xs font-semibold">
-                        {item.title.split('?')[0]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-12 flex items-center gap-2 border-t border-white/10 pt-5 text-[11px] text-[#9bb4b2]">
-                <Clock3
-                  aria-hidden="true"
-                  className="size-3.5 text-[#ffce8e]"
-                />
-                Usually takes about 10 minutes
-              </div>
-            </aside>
-
+        <main className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-14">
+          <div className="mx-auto grid max-w-5xl gap-8">
             <form
               onSubmit={handleSubmit}
               className="flex min-w-0 flex-col gap-5"
             >
-              <div className="rounded-[26px] border border-[#e1ebe5] bg-white p-5 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-7">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[11px] font-bold tracking-[0.12em] text-[#0f8a62] uppercase">
-                      Profile setup
-                    </p>
-                    <p className="mt-2 text-sm font-bold text-[#53696b]">
-                      Step {step + 1} of {formSteps.length}
-                    </p>
+              <div
+                aria-hidden={!showProgressBar}
+                className={cn(
+                  'grid overflow-hidden transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none',
+                  showProgressBar
+                    ? 'grid-rows-[1fr] opacity-100'
+                    : 'pointer-events-none grid-rows-[0fr] opacity-0',
+                )}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  <div className="rounded-[26px] border border-[#e1ebe5] bg-white p-5 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-7">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-[11px] font-bold tracking-[0.12em] text-[#0f8a62] uppercase">
+                          Profile setup
+                        </p>
+                        <p className="mt-2 text-sm font-bold text-[#53696b]">
+                          Step {step + 1} of {formSteps.length}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-[#e3f6ee] px-3 py-1.5 text-[10px] font-bold text-[#0f8a62]">
+                        {Math.round(progressValue)}% complete
+                      </span>
+                    </div>
+
+                    <div className="mt-7 grid grid-cols-5">
+                      {formSteps.map((item, index) => {
+                        const isCurrent = index === step;
+                        const isComplete = index < step;
+
+                        return (
+                          <div
+                            className="relative flex min-w-0 flex-col items-center"
+                            key={item.title}
+                          >
+                            {index < formSteps.length - 1 && (
+                              <span
+                                aria-hidden="true"
+                                className={cn(
+                                  'absolute top-3 left-1/2 h-px w-full',
+                                  index < step
+                                    ? 'bg-[#72d5ac]'
+                                    : 'bg-[#e1ebe5]',
+                                )}
+                              />
+                            )}
+                            <span
+                              aria-current={isCurrent ? 'step' : undefined}
+                              className={cn(
+                                'relative z-10 flex size-6 items-center justify-center rounded-full text-[10px] font-bold transition sm:size-7',
+                                isComplete
+                                  ? 'bg-[#72d5ac] text-[#17343c]'
+                                  : isCurrent
+                                    ? 'bg-[#0f8a62] text-white ring-4 ring-[#e3f6ee]'
+                                    : 'border border-[#cbd9d2] bg-white text-[#7a8989]',
+                              )}
+                            >
+                              {isComplete ? (
+                                <Check
+                                  aria-hidden="true"
+                                  className="size-3.5"
+                                  strokeWidth={3}
+                                />
+                              ) : (
+                                index + 1
+                              )}
+                            </span>
+                            <span
+                              className={cn(
+                                'mt-2 hidden w-full truncate px-1 text-center text-[10px] font-semibold sm:block',
+                                isCurrent ? 'text-[#0f8a62]' : 'text-[#718081]',
+                              )}
+                            >
+                              {item.title.split('?')[0]}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <span className="rounded-full bg-[#e3f6ee] px-3 py-1.5 text-[10px] font-bold text-[#0f8a62]">
-                    {Math.round(progressValue)}% complete
-                  </span>
                 </div>
-                <Progress
-                  value={progressValue}
-                  className="mt-5 h-2 bg-[#eaf0ec]"
-                />
               </div>
 
               <div className="flex-1 rounded-[26px] border border-[#e1ebe5] bg-white p-5 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-8 lg:p-10">
@@ -323,6 +341,32 @@ export default function OnboardingForm() {
                   <p className="mt-3 text-sm leading-6 text-[#718081] sm:text-base">
                     {formSteps[step].description}
                   </p>
+                  <div
+                    aria-live="polite"
+                    className="mt-5 flex items-center gap-2 text-xs font-semibold"
+                  >
+                    <span
+                      className={cn(
+                        'size-2 rounded-full',
+                        form.validating
+                          ? 'animate-pulse bg-[#ffbd72]'
+                          : stepHasErrors
+                            ? 'bg-[#d75c4a]'
+                            : canContinue
+                              ? 'bg-[#0f8a62]'
+                              : 'bg-[#c9d6d1]',
+                      )}
+                    />
+                    <span className="text-[#718081]">
+                      {form.validating
+                        ? 'Checking this step…'
+                        : stepHasErrors
+                          ? 'Review the highlighted fields to continue.'
+                          : canContinue
+                            ? 'All fields are validated.'
+                            : 'Complete each field to continue.'}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="mt-8">{getForm(step, form)}</div>
@@ -333,19 +377,20 @@ export default function OnboardingForm() {
                   className="rounded-full border border-[#dce6e1] bg-white px-5 text-[#53696b] hover:bg-[#f3f8f5]"
                   disabled={step === 0}
                   id="back-btn"
-                  onClick={() => handleNavigation(NavAction.DECRMENT)}
+                  onClick={() => handleNavigation(NavAction.DECREMENT)}
                   variant="secondary"
                 >
                   <ChevronLeft className="size-4" />
                   <span>Back</span>
                 </Button>
 
-                {step + 1 !== formSteps.length ? (
+                { (form.data.type === "provider" ||
+                  step + 1 !== formSteps.length) ? (
                   <Button
                     className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
-                    disabled={!canContinue}
+                    disabled={!canContinue || form.validating}
                     id="continue-btn"
-                    onClick={() => handleNavigation(NavAction.INCRMENT)}
+                    onClick={() => handleNavigation(NavAction.INCREMENT)}
                   >
                     <span>Continue</span>
                     <ChevronRight className="size-4" />
@@ -353,6 +398,7 @@ export default function OnboardingForm() {
                 ) : (
                   <SubmitButton
                     className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
+                    disabled={!canContinue || form.processing}
                     label="Complete setup"
                     form={form}
                   />
@@ -360,6 +406,7 @@ export default function OnboardingForm() {
               </div>
             </form>
           </div>
+
           <p className="mt-8 text-center text-xs leading-5 text-[#91a09f]">
             By continuing, you agree to our{' '}
             <Link

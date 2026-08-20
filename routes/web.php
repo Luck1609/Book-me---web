@@ -8,11 +8,12 @@ Route::inertia('/about', 'about')->name('about');
 Route::inertia('/contact', 'contact')->name('contact');
 Route::inertia('/privacy-policy', 'privacy-policy')->name('privacy');
 Route::inertia('/terms-and-conditions', 'terms-and-conditions')->name('terms');
-Route::inertia('/onboarding', 'onboarding/index')
-  // ->middleware(['auth', 'verified'])
+
+Route::get('/onboarding', [OnboardingController::class, 'index'])
+  ->middleware(['auth'])
   ->name('onboarding');
 Route::post('/onboarding', [OnboardingController::class, 'store'])
-  ->middleware(['auth', 'verified', 'precognitive'])
+  ->middleware(['auth', 'precognitive'])
   ->name('onboarding.store');
 
 Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
