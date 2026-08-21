@@ -3,21 +3,22 @@ import type {
   InertiaFormProps,
   InertiaPrecognitiveFormProps,
 } from '@inertiajs/react';
-import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { store } from '@/actions/App/Http/Controllers/OnboardingController';
 import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { cn, getNestedValue } from '@/lib/utils';
-import { privacy, terms } from '@/routes';
+import { home, login, privacy, terms } from '@/routes';
 import AccountSelection from './account-selection';
 import BasicInfo from './shop/basic-info';
 import LocationDetails from './shop/location-details';
 import Operations from './shop/operation';
 import Service from './shop/service';
 import ShopSetupSuccessful from './shop/success';
+import type { OnboardingFormData } from './types';
+import AppLogo from '@/components/app-logo';
 
 const formSteps: { title: string; description: string }[] = [
   {
@@ -43,31 +44,6 @@ const formSteps: { title: string; description: string }[] = [
   },
 ];
 
-type ServiceFormData = {
-  image: File | null;
-  name: string;
-  price: number | string;
-  min_duration: string;
-  max_duration: string;
-  description: string;
-};
-
-type OnboardingFormData = {
-  type: 'client' | 'provider';
-  avatar: File | null;
-  name: string;
-  category_id: string;
-  description: string;
-  region_id: string;
-  district_id: string;
-  city: string;
-  address: string;
-  working_days: string[];
-  opens_at: string;
-  closes_at: string;
-  includes_holidays: string;
-  services: ServiceFormData[];
-};
 
 enum NavAction {
   INCREMENT = 'increment',
@@ -110,9 +86,9 @@ const getFieldsForStep = (
 };
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(4);
   const form = useForm<OnboardingFormData>({
-    type: '',
+    type: "provider",
 
     avatar: null,
     name: '',
@@ -137,7 +113,7 @@ export default function OnboardingForm() {
         min_duration: '',
         max_duration: '',
         description: '',
-      },
+      }
     ],
   })
     .withPrecognition(store())
@@ -227,7 +203,7 @@ export default function OnboardingForm() {
           <div className="absolute bottom-0 -left-48 size-112 rounded-full bg-[#fff0d6] blur-3xl" />
         </div>
 
-        {/* <header className="relative z-10 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
+        <header className="relative z-10 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
           <div className="mx-auto flex h-19 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
             <Link href={home()} aria-label="Book Me home">
               <AppLogo />
@@ -242,7 +218,7 @@ export default function OnboardingForm() {
               </Link>
             </div>
           </div>
-        </header> */}
+        </header>
 
         <main className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-14">
           <div className="mx-auto grid max-w-5xl gap-8">

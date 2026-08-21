@@ -5,6 +5,7 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 @import "./svg-animations.css";
+@import "./loader.css";
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

@@ -1,0 +1,84 @@
+/* From Uiverse.io by dovatgabriel */
+/* .scanner span {
+  color: transparent;
+  font-size: 1.4rem;
+  position: relative;
+  overflow: hidden;
+} */
+
+.scanner span::before {
+  content: "Please wait...";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  border-right: 4px solid #17FEFF;
+  overflow: hidden;
+  color: #FFF;
+  animation: load91371 2s linear infinite;
+}
+
+@keyframes load91371 {
+  0%, 10%, 100% {
+    width: 0;
+  }
+
+  10%,20%,30%,40%,50%,60%,70%,80%,90%,100% {
+    border-right-color: transparent;
+  }
+
+  11%,21%,31%,41%,51%,61%,71%,81%,91% {
+    border-right-color: #FFF;
+  }
+
+  60%, 80% {
+    width: 100%;
+  }
+}
+
+
+/* From Uiverse.io by ahmed150up */
+.loader {
+  display: flex;
+  justify-content: center;
+}
+
+.bar {
+  width: 4px;
+  height: 7px;
+  margin: 0 5px;
+  border-radius: 10px;
+  animation: loading_5192 1s ease-in-out infinite;
+  background-color: #FFF;
+}
+
+.bar:nth-child(1) {
+  animation-delay: 0.01s;
+}
+
+.bar:nth-child(2) {
+  animation-delay: 0.09s;
+}
+
+.bar:nth-child(3) {
+  animation-delay: 0.19s;
+}
+
+.bar:nth-child(4) {
+  animation-delay: 0.29s;
+}
+
+@keyframes loading_5192 {
+  0% {
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scale(1, 2.5);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
