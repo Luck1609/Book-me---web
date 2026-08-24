@@ -29,8 +29,6 @@ return new class extends Migration
       $table->json('working_days');
       $table->boolean('works_on_holidays')->default(false);
       $table->boolean('is_accepting_bookings')->default(true)->index();
-      // $table->decimal('average_rating', 3, 2)->default(0);
-      // $table->unsignedInteger('review_count')->default(0);
       $table->string('slug')->unique();
       $table->timestamps();
     });

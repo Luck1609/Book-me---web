@@ -5,28 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\Sluggable\HasSlug;
-use Spatie\Sluggable\SlugOptions;
 
 class Region extends Model
 {
-  use HasUuids, HasSlug;
+    use HasUuids;
 
-  public $incrementing = false;
+    public $incrementing = false;
 
-  protected $keyType = 'string';
+    protected $keyType = 'string';
 
-  protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name'];
 
-  public function getSlugOptions(): SlugOptions
-  {
-    return SlugOptions::create()
-      ->generateSlugsFrom('name')
-      ->saveSlugsTo('slug');
-  }
-
-  public function districts() : HasMany
-  {
-    return $this->hasMany(District::class);
-  }
+    public function districts(): HasMany
+    {
+        return $this->hasMany(District::class);
+    }
 }

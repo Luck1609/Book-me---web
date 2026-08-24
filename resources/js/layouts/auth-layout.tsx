@@ -31,7 +31,7 @@ export default function AuthLayout({
       <div className="min-h-screen bg-[#fbfcfa] px-4 py-4 text-[#17343c] selection:bg-[#bce9d4] selection:text-[#17343c] sm:px-6 lg:px-10 lg:py-6">
         <div
           className={cn(
-            'mx-auto flex min-h-[calc(100dvh-2rem)] max-w-[1440px] flex-col overflow-hidden rounded-[2rem] border border-[#e2ebe6] bg-white shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
+            'mx-auto flex min-h-[calc(100dvh-2rem)] max-w-360 flex-col overflow-hidden rounded-4xl border border-[#e2ebe6] bg-white shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
             classNames?.wrapper,
           )}
         >
@@ -76,7 +76,7 @@ export default function AuthLayout({
                 one thoughtful place.
               </p>
 
-              <div className="mt-9 rounded-3xl border border-white/10 bg-white/[0.08] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.14)] backdrop-blur-md">
+              <div className="mt-9 rounded-3xl border border-white/10 bg-white/8 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.14)] backdrop-blur-md">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2.5">
                     <div className="flex size-8 items-center justify-center rounded-xl bg-[#0f8a62] text-[#d9f7e8]">
@@ -97,7 +97,7 @@ export default function AuthLayout({
                 </div>
 
                 <div className="space-y-2.5 pt-3">
-                  <div className="flex items-center gap-3 rounded-2xl bg-white/[0.08] px-3 py-2.5">
+                  <div className="flex items-center gap-3 rounded-2xl bg-white/8 px-3 py-2.5">
                     <span className="size-2 rounded-full bg-[#72d5ac]" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[10px] font-bold text-white">
@@ -164,7 +164,7 @@ export default function AuthLayout({
             <div className="flex flex-1 items-center px-5 pb-8 sm:px-8 lg:px-12 lg:pb-12">
               <div
                 className={cn(
-                  'mx-auto w-full max-w-[31rem]',
+                  'mx-auto w-full max-w-124',
                   classNames?.container,
                 )}
               >

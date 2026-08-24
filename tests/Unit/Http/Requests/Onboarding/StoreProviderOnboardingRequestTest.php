@@ -19,7 +19,14 @@ class StoreProviderOnboardingRequestTest extends TestCase
         $this->assertArrayHasKey('name', $validationErrors);
         $this->assertArrayHasKey('category_id', $validationErrors);
         $this->assertArrayHasKey('working_days', $validationErrors);
-        $this->assertArrayHasKey('services', $validationErrors);
+        $this->assertArrayNotHasKey('services', $validationErrors);
+    }
+
+    public function test_client_onboarding_only_requires_the_account_type(): void
+    {
+        $errors = $this->validationErrors(['type' => 'client']);
+
+        $this->assertSame([], $errors->toArray());
     }
 
     public function test_closing_time_must_be_after_opening_time(): void
@@ -44,6 +51,16 @@ class StoreProviderOnboardingRequestTest extends TestCase
         ]);
 
         $this->assertArrayHasKey('services.0.max_duration', $errors->toArray());
+    }
+
+    public function test_provider_onboarding_allows_an_empty_services_list(): void
+    {
+        $errors = $this->validationErrors([
+            'type' => 'provider',
+            'services' => [],
+        ]);
+
+        $this->assertArrayNotHasKey('services', $errors->toArray());
     }
 
     /**

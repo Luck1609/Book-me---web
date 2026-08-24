@@ -11,23 +11,24 @@ use Spatie\Sluggable\SlugOptions;
 
 class Category extends Model
 {
-  use HasUuids, HasSlug;
+    use HasSlug, HasUuids;
 
+    protected $fillable = ['name', 'slug'];
 
-  public function getSlugOptions(): SlugOptions
-  {
-    return SlugOptions::create()
-      ->generateSlugsFrom('name')
-      ->saveSlugsTo('slug');
-  }
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
+    }
 
-  public function childCategories() : HasMany
-  {
-    return $this->hasMany(Category::class, 'parent_id');
-  }
+    public function childCategories(): HasMany
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
 
-  public function parentCategories() : BelongsTo
-  {
-    return $this->belongsTo(Category::class, 'parent_id');
-  }
+    public function parentCategories(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
 }

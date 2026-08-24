@@ -10,16 +10,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class ProviderProfile extends Model
+class ProviderProfile extends Model implements HasMedia
 {
   /** @use HasFactory<ProviderProfileFactory> */
-  use HasFactory, HasUuids, HasSlug;
+  use HasFactory, HasSlug, HasUuids, InteractsWithMedia;
 
   protected $fillable = [
     'user_id',
+    'region_id',
+    'district_id',
+    'category_id',
     'business_name',
     'slug',
     'description',
@@ -30,6 +35,8 @@ class ProviderProfile extends Model
     'latitude',
     'longitude',
     'status',
+    'working_days',
+    'works_on_holidays',
     'is_accepting_bookings',
     // 'average_rating', 'review_count',
   ];
@@ -37,25 +44,29 @@ class ProviderProfile extends Model
   protected $attributes = [
     'status' => ProviderStatus::Draft->value,
     'is_accepting_bookings' => true,
-    'average_rating' => 0,
-    'review_count' => 0,
   ];
 
   protected function casts(): array
   {
     return [
       'status' => ProviderStatus::class,
+      'working_days' => 'array',
+      'works_on_holidays' => 'boolean',
       'is_accepting_bookings' => 'boolean',
-      'average_rating' => 'decimal:2',
-      'review_count' => 'integer',
     ];
   }
 
   public function getSlugOptions(): SlugOptions
   {
     return SlugOptions::create()
-      ->generateSlugsFrom('name')
+      ->generateSlugsFrom('business_name')
       ->saveSlugsTo('slug');
+  }
+
+  public function registerMediaCollections(): void
+  {
+    $this->addMediaCollection('avatar')
+      ->singleFile();
   }
 
   /**

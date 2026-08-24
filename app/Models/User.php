@@ -16,6 +16,8 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -33,42 +35,49 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'phone', 'password', 'avatar_path', 'is_active'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'is_active', 'has_onboarded'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements PasskeyUser
+class User extends Authenticatable implements HasMedia, PasskeyUser
 {
-  /** @use HasFactory<UserFactory> */
-  use HasApiTokens, HasFactory, HasRoles, HasUuids, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+    /** @use HasFactory<UserFactory> */
+    use HasApiTokens, HasFactory, HasRoles, HasUuids, InteractsWithMedia, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
-  public $incrementing = false;
+    public $incrementing = false;
 
-  protected $keyType = 'string';
+    protected $keyType = 'string';
 
-  protected $attributes = [
-    'is_active' => true,
-  ];
-
-  /**
-   * Get the attributes that should be cast.
-   *
-   * @return array<string, string>
-   */
-  protected function casts(): array
-  {
-    return [
-      'email_verified_at' => 'datetime',
-      'phone_verified_at' => 'datetime',
-      'password' => 'hashed',
-      'is_active' => 'boolean',
-      'two_factor_confirmed_at' => 'datetime',
+    protected $attributes = [
+        'is_active' => true,
     ];
-  }
 
-  /**
-   * @return HasOne<ProviderProfile, $this>
-   */
-  public function providerProfile(): HasOne
-  {
-    return $this->hasOne(ProviderProfile::class);
-  }
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_active' => 'boolean',
+            'has_onboarded' => 'boolean',
+            'two_factor_confirmed_at' => 'datetime',
+        ];
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile();
+    }
+
+    /**
+     * @return HasOne<ProviderProfile, $this>
+     */
+    public function providerProfile(): HasOne
+    {
+        return $this->hasOne(ProviderProfile::class);
+    }
 }

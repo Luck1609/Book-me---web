@@ -7,6 +7,7 @@ import { ArrowRight, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { store } from '@/actions/App/Http/Controllers/OnboardingController';
+import AppLogo from '@/components/app-logo';
 import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
 import { cn, getNestedValue } from '@/lib/utils';
@@ -16,9 +17,7 @@ import BasicInfo from './shop/basic-info';
 import LocationDetails from './shop/location-details';
 import Operations from './shop/operation';
 import Service from './shop/service';
-import ShopSetupSuccessful from './shop/success';
 import type { OnboardingFormData } from './types';
-import AppLogo from '@/components/app-logo';
 
 const formSteps: { title: string; description: string }[] = [
   {
@@ -44,7 +43,6 @@ const formSteps: { title: string; description: string }[] = [
   },
 ];
 
-
 enum NavAction {
   INCREMENT = 'increment',
   DECREMENT = 'decrement',
@@ -58,19 +56,12 @@ const requiredFieldsByStep: Record<number, OnboardingField[]> = {
   1: ['name', 'category_id', 'description'],
   2: ['region_id', 'district_id', 'city', 'address'],
   3: ['working_days', 'opens_at', 'closes_at', 'includes_holidays'],
-  4: [
-    'services.0.name',
-    'services.0.price',
-    'services.0.min_duration',
-    'services.0.max_duration',
-    'services.0.description',
-  ],
 };
 
 const getFieldsForStep = (
   currentStep: number,
   avatar: File | null,
-  serviceImage: File | null,
+  services: OnboardingFormData['services'],
 ): OnboardingField[] => {
   const fields = [...(requiredFieldsByStep[currentStep] ?? [])];
 
@@ -78,17 +69,29 @@ const getFieldsForStep = (
     fields.push('avatar');
   }
 
-  if (currentStep === 4 && serviceImage) {
-    fields.push('services.0.image');
+  if (currentStep === 4) {
+    services.forEach((service, index) => {
+      fields.push(
+        `services.${index}.name`,
+        `services.${index}.price`,
+        `services.${index}.min_duration`,
+        `services.${index}.max_duration`,
+        `services.${index}.description`,
+      );
+
+      if (service.image) {
+        fields.push(`services.${index}.image`);
+      }
+    });
   }
 
   return fields;
 };
 
 export default function OnboardingForm() {
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(0);
   const form = useForm<OnboardingFormData>({
-    type: "provider",
+    type: null,
 
     avatar: null,
     name: '',
@@ -113,7 +116,7 @@ export default function OnboardingForm() {
         min_duration: '',
         max_duration: '',
         description: '',
-      }
+      },
     ],
   })
     .withPrecognition(store())
@@ -123,11 +126,11 @@ export default function OnboardingForm() {
   const formRef = useRef<OnboardingForm>(form);
   const previousData = useRef<OnboardingFormData | null>(null);
   const avatar = form.data.avatar;
-  const serviceImage = form.data.services[0]?.image ?? null;
+  const services = form.data.services;
 
   const fieldsForStep = useMemo(
-    () => getFieldsForStep(step, avatar, serviceImage),
-    [step, avatar, serviceImage],
+    () => getFieldsForStep(step, avatar, services),
+    [step, avatar, services],
   );
 
   useEffect(() => {
@@ -160,16 +163,31 @@ export default function OnboardingForm() {
   const isStepValid = fieldsForStep.every(
     (field) => form.valid(field as never) && !form.invalid(field as never),
   );
-  const stepHasErrors = fieldsForStep.some((field) =>
-    form.invalid(field as never),
-  );
+  // const stepHasErrors = fieldsForStep.some((field) =>
+  //   form.invalid(field as never),
+  // );
   const canContinue = !form.validating && isStepValid;
+  const isClientAccount = form.data.type === 'client';
+  const isFinalStep = step + 1 === formSteps.length;
+  const showCompleteSetup = isClientAccount || isFinalStep;
   const showProgressBar = form.data.type === 'provider';
   const progressValue = ((step + 1) / formSteps.length) * 100;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    form.submit();
+  };
+
+  const handleSkipServices = () => {
+    if (form.processing) {
+      return;
+    }
+
+    form.transform((data) => ({
+      ...data,
+      services: [],
+    }));
     form.submit();
   };
 
@@ -190,8 +208,6 @@ export default function OnboardingForm() {
       setStep((currentStep) => currentStep - 1);
     }
   };
-
-  console.log("Onboarding form details", form.data)
 
   return (
     <>
@@ -317,35 +333,11 @@ export default function OnboardingForm() {
                   <p className="mt-3 text-sm leading-6 text-[#718081] sm:text-base">
                     {formSteps[step].description}
                   </p>
-                  <div
-                    aria-live="polite"
-                    className="mt-5 flex items-center gap-2 text-xs font-semibold"
-                  >
-                    <span
-                      className={cn(
-                        'size-2 rounded-full',
-                        form.validating
-                          ? 'animate-pulse bg-[#ffbd72]'
-                          : stepHasErrors
-                            ? 'bg-[#d75c4a]'
-                            : canContinue
-                              ? 'bg-[#0f8a62]'
-                              : 'bg-[#c9d6d1]',
-                      )}
-                    />
-                    <span className="text-[#718081]">
-                      {form.validating
-                        ? 'Checking this step…'
-                        : stepHasErrors
-                          ? 'Review the highlighted fields to continue.'
-                          : canContinue
-                            ? 'All fields are validated.'
-                            : 'Complete each field to continue.'}
-                    </span>
-                  </div>
                 </div>
 
-                <div className="mt-8">{getForm(step, form)}</div>
+                <div className="mt-8">
+                  {getForm(step, form, handleSkipServices)}
+                </div>
               </div>
 
               <div className="flex items-center justify-between gap-4 rounded-[26px] border border-[#e1ebe5] bg-white p-4 shadow-[0_16px_35px_rgba(45,86,68,0.06)] sm:p-5">
@@ -360,8 +352,14 @@ export default function OnboardingForm() {
                   <span>Back</span>
                 </Button>
 
-                { (form.data.type === "provider" ||
-                  step + 1 !== formSteps.length) ? (
+                {showCompleteSetup ? (
+                  <SubmitButton
+                    className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
+                    disabled={!canContinue || form.processing}
+                    label="Complete setup"
+                    form={form}
+                  />
+                ) : (
                   <Button
                     className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
                     disabled={!canContinue || form.validating}
@@ -371,13 +369,6 @@ export default function OnboardingForm() {
                     <span>Continue</span>
                     <ChevronRight className="size-4" />
                   </Button>
-                ) : (
-                  <SubmitButton
-                    className="rounded-full bg-[#0f8a62] px-6 font-bold text-white shadow-[0_8px_18px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
-                    disabled={!canContinue || form.processing}
-                    label="Complete setup"
-                    form={form}
-                  />
                 )}
               </div>
             </form>
@@ -406,7 +397,11 @@ export default function OnboardingForm() {
   );
 }
 
-const getForm = (step: number, form: InertiaFormProps<OnboardingFormData>) => {
+const getForm = (
+  step: number,
+  form: InertiaFormProps<OnboardingFormData>,
+  onSkipServices: () => void,
+) => {
   switch (step) {
     case 0:
       return <AccountSelection form={form} />;
@@ -417,9 +412,7 @@ const getForm = (step: number, form: InertiaFormProps<OnboardingFormData>) => {
     case 3:
       return <Operations form={form} />;
     case 4:
-      return <Service form={form} />;
-    case 5:
-      return <ShopSetupSuccessful />;
+      return <Service form={form} onSkip={onSkipServices} />;
 
     default:
       return <AccountSelection form={form} />;
