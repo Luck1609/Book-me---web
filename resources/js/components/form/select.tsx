@@ -138,8 +138,9 @@ export function MultiSelect<T extends object>({
 }: MultiSelectOptions<T>) {
   const anchor = useComboboxAnchor()
 
-  if (!form)
+  if (!form) {
     throw new Error("MultiSelect component requires inertia useForm hook")
+  }
 
   const { value, error, handleChange } = handleFormData(props.name, form) || {}
 

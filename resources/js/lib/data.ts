@@ -1,6 +1,15 @@
-import { CalendarRange, ChartNoAxesCombined, ContactRound, LayoutGrid, UsersRound } from "lucide-react";
-import { dashboard } from "@/routes";
-import type { NavItem } from "@/types";
+import {
+  CalendarRange,
+  ChartNoAxesCombined,
+  ContactRound,
+  LayoutGrid,
+  UsersRound,
+} from 'lucide-react';
+import { dashboard, report } from '@/routes';
+import booking from '@/routes/booking';
+import client from '@/routes/client';
+import team from '@/routes/team';
+import type { NavItem } from '@/types';
 
 export const mainNavItems: NavItem[] = [
   {
@@ -10,22 +19,22 @@ export const mainNavItems: NavItem[] = [
   },
   {
     title: 'Booking',
-    href: "#",
+    href: booking.index.url(),
     icon: CalendarRange,
   },
   {
     title: 'Client',
-    href: "#",
+    href: client.index.url(),
     icon: ContactRound,
   },
   {
     title: 'Team Management',
-    href: "#",
+    href: team.index.url(),
     icon: UsersRound,
   },
   {
     title: 'Report',
-    href: "#",
+    href: report(),
     icon: ChartNoAxesCombined,
   },
 ];
