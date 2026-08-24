@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import {
   ArrowUpRight,
   CalendarDays,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
   Clock3,
@@ -14,182 +15,199 @@ import {
   Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import client from '@/routes/client';
+import team from '@/routes/team';
 
-type ClientSegment = 'regular' | 'new' | 'inactive';
+type TeamStatus = 'available' | 'away' | 'offline';
 
-type ClientRecord = {
+type TeamMember = {
   id: string;
   name: string;
   initials: string;
+  role: string;
   email: string;
-  phone: string;
-  segment: ClientSegment;
-  visits: number;
-  lastVisit: string;
-  nextBooking: string;
-  spend: string;
-  favoriteService: string;
+  status: TeamStatus;
+  statusLabel: string;
+  shift: string;
+  nextShift: string;
+  bookings: number;
+  rating: string;
+  workload: number;
   tone: string;
 };
 
-type ClientPageProps = {
-  clients?: ClientRecord[];
+type TeamPageProps = {
+  team?: TeamMember[];
 };
 
-const sampleClients: ClientRecord[] = [
+const sampleTeam: TeamMember[] = [
   {
-    id: 'client-001',
+    id: 'team-001',
     name: 'Julian Sterling',
     initials: 'JS',
+    role: 'Lead Barber',
     email: 'julian.sterling@example.com',
-    phone: '+1 (212) 555-0148',
-    segment: 'regular',
-    visits: 24,
-    lastVisit: '12 Aug 2026',
-    nextBooking: '28 Aug · 10:30 AM',
-    spend: '$1,420',
-    favoriteService: 'Signature Fade',
+    status: 'available',
+    statusLabel: 'Available now',
+    shift: '09:00 AM – 06:00 PM',
+    nextShift: 'Today · 09:00 AM',
+    bookings: 18,
+    rating: '4.9',
+    workload: 82,
     tone: 'bg-[#d9f7e8] text-[#0f6b4d]',
   },
   {
-    id: 'client-002',
-    name: 'Elena Rodriguez',
-    initials: 'ER',
-    email: 'elena.rodriguez@example.com',
-    phone: '+1 (646) 555-0120',
-    segment: 'new',
-    visits: 1,
-    lastVisit: '01 Aug 2026',
-    nextBooking: 'Not booked',
-    spend: '$55',
-    favoriteService: 'Style Consultation',
-    tone: 'bg-[#ffead9] text-[#a55c2d]',
+    id: 'team-002',
+    name: 'Maya Okafor',
+    initials: 'MO',
+    role: 'Senior Stylist',
+    email: 'maya.okafor@example.com',
+    status: 'available',
+    statusLabel: 'Available now',
+    shift: '10:00 AM – 07:00 PM',
+    nextShift: 'Today · 10:00 AM',
+    bookings: 14,
+    rating: '5.0',
+    workload: 68,
+    tone: 'bg-[#e6e1ff] text-[#594e9e]',
   },
   {
-    id: 'client-003',
-    name: 'Marcus Vane',
-    initials: 'MV',
-    email: 'marcus.vane@example.com',
-    phone: '+1 (917) 555-0192',
-    segment: 'regular',
-    visits: 12,
-    lastVisit: '28 Jul 2026',
-    nextBooking: '04 Sep · 02:00 PM',
-    spend: '$860',
-    favoriteService: 'Beard Sculpting',
+    id: 'team-003',
+    name: 'Theo Anderson',
+    initials: 'TA',
+    role: 'Barber',
+    email: 'theo.anderson@example.com',
+    status: 'away',
+    statusLabel: 'On break',
+    shift: '08:30 AM – 05:30 PM',
+    nextShift: 'Today · 08:30 AM',
+    bookings: 12,
+    rating: '4.8',
+    workload: 56,
     tone: 'bg-[#dcecf5] text-[#2d6980]',
   },
   {
-    id: 'client-004',
-    name: 'Sophia Bennett',
+    id: 'team-004',
+    name: 'Nia Mensah',
+    initials: 'NM',
+    role: 'Nail Technician',
+    email: 'nia.mensah@example.com',
+    status: 'available',
+    statusLabel: 'Available now',
+    shift: '09:30 AM – 06:30 PM',
+    nextShift: 'Today · 09:30 AM',
+    bookings: 16,
+    rating: '4.9',
+    workload: 74,
+    tone: 'bg-[#ffead9] text-[#a55c2d]',
+  },
+  {
+    id: 'team-005',
+    name: 'Sofia Bennett',
     initials: 'SB',
-    email: 'sophia.bennett@example.com',
-    phone: '+1 (917) 555-0164',
-    segment: 'inactive',
-    visits: 8,
-    lastVisit: '14 Mar 2026',
-    nextBooking: 'Not booked',
-    spend: '$520',
-    favoriteService: 'Premium Cut',
+    role: 'Guest Experience',
+    email: 'sofia.bennett@example.com',
+    status: 'offline',
+    statusLabel: 'Off today',
+    shift: '09:00 AM – 05:00 PM',
+    nextShift: 'Tomorrow · 09:00 AM',
+    bookings: 0,
+    rating: '4.9',
+    workload: 34,
     tone: 'bg-[#f3f0ff] text-[#685bb4]',
   },
   {
-    id: 'client-005',
-    name: 'Aisha Morgan',
-    initials: 'AM',
-    email: 'aisha.morgan@example.com',
-    phone: '+1 (347) 555-0188',
-    segment: 'new',
-    visits: 2,
-    lastVisit: '25 Jul 2026',
-    nextBooking: '02 Sep · 04:30 PM',
-    spend: '$120',
-    favoriteService: 'Shape Up',
+    id: 'team-006',
+    name: 'Marcus Vane',
+    initials: 'MV',
+    role: 'Barber',
+    email: 'marcus.vane@example.com',
+    status: 'available',
+    statusLabel: 'Available now',
+    shift: '11:00 AM – 08:00 PM',
+    nextShift: 'Today · 11:00 AM',
+    bookings: 11,
+    rating: '4.8',
+    workload: 61,
     tone: 'bg-[#f2e8eb] text-[#96546a]',
   },
-  {
-    id: 'client-006',
-    name: 'Theo Anderson',
-    initials: 'TA',
-    email: 'theo.anderson@example.com',
-    phone: '+1 (917) 555-0168',
-    segment: 'regular',
-    visits: 18,
-    lastVisit: '20 Aug 2026',
-    nextBooking: '03 Sep · 09:00 AM',
-    spend: '$1,080',
-    favoriteService: 'Hot Towel Shave',
-    tone: 'bg-[#e6e1ff] text-[#594e9e]',
-  },
 ];
 
-const segmentTabs: { label: string; value: 'all' | ClientSegment }[] = [
-  { label: 'All clients', value: 'all' },
-  { label: 'Regulars', value: 'regular' },
-  { label: 'New clients', value: 'new' },
-  { label: 'Inactive', value: 'inactive' },
-];
+const roleTabs = [
+  { label: 'Everyone', value: 'all' },
+  { label: 'Barbers', value: 'barber' },
+  { label: 'Stylists', value: 'stylist' },
+  { label: 'Support', value: 'support' },
+] as const;
 
-function segmentLabel(segment: ClientSegment): string {
-  if (segment === 'regular') {
-    return 'Regular';
-  }
-
-  if (segment === 'inactive') {
-    return 'Inactive';
-  }
-
-  return 'New client';
-}
-
-function segmentClassName(segment: ClientSegment): string {
-  if (segment === 'regular') {
+function getStatusClass(status: TeamStatus): string {
+  if (status === 'available') {
     return 'bg-[#e9f8f0] text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]';
   }
 
-  if (segment === 'inactive') {
-    return 'bg-[#f2f0f1] text-[#7b8884] dark:bg-white/10 dark:text-[#afc0ba]';
+  if (status === 'away') {
+    return 'bg-[#fff4eb] text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]';
   }
 
-  return 'bg-[#fff4eb] text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]';
+  return 'bg-[#f2f0f1] text-[#7b8884] dark:bg-white/10 dark:text-[#afc0ba]';
 }
 
-export default function ClientIndex({
-  clients = sampleClients,
-}: ClientPageProps) {
-  const [activeSegment, setActiveSegment] = useState<'all' | ClientSegment>(
-    'all',
+function matchesRole(
+  member: TeamMember,
+  filter: (typeof roleTabs)[number]['value'],
+): boolean {
+  if (filter === 'all') {
+    return true;
+  }
+
+  if (filter === 'barber') {
+    return member.role.toLowerCase().includes('barber');
+  }
+
+  if (filter === 'stylist') {
+    return member.role.toLowerCase().includes('stylist');
+  }
+
+  return (
+    member.role.toLowerCase().includes('experience') ||
+    member.role.toLowerCase().includes('technician')
   );
+}
+
+export default function TeamIndex({
+  team: providedTeam = sampleTeam,
+}: TeamPageProps) {
+  const [activeRole, setActiveRole] =
+    useState<(typeof roleTabs)[number]['value']>('all');
   const [search, setSearch] = useState('');
 
-  const visibleClients = useMemo(() => {
+  const visibleTeam = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return clients.filter((item) => {
-      const matchesSegment =
-        activeSegment === 'all' || item.segment === activeSegment;
+    return providedTeam.filter((member) => {
       const matchesSearch =
         normalizedSearch.length === 0 ||
-        `${item.name} ${item.email} ${item.favoriteService}`
+        `${member.name} ${member.role} ${member.email}`
           .toLowerCase()
           .includes(normalizedSearch);
 
-      return matchesSegment && matchesSearch;
+      return matchesRole(member, activeRole) && matchesSearch;
     });
-  }, [activeSegment, clients, search]);
+  }, [activeRole, providedTeam, search]);
 
-  const regularCount = clients.filter(
-    (item) => item.segment === 'regular',
+  const availableCount = providedTeam.filter(
+    (member) => member.status === 'available',
   ).length;
-  const newCount = clients.filter((item) => item.segment === 'new').length;
-  const inactiveCount = clients.filter(
-    (item) => item.segment === 'inactive',
+  const onBreakCount = providedTeam.filter(
+    (member) => member.status === 'away',
   ).length;
+  const totalBookings = providedTeam.reduce(
+    (sum, member) => sum + member.bookings,
+    0,
+  );
 
   return (
     <>
-      <Head title="Clients" />
+      <Head title="Team management" />
 
       <main className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
         <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
@@ -197,14 +215,14 @@ export default function ClientIndex({
             <div>
               <div className="mb-4 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-[#8fe0bb] uppercase">
                 <Users aria-hidden="true" className="size-4" />
-                Client relationships
+                Team workspace
               </div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Your clients
+                Your team
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-[#b8c9c7] sm:text-base">
-                The people who keep your craft moving. Stay close to every
-                relationship and every return visit.
+                Give every person the clarity and space they need to do their
+                best work.
               </p>
             </div>
             <button
@@ -212,12 +230,12 @@ export default function ClientIndex({
               className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#0f8a62] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#0f8a62]/20 transition hover:bg-[#0d7955] focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
             >
               <Plus aria-hidden="true" className="size-4" />
-              Add client
+              Add team member
             </button>
           </section>
 
           <section
-            aria-label="Client summary"
+            aria-label="Team summary"
             className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
           >
             <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
@@ -231,70 +249,72 @@ export default function ClientIndex({
                 />
               </div>
               <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
-                Total clients
+                Team members
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {clients.length}
+                {providedTeam.length}
               </p>
-              <p className="mt-1 text-xs text-[#91aaa2]">
-                Across your client book
-              </p>
+              <p className="mt-1 text-xs text-[#91aaa2]">Across your studio</p>
             </div>
             <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
               <div className="flex items-center justify-between">
                 <span className="flex size-10 items-center justify-center rounded-xl bg-[#e6e1ff] text-[#594e9e]">
-                  <Star aria-hidden="true" className="size-5" />
+                  <CheckCircle2 aria-hidden="true" className="size-5" />
                 </span>
                 <span className="text-xs font-bold text-[#685bb4] dark:text-[#c0b8ec]">
-                  Loyal
+                  Live
                 </span>
               </div>
               <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
-                Regulars
+                Available now
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {regularCount}
+                {availableCount}
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">
-                Your strongest relationships
+                Ready for today&apos;s work
               </p>
             </div>
             <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
               <div className="flex items-center justify-between">
                 <span className="flex size-10 items-center justify-center rounded-xl bg-[#ffead9] text-[#a55c2d]">
-                  <Sparkles aria-hidden="true" className="size-5" />
+                  <Clock3 aria-hidden="true" className="size-5" />
                 </span>
                 <span className="rounded-full bg-[#fff4eb] px-2 py-1 text-[10px] font-bold text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]">
-                  Growing
+                  {onBreakCount} away
                 </span>
               </div>
               <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
-                New clients
+                Live coverage
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {newCount}
+                {Math.round(
+                  (availableCount / Math.max(providedTeam.length, 1)) * 100,
+                )}
+                %
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">
-                Welcome them thoughtfully
+                Team availability today
               </p>
             </div>
             <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
               <div className="flex items-center justify-between">
                 <span className="flex size-10 items-center justify-center rounded-xl bg-[#dcecf5] text-[#2d6980]">
-                  <Clock3 aria-hidden="true" className="size-5" />
+                  <CalendarDays aria-hidden="true" className="size-5" />
                 </span>
-                <span className="text-xs font-bold text-[#2d6980] dark:text-[#8ac5d7]">
-                  Reconnect
-                </span>
+                <Sparkles
+                  aria-hidden="true"
+                  className="size-4 text-[#2d6980]"
+                />
               </div>
               <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
-                Need attention
+                Bookings this week
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {inactiveCount}
+                {totalBookings}
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">
-                No visit in 90+ days
+                Across the whole team
               </p>
             </div>
           </section>
@@ -310,30 +330,20 @@ export default function ClientIndex({
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   type="search"
-                  placeholder="Search by name, email or service"
-                  aria-label="Search clients"
+                  placeholder="Search team members"
+                  aria-label="Search team members"
                   className="h-11 w-full rounded-xl border border-[#dceae4] bg-[#f8fcfa] pr-4 pl-11 text-sm transition outline-none placeholder:text-[#91aaa2] focus:border-[#76c9a5] focus:ring-4 focus:ring-[#e3f6ee] dark:border-white/10 dark:bg-white/5 dark:placeholder:text-[#719089] dark:focus:border-[#4fae88] dark:focus:ring-[#0f8a62]/15"
                 />
               </div>
               <div className="flex [scrollbar-width:none] items-center gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
-                {segmentTabs.map((tab) => (
+                {roleTabs.map((tab) => (
                   <button
                     key={tab.value}
                     type="button"
-                    onClick={() => setActiveSegment(tab.value)}
-                    className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition ${activeSegment === tab.value ? 'bg-[#17343c] text-white dark:bg-[#0f8a62]' : 'border border-[#dceae4] text-[#70908a] hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8'}`}
+                    onClick={() => setActiveRole(tab.value)}
+                    className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition ${activeRole === tab.value ? 'bg-[#17343c] text-white dark:bg-[#0f8a62]' : 'border border-[#dceae4] text-[#70908a] hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8'}`}
                   >
                     {tab.label}
-                    {tab.value === 'regular' && (
-                      <span className="ml-1.5 text-[10px] opacity-70">
-                        {regularCount}
-                      </span>
-                    )}
-                    {tab.value === 'new' && (
-                      <span className="ml-1.5 text-[10px] opacity-70">
-                        {newCount}
-                      </span>
-                    )}
                   </button>
                 ))}
               </div>
@@ -341,9 +351,9 @@ export default function ClientIndex({
             <div className="flex flex-col gap-3 border-b border-[#e7f0ec] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-white/8">
               <p className="text-sm text-[#70908a] dark:text-[#9cb8b1]">
                 <span className="font-bold text-[#17343c] dark:text-white">
-                  {visibleClients.length}
+                  {visibleTeam.length}
                 </span>{' '}
-                clients shown
+                team members shown
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -357,18 +367,17 @@ export default function ClientIndex({
                   type="button"
                   className="inline-flex items-center gap-2 rounded-lg border border-[#dceae4] px-3 py-2 text-xs font-bold text-[#70908a] transition hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8"
                 >
-                  Recently active
+                  Most active
                   <ChevronDown aria-hidden="true" className="size-3.5" />
                 </button>
               </div>
             </div>
-
             <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 lg:p-6">
-              {visibleClients.length > 0 ? (
-                visibleClients.map((item) => (
+              {visibleTeam.length > 0 ? (
+                visibleTeam.map((member) => (
                   <Link
-                    key={item.id}
-                    href={client.show.url(item.id)}
+                    key={member.id}
+                    href={team.show.url(member.id)}
                     prefetch
                     className="group relative overflow-hidden rounded-2xl border border-[#dceae4] bg-[#fbfdfc] p-5 transition hover:-translate-y-0.5 hover:border-[#b9d5ca] hover:shadow-[0_14px_30px_rgba(23,52,60,0.08)] dark:border-white/10 dark:bg-white/3 dark:hover:border-[#376452]"
                   >
@@ -376,19 +385,20 @@ export default function ClientIndex({
                     <div className="relative flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <span
-                          className={`flex size-12 items-center justify-center rounded-2xl text-sm font-bold ${item.tone}`}
+                          className={`relative flex size-12 items-center justify-center rounded-2xl text-sm font-bold ${member.tone}`}
                         >
-                          {item.initials}
+                          {member.initials}
+                          <span
+                            className={`absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-[#fbfdfc] ${member.status === 'available' ? 'bg-[#0f8a62]' : member.status === 'away' ? 'bg-[#f0a46e]' : 'bg-[#9aaba5]'} dark:border-[#17221f]`}
+                          />
                         </span>
                         <div className="min-w-0">
                           <h2 className="truncate text-sm font-bold text-[#17343c] dark:text-white">
-                            {item.name}
+                            {member.name}
                           </h2>
-                          <span
-                            className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${segmentClassName(item.segment)}`}
-                          >
-                            {segmentLabel(item.segment)}
-                          </span>
+                          <p className="mt-1 text-xs text-[#70908a] dark:text-[#9cb8b1]">
+                            {member.role}
+                          </p>
                         </div>
                       </div>
                       <MoreHorizontal
@@ -396,45 +406,50 @@ export default function ClientIndex({
                         className="size-5 text-[#a0b5ae]"
                       />
                     </div>
+                    <div className="relative mt-5 flex items-center justify-between">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${getStatusClass(member.status)}`}
+                      >
+                        {member.statusLabel}
+                      </span>
+                      <span className="flex items-center gap-1 text-xs font-bold text-[#a55c2d]">
+                        <Star
+                          aria-hidden="true"
+                          className="size-3.5 fill-current"
+                        />
+                        {member.rating}
+                      </span>
+                    </div>
                     <div className="relative mt-5 grid grid-cols-2 gap-3 border-y border-[#e7f0ec] py-4 text-xs dark:border-white/8">
                       <div>
-                        <p className="text-[#91aaa2]">Visits</p>
+                        <p className="text-[#91aaa2]">Today&apos;s shift</p>
                         <p className="mt-1 font-bold text-[#17343c] dark:text-white">
-                          {item.visits}
+                          {member.shift}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[#91aaa2]">Total spend</p>
+                        <p className="text-[#91aaa2]">Bookings</p>
                         <p className="mt-1 font-bold text-[#17343c] dark:text-white">
-                          {item.spend}
+                          {member.bookings} this week
                         </p>
                       </div>
                     </div>
-                    <div className="relative mt-4 space-y-2.5">
-                      <div className="flex items-center gap-2 text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                        <CalendarDays
-                          aria-hidden="true"
-                          className="size-3.5 text-[#0f8a62]"
-                        />
-                        Next:{' '}
-                        <span className="font-semibold text-[#41645a] dark:text-[#c4d8d1]">
-                          {item.nextBooking}
-                        </span>
+                    <div className="relative mt-4">
+                      <div className="flex items-center justify-between text-[10px] font-bold text-[#91aaa2]">
+                        <span>Workload</span>
+                        <span>{member.workload}%</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                        <Star
-                          aria-hidden="true"
-                          className="size-3.5 text-[#a55c2d]"
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e8f1ed] dark:bg-white/10">
+                        <div
+                          className={`h-full rounded-full ${member.workload > 80 ? 'bg-[#a55c2d]' : 'bg-[#0f8a62]'}`}
+                          style={{ width: `${member.workload}%` }}
                         />
-                        Favorite:{' '}
-                        <span className="font-semibold text-[#41645a] dark:text-[#c4d8d1]">
-                          {item.favoriteService}
-                        </span>
                       </div>
                     </div>
                     <div className="relative mt-5 flex items-center justify-between border-t border-[#e7f0ec] pt-4 dark:border-white/8">
-                      <span className="text-[11px] text-[#91aaa2]">
-                        Last visit {item.lastVisit}
+                      <span className="flex items-center gap-1.5 text-[11px] text-[#91aaa2]">
+                        <CalendarDays aria-hidden="true" className="size-3.5" />
+                        {member.nextShift}
                       </span>
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-[#0f8a62] transition group-hover:gap-1.5 dark:text-[#8fe0bb]">
                         View profile
@@ -449,23 +464,24 @@ export default function ClientIndex({
                     <Search aria-hidden="true" className="size-5" />
                   </div>
                   <h3 className="mt-4 text-base font-bold text-[#17343c] dark:text-white">
-                    No clients found
+                    No team members found
                   </h3>
                   <p className="mt-1 text-sm text-[#70908a] dark:text-[#9cb8b1]">
-                    Try another name or client segment.
+                    Try another name or role filter.
                   </p>
                 </div>
               )}
             </div>
             <div className="flex flex-col gap-3 border-t border-[#e7f0ec] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-white/8">
               <p className="text-xs text-[#91aaa2]">
-                Showing {visibleClients.length} of {clients.length} clients
+                Showing {visibleTeam.length} of {providedTeam.length} team
+                members
               </p>
               <button
                 type="button"
                 className="inline-flex items-center gap-1 text-xs font-bold text-[#0f8a62] dark:text-[#8fe0bb]"
               >
-                Export client list
+                View team schedule
                 <ArrowUpRight aria-hidden="true" className="size-3.5" />
               </button>
             </div>
