@@ -1,303 +1,519 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import {
+  ArrowUpRight,
+  Bell,
+  CalendarCheck2,
   CalendarDays,
-  CalendarRange,
-  CircleCheck,
-  Compass,
-  EllipsisVertical,
-  LayoutDashboard,
-  MapPin,
+  Check,
+  ChevronRight,
+  Clock3,
+  MoreHorizontal,
   Plus,
-  Search,
-  Settings,
-  User,
+  Share2,
+  Sparkles,
   Users,
+  WalletCards,
 } from 'lucide-react';
+import type { User } from '@/types';
+
+type PageProps = {
+  auth: {
+    user: User;
+  };
+};
+
+type Appointment = {
+  client: string;
+  service: string;
+  time: string;
+  duration: string;
+  price: string;
+  status: 'completed' | 'in-progress' | 'upcoming';
+  initials: string;
+  tone: string;
+};
+
+const appointments: Appointment[] = [
+  {
+    client: 'Marcus Thorne',
+    service: 'Signature Fade & Lineup',
+    time: '09:00 AM',
+    duration: '45 min',
+    price: '$65.00',
+    status: 'completed',
+    initials: 'MT',
+    tone: 'bg-[#d9f7e8] text-[#0f6b4d]',
+  },
+  {
+    client: 'John Doe',
+    service: 'Traditional Hot Towel Shave',
+    time: '10:00 AM',
+    duration: '60 min',
+    price: '$85.00',
+    status: 'in-progress',
+    initials: 'JD',
+    tone: 'bg-[#e6e1ff] text-[#594e9e]',
+  },
+  {
+    client: 'Sarah Williams',
+    service: 'Style Consultation & Trim',
+    time: '11:30 AM',
+    duration: '45 min',
+    price: '$55.00',
+    status: 'upcoming',
+    initials: 'SW',
+    tone: 'bg-[#ffead9] text-[#a55c2d]',
+  },
+  {
+    client: 'Robert Chen',
+    service: 'Beard Sculpting & Oil Treatment',
+    time: '01:00 PM',
+    duration: '60 min',
+    price: '$70.00',
+    status: 'upcoming',
+    initials: 'RC',
+    tone: 'bg-[#dcecf5] text-[#2d6980]',
+  },
+];
+
+const weeklyRevenue = [
+  { day: 'Mon', amount: '$420', value: 62 },
+  { day: 'Tue', amount: '$610', value: 88 },
+  { day: 'Wed', amount: '$480', value: 69 },
+  { day: 'Thu', amount: '$720', value: 100 },
+  { day: 'Fri', amount: '$540', value: 78 },
+  { day: 'Sat', amount: '$390', value: 55 },
+  { day: 'Sun', amount: '$0', value: 6 },
+];
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function statusLabel(status: Appointment['status']): string {
+  if (status === 'in-progress') {
+    return 'In progress';
+  }
+
+  if (status === 'completed') {
+    return 'Completed';
+  }
+
+  return 'Upcoming';
+}
 
 export default function Dashboard() {
+  const { auth } = usePage<PageProps>().props;
+  const firstName = auth.user.name.split(' ')[0] || 'there';
+
   return (
     <>
-      <Head title="Craft & Care | Provider Dashboard">
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-      <div className="overflow-x-hidden font-body-md">
-        <header className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-surface px-margin-mobile shadow-sm md:px-margin-desktop">
-          <div className="flex items-center gap-3">
-            <MapPin aria-hidden="true" className="size-6 text-primary" />
-            <h1 className="font-md text-md text-primary">
-              Craft &amp; Care
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-low"
-              data-icon="search"
-            >
-              <Search aria-hidden="true" className="size-6" />
-            </button>
-            <div className="h-8 w-8 overflow-hidden rounded-full border border-outline-variant bg-surface-container-highest">
-              <img
-                className="h-full w-full object-cover"
-                data-alt="A clean professional studio portrait of a master barber in a minimalist, high-end shop environment. The lighting is soft and directional, emphasizing premium craftsmanship and expertise. The aesthetic is modern and sophisticated with a neutral, high-contrast palette."
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuChF7bqPPqpYcR0he2FZjHwJXl3dAXChor2F7QlWBUQXWGe-YfoJ0yEvC2B9BtFRDHRbu1RDzn1fCYX0tZ2_Y07GwT0jSq9hPP47SKyOtohoPhpf1UTEEjtBFiDsXeKdg8cxp8ZUmcxVj4ExAOqZYZ7Y8jsdUUssBo1jUw1z-e4Cjgzbaf4FEyV5Tb7OC8DhrayrTks76qE-IywW5pCRXZdKdmzHbS8CoReLy0vLVQfbsfqxDc5BZVErDtJtDlkC04Evtps9tXg9tw"
-              />
-            </div>
-          </div>
-        </header>
+      <Head title="Provider dashboard" />
 
-        <aside className="fixed top-0 left-0 z-40 hidden h-screen w-72 flex-col bg-surface-container-low pt-20 shadow-lg md:flex">
-          <div className="mb-8 flex flex-col px-6">
-            <div className="mb-4 flex items-center gap-4">
-              <div className="h-12 w-12 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-highest">
-                <img
-                  className="h-full w-full object-cover"
-                  data-alt="A macro close-up of a premium leather-wrapped chair in a minimalist modern barber shop. The image features shallow depth of field, highlighting the fine stitching and luxury texture. The lighting is cinematic and warm, conveying quality and care."
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDl7o9xCnqwnXdpGgF_IweEkYfW7ps1TFzAV01Kj-G-9Tam7viuubUUZwfheUPH6N2d4wELGGggMMNLwb7IBmSB9ez0n3fNAZh62BTl6q4v_yEGoiHxm6UCFiPNqv2n1IY7rTfCZBsO5ufUXlBf3K2AnO32KwirG3ZuZCTqzFFnxxg1KCcssH8GrD6PEI-yfwSN2g8P1umXr3gqPCcLVWcz49etYxpQAPn9wbVmmfJl4uUXNzbeC-odDIvPjVJ6U8wrJ8lRCXbLmU"
-                />
-              </div>
+      <div className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
+        <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
+          <section className="relative isolate overflow-hidden rounded-3xl bg-[#17343c] px-6 py-8 text-white shadow-[0_20px_55px_rgba(23,52,60,0.15)] sm:px-8 lg:px-10 lg:py-10">
+            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+              <div className="absolute -top-28 right-0 size-80 rounded-full bg-[#0f8a62]/35 blur-3xl" />
+              <div className="absolute -bottom-44 left-1/3 size-96 rounded-full bg-[#806edc]/20 blur-3xl" />
+              <div className="absolute top-0 right-20 h-full w-px rotate-45 bg-white/8" />
+              <div className="absolute top-0 right-48 h-full w-px rotate-45 bg-white/8" />
+            </div>
+
+            <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="font-md text-md text-primary">
-                  The Master Barber
-                </h2>
-                <p className="font-caption text-on-surface-variant">
-                  Open for Business
+                <div className="mb-5 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-[#8fe0bb] uppercase">
+                  <span className="size-2 rounded-full bg-[#72d5ac]" />
+                  Tuesday, 24 August 2026
+                </div>
+
+                <h1 className="max-w-xl text-3xl leading-tight font-bold tracking-tighter sm:text-4xl lg:text-[2.75rem]">
+                  Good morning, {firstName}.
+                  <span className="block text-[#a9c3c0]">
+                    Let&apos;s make today count.
+                  </span>
+                </h1>
+
+                <p className="mt-4 max-w-lg text-sm leading-6 text-[#b8c9c7] sm:text-base">
+                  You have 4 appointments today and a calm, productive day
+                  ahead.
                 </p>
               </div>
-            </div>
-            <div className="inline-block w-fit rounded-lg bg-secondary-container px-2 py-1">
-              <span className="font-label-md text-label-md text-on-secondary-container">
-                Provider Mode
-              </span>
-            </div>
-          </div>
-          <nav className="flex flex-col gap-1">
-            <a
-              className="mx-2 flex items-center gap-3 rounded-lg bg-secondary-container px-4 py-3 font-bold text-on-secondary-container transition-colors duration-100 active:opacity-80"
-              href="#"
-            >
-              <LayoutDashboard aria-hidden="true" className="size-6" />
-              <span className="font-body-md">Schedule</span>
-            </a>
-            <a
-              className="mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-on-surface-variant transition-colors duration-100 hover:bg-surface-container-highest active:opacity-80"
-              href="#"
-            >
-              <CalendarRange aria-hidden="true" className="size-6" />
-              <span className="font-body-md">Bookings</span>
-            </a>
-            <a
-              className="mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-on-surface-variant transition-colors duration-100 hover:bg-surface-container-highest active:opacity-80"
-              href="#"
-            >
-              <Users aria-hidden="true" className="size-6" />
-              <span className="font-body-md">Clients</span>
-            </a>
-            <a
-              className="mx-2 flex items-center gap-3 rounded-lg px-4 py-3 text-on-surface-variant transition-colors duration-100 hover:bg-surface-container-highest active:opacity-80"
-              href="#"
-            >
-              <Settings aria-hidden="true" className="size-6" />
-              <span className="font-body-md">Settings</span>
-            </a>
-          </nav>
-        </aside>
 
-        <main className="px-margin-mobile pt-24 pb-28 md:ml-72 md:px-margin-desktop md:pt-28">
-          <div className="mx-auto max-w-container-max">
-            <section className="mb-stack-lg">
-              <h2 className="mb-stack-md font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg">
-                Today's Overview
-              </h2>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-                <div className="rounded-xl border border-[#E2E8F0] bg-surface-container-lowest p-6 shadow-[0px_2px_4px_rgba(15,23,42,0.04)] transition-all hover:shadow-md">
-                  <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    Total Bookings
-                  </p>
-                  <p className="font-display-lg text-lg text-primary">
-                    12
-                  </p>
-                </div>
-                <div className="rounded-xl border border-[#E2E8F0] bg-surface-container-lowest p-6 shadow-[0px_2px_4px_rgba(15,23,42,0.04)] transition-all hover:shadow-md">
-                  <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    Revenue Today
-                  </p>
-                  <p className="font-display-lg text-lg text-primary">
-                    $450
-                  </p>
-                </div>
-
-                <div className="hidden rounded-xl border border-[#E2E8F0] bg-surface-container-lowest p-6 shadow-[0px_2px_4px_rgba(15,23,42,0.04)] transition-all hover:shadow-md md:block">
-                  <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    Efficiency Rate
-                  </p>
-                  <p className="font-display-lg text-lg text-primary">
-                    94%
-                  </p>
-                </div>
-                <div className="hidden rounded-xl border border-[#E2E8F0] bg-surface-container-lowest p-6 shadow-[0px_2px_4px_rgba(15,23,42,0.04)] transition-all hover:shadow-md md:block">
-                  <p className="mb-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    Active Clients
-                  </p>
-                  <p className="font-display-lg text-lg text-primary">
-                    8
-                  </p>
-                </div>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0f8a62] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#0f8a62]/20 transition hover:bg-[#0d7955] focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
+                >
+                  <Plus aria-hidden="true" className="size-4" />
+                  New booking
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
+                >
+                  <Share2 aria-hidden="true" className="size-4" />
+                  Share profile
+                </button>
               </div>
-            </section>
+            </div>
+          </section>
 
-            <section>
-              <div className="mb-stack-md flex items-center justify-between">
-                <h2 className="font-md text-md text-primary">
-                  Today's Schedule
-                </h2>
-                <div className="flex gap-2">
-                  <button className="rounded-lg bg-surface-container-low px-4 py-2 font-label-md text-label-md transition-colors hover:bg-surface-container-highest">
-                    Timeline
-                  </button>
-                  <button className="rounded-lg px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
-                    List
-                  </button>
+          <section
+            aria-label="Today's key metrics"
+            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+          >
+            <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+              <div className="flex items-start justify-between">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#d9f7e8] text-[#0f6b4d]">
+                  <CalendarCheck2 aria-hidden="true" className="size-5" />
                 </div>
+                <span className="rounded-full bg-[#e9f8f0] px-2.5 py-1 text-xs font-bold text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
+                  +12.5%
+                </span>
               </div>
-              <div className="relative space-y-stack-md pl-8 before:absolute before:inset-y-0 before:left-3 before:w-px before:bg-slate-200">
-                <div className="relative opacity-60">
-                  <div className="absolute top-4 -left-8 z-10 h-4 w-4 rounded-full border-4 border-surface bg-outline"></div>
-                  <div className="rounded-xl border border-transparent bg-surface-container p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-label-md text-label-md text-on-surface-variant">
-                          09:00 AM — 09:45 AM
-                        </p>
-                        <h3 className="font-md text-md text-on-surface">
-                          Marcus Thorne
-                        </h3>
-                        <p className="font-body-md text-on-surface-variant">
-                          Signature Fade &amp; Lineup
-                        </p>
-                      </div>
-                      <CircleCheck
-                        aria-hidden="true"
-                        className="size-6 fill-current text-primary"
-                      />
-                    </div>
+              <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
+                Bookings this month
+              </p>
+              <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
+                48
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+              <div className="flex items-start justify-between">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#e6e1ff] text-[#594e9e]">
+                  <WalletCards aria-hidden="true" className="size-5" />
+                </div>
+                <span className="rounded-full bg-[#f3f0ff] px-2.5 py-1 text-xs font-bold text-[#685bb4] dark:bg-[#806edc]/15 dark:text-[#c0b8ec]">
+                  +8.4%
+                </span>
+              </div>
+              <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
+                Revenue this month
+              </p>
+              <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
+                $3,840
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+              <div className="flex items-start justify-between">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#ffead9] text-[#a55c2d]">
+                  <Users aria-hidden="true" className="size-5" />
+                </div>
+                <span className="rounded-full bg-[#fff4eb] px-2.5 py-1 text-xs font-bold text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]">
+                  +3 new
+                </span>
+              </div>
+              <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
+                Returning clients
+              </p>
+              <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
+                86%
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+              <div className="flex items-start justify-between">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#dcecf5] text-[#2d6980]">
+                  <Sparkles aria-hidden="true" className="size-5" />
+                </div>
+                <span className="rounded-full bg-[#edf7fb] px-2.5 py-1 text-xs font-bold text-[#2d6980] dark:bg-[#2d6980]/15 dark:text-[#8ac5d7]">
+                  Excellent
+                </span>
+              </div>
+              <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
+                Client satisfaction
+              </p>
+              <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
+                4.9<span className="text-lg text-[#70908a]">/5</span>
+              </p>
+            </div>
+          </section>
+
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.85fr)]">
+            <section className="overflow-hidden rounded-2xl border border-[#dceae4] bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+              <div className="flex flex-col gap-4 border-b border-[#e7f0ec] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-white/8">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold tracking-tight text-[#17343c] dark:text-white">
+                      Today&apos;s schedule
+                    </h2>
+                    <span className="rounded-full bg-[#e9f8f0] px-2 py-0.5 text-[11px] font-bold text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
+                      4 bookings
+                    </span>
                   </div>
+                  <p className="mt-1 text-sm text-[#70908a] dark:text-[#9cb8b1]">
+                    Tuesday, August 24 · Your next appointment is in 20 min
+                  </p>
                 </div>
+                <button
+                  type="button"
+                  className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-[#0f8a62] transition hover:text-[#0b6549] dark:text-[#8fe0bb]"
+                >
+                  View calendar{' '}
+                  <ArrowUpRight aria-hidden="true" className="size-4" />
+                </button>
+              </div>
 
-                <div className="relative">
-                  <div className="absolute top-4 -left-8 z-10 h-4 w-4 animate-pulse rounded-full border-4 border-surface bg-secondary-container"></div>
-                  <div className="rounded-xl border-l-4 border-secondary-container bg-surface-container-lowest p-6 shadow-[0px_12px_24px_rgba(15,23,42,0.08)]">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="mb-1 flex items-center gap-2">
-                          <span className="rounded bg-primary-container px-2 py-0.5 text-[10px] font-bold tracking-widest text-on-primary-container uppercase">
-                            In Progress
+              <div className="divide-y divide-[#e7f0ec] dark:divide-white/8">
+                {appointments.map((appointment) => (
+                  <div
+                    key={`${appointment.time}-${appointment.client}`}
+                    className="group flex items-center gap-4 px-5 py-4 transition hover:bg-[#f8fcfa] sm:px-6 dark:hover:bg-white/4"
+                  >
+                    <div
+                      className={`hidden w-16 shrink-0 text-right text-xs font-bold sm:block ${appointment.status === 'in-progress' ? 'text-[#0f8a62]' : 'text-[#70908a] dark:text-[#9cb8b1]'}`}
+                    >
+                      {appointment.time}
+                    </div>
+                    <div
+                      className={`relative flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${appointment.tone}`}
+                    >
+                      {appointment.initials}
+                      {appointment.status === 'in-progress' && (
+                        <span className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-white bg-[#0f8a62] dark:border-[#17221f]" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="truncate text-sm font-bold text-[#17343c] dark:text-white">
+                          {appointment.client}
+                        </p>
+                        {appointment.status === 'in-progress' && (
+                          <span className="rounded-full bg-[#e9f8f0] px-2 py-0.5 text-[10px] font-bold text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
+                            Live now
                           </span>
-                          <p className="font-label-md text-label-md text-on-surface-variant">
-                            10:00 AM — 11:00 AM
-                          </p>
-                        </div>
-                        <h3 className="font-md text-md text-primary">
-                          John Doe
-                        </h3>
-                        <p className="font-body-md text-on-surface-variant">
-                          Traditional Hot Towel Shave
-                        </p>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="font-md text-md text-primary">
-                          $65.00
-                        </p>
-                        <button className="mt-2 font-label-md text-label-md text-primary underline hover:text-on-surface-variant">
-                          Manage
-                        </button>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#70908a] dark:text-[#9cb8b1]">
+                        <span className="font-semibold text-[#0f8a62] sm:hidden">
+                          {appointment.time}
+                        </span>
+                        <span>{appointment.service}</span>
+                        <span className="text-[#b6c9c1]">·</span>
+                        <span>{appointment.duration}</span>
                       </div>
                     </div>
+                    <div className="hidden text-right sm:block">
+                      <p className="text-sm font-bold text-[#17343c] dark:text-white">
+                        {appointment.price}
+                      </p>
+                      <p
+                        className={`mt-1 text-[11px] font-semibold ${appointment.status === 'completed' ? 'text-[#70908a]' : appointment.status === 'in-progress' ? 'text-[#0f8a62]' : 'text-[#a1b4ae]'}`}
+                      >
+                        {statusLabel(appointment.status)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={`More options for ${appointment.client}`}
+                      className="rounded-lg p-2 text-[#9ab2aa] transition hover:bg-[#edf7f2] hover:text-[#17343c] dark:hover:bg-white/8 dark:hover:text-white"
+                    >
+                      <MoreHorizontal aria-hidden="true" className="size-5" />
+                    </button>
                   </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="relative">
-                  <div className="absolute top-4 -left-8 z-10 h-4 w-4 rounded-full border-4 border-surface bg-outline-variant"></div>
-                  <div className="rounded-xl border border-[#E2E8F0] bg-surface-container-lowest p-4 transition-colors hover:border-outline">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-label-md text-label-md text-on-surface-variant">
-                          11:30 AM — 12:15 PM
-                        </p>
-                        <h3 className="font-md text-md text-primary">
-                          Sarah Williams
-                        </h3>
-                        <p className="font-body-md text-on-surface-variant">
-                          Style Consultation &amp; Trim
-                        </p>
-                      </div>
-                      <EllipsisVertical
-                        aria-hidden="true"
-                        className="size-6 text-on-surface-variant"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute top-4 -left-8 z-10 h-4 w-4 rounded-full border-4 border-surface bg-outline-variant"></div>
-                  <div className="rounded-xl border border-[#E2E8F0] bg-surface-container-lowest p-4 transition-colors hover:border-outline">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-label-md text-label-md text-on-surface-variant">
-                          01:00 PM — 02:00 PM
-                        </p>
-                        <h3 className="font-md text-md text-primary">
-                          Robert Chen
-                        </h3>
-                        <p className="font-body-md text-on-surface-variant">
-                          Beard Sculpting &amp; Oil Treatment
-                        </p>
-                      </div>
-                      <EllipsisVertical
-                        aria-hidden="true"
-                        className="size-6 text-on-surface-variant"
-                      />
-                    </div>
-                  </div>
-                </div>
+              <div className="border-t border-[#e7f0ec] px-5 py-4 dark:border-white/8">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#b9d5ca] py-3 text-sm font-bold text-[#0f8a62] transition hover:bg-[#f4fbf7] dark:border-[#376452] dark:text-[#8fe0bb] dark:hover:bg-[#0f8a62]/10"
+                >
+                  <Plus aria-hidden="true" className="size-4" />
+                  Add time block
+                </button>
               </div>
             </section>
+
+            <div className="space-y-6">
+              <section className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
+                      Your profile
+                    </p>
+                    <h2 className="mt-1 text-lg font-bold tracking-tight text-[#17343c] dark:text-white">
+                      Almost ready to share
+                    </h2>
+                  </div>
+                  <div className="flex size-10 items-center justify-center rounded-full bg-[#17343c] text-sm font-bold text-[#8fe0bb] dark:bg-[#0f8a62] dark:text-white">
+                    {getInitials(auth.user.name)}
+                  </div>
+                </div>
+                <div className="mt-5 flex items-center justify-between text-xs font-semibold">
+                  <span className="text-[#70908a] dark:text-[#9cb8b1]">
+                    Profile completion
+                  </span>
+                  <span className="text-[#0f8a62] dark:text-[#8fe0bb]">
+                    80%
+                  </span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#e8f1ed] dark:bg-white/10">
+                  <div className="h-full w-4/5 rounded-full bg-[#0f8a62]" />
+                </div>
+                <div className="mt-5 space-y-3">
+                  {[
+                    'Add a cover photo',
+                    'Set your availability',
+                    'Share your booking link',
+                  ].map((item, index) => (
+                    <div key={item} className="flex items-center gap-3 text-sm">
+                      <span
+                        className={`flex size-5 items-center justify-center rounded-full ${index === 0 ? 'border border-[#b9d5ca] text-transparent dark:border-[#376452]' : 'bg-[#d9f7e8] text-[#0f8a62] dark:bg-[#0f8a62]/20 dark:text-[#8fe0bb]'}`}
+                      >
+                        {index > 0 && (
+                          <Check aria-hidden="true" className="size-3" />
+                        )}
+                      </span>
+                      <span
+                        className={
+                          index === 0
+                            ? 'font-semibold text-[#17343c] dark:text-white'
+                            : 'text-[#70908a] line-through dark:text-[#9cb8b1]'
+                        }
+                      >
+                        {item}
+                      </span>
+                      {index === 0 && (
+                        <ChevronRight
+                          aria-hidden="true"
+                          className="ml-auto size-4 text-[#0f8a62]"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
+                      This week
+                    </p>
+                    <h2 className="mt-1 text-lg font-bold tracking-tight text-[#17343c] dark:text-white">
+                      Revenue overview
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Revenue options"
+                    className="rounded-lg p-2 text-[#9ab2aa] hover:bg-[#edf7f2] dark:hover:bg-white/8"
+                  >
+                    <MoreHorizontal aria-hidden="true" className="size-5" />
+                  </button>
+                </div>
+                <div className="mt-5 flex items-end justify-between">
+                  <div>
+                    <p className="text-2xl font-bold tracking-tight text-[#17343c] dark:text-white">
+                      $3,160
+                    </p>
+                    <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-[#0f8a62] dark:text-[#8fe0bb]">
+                      <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                      14.8% from last week
+                    </p>
+                  </div>
+                  <span className="rounded-lg bg-[#f4fbf7] px-2 py-1 text-[11px] font-bold text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
+                    Aug 18–24
+                  </span>
+                </div>
+                <div className="mt-6 flex h-28 items-end justify-between gap-2">
+                  {weeklyRevenue.map((item, index) => (
+                    <div
+                      key={item.day}
+                      className="flex h-full flex-1 flex-col items-center justify-end gap-2"
+                    >
+                      <div className="group relative flex h-full w-full items-end">
+                        <div
+                          className={`w-full rounded-t-md transition-all ${index === 3 ? 'bg-[#0f8a62]' : 'bg-[#cce9db] group-hover:bg-[#9ed6ba] dark:bg-[#245a47] dark:group-hover:bg-[#347960]'}`}
+                          style={{ height: `${item.value}%` }}
+                        >
+                          <span className="pointer-events-none absolute -top-7 left-1/2 hidden -translate-x-1/2 rounded-md bg-[#17343c] px-1.5 py-1 text-[10px] font-bold whitespace-nowrap text-white group-hover:block dark:bg-white dark:text-[#17343c]">
+                            {item.amount}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-semibold text-[#91aaa2]">
+                        {item.day}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
           </div>
-        </main>
 
-        <button className="group fixed right-6 bottom-24 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-lg duration-150 active:scale-95 md:right-12 md:bottom-12">
-          <Plus aria-hidden="true" className="size-6 text-2xl" />
-          <span className="ml-0 max-w-0 overflow-hidden font-label-md text-label-md whitespace-nowrap transition-all duration-300 group-hover:ml-2 group-hover:max-w-xs">
-            Add Booking
-          </span>
-        </button>
-
-        <nav className="shadow-high fixed bottom-0 left-0 z-50 flex w-full items-center justify-around rounded-t-xl border-t border-outline-variant/10 bg-surface px-4 py-2 md:hidden">
-          <a
-            className="flex flex-col items-center justify-center p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-highest active:scale-90"
-            href="#"
-          >
-            <Compass aria-hidden="true" className="size-6" />
-            <span className="font-label-md text-label-md">Discover</span>
-          </a>
-          <a
-            className="flex flex-col items-center justify-center rounded-xl bg-primary-container p-2 text-on-primary-container duration-200 active:scale-90"
-            href="#"
-          >
-            <CalendarDays aria-hidden="true" className="size-6 fill-current" />
-            <span className="font-label-md text-label-md">Bookings</span>
-          </a>
-          <a
-            className="flex flex-col items-center justify-center p-2 text-on-surface-variant transition-all duration-200 hover:bg-surface-container-highest active:scale-90"
-            href="#"
-          >
-            <User aria-hidden="true" className="size-6" />
-            <span className="font-label-md text-label-md">Profile</span>
-          </a>
-        </nav>
+          <section className="grid gap-4 sm:grid-cols-3">
+            <button
+              type="button"
+              className="group flex items-center gap-4 rounded-2xl border border-[#dceae4] bg-white p-4 text-left shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#17221f]"
+            >
+              <span className="flex size-10 items-center justify-center rounded-xl bg-[#edf7fb] text-[#2d6980] dark:bg-[#2d6980]/15 dark:text-[#8ac5d7]">
+                <CalendarDays aria-hidden="true" className="size-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-bold text-[#17343c] dark:text-white">
+                  Manage availability
+                </span>
+                <span className="mt-0.5 block text-xs text-[#70908a] dark:text-[#9cb8b1]">
+                  Keep your calendar up to date
+                </span>
+              </span>
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4 text-[#9ab2aa] transition group-hover:translate-x-0.5"
+              />
+            </button>
+            <button
+              type="button"
+              className="group flex items-center gap-4 rounded-2xl border border-[#dceae4] bg-white p-4 text-left shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#17221f]"
+            >
+              <span className="flex size-10 items-center justify-center rounded-xl bg-[#fff4eb] text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]">
+                <Bell aria-hidden="true" className="size-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-bold text-[#17343c] dark:text-white">
+                  Review notifications
+                </span>
+                <span className="mt-0.5 block text-xs text-[#70908a] dark:text-[#9cb8b1]">
+                  2 reminders need your attention
+                </span>
+              </span>
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4 text-[#9ab2aa] transition group-hover:translate-x-0.5"
+              />
+            </button>
+            <button
+              type="button"
+              className="group flex items-center gap-4 rounded-2xl border border-[#dceae4] bg-white p-4 text-left shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#17221f]"
+            >
+              <span className="flex size-10 items-center justify-center rounded-xl bg-[#f3f0ff] text-[#685bb4] dark:bg-[#806edc]/15 dark:text-[#c0b8ec]">
+                <Clock3 aria-hidden="true" className="size-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-bold text-[#17343c] dark:text-white">
+                  Block time off
+                </span>
+                <span className="mt-0.5 block text-xs text-[#70908a] dark:text-[#9cb8b1]">
+                  Protect space for yourself
+                </span>
+              </span>
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4 text-[#9ab2aa] transition group-hover:translate-x-0.5"
+              />
+            </button>
+          </section>
+        </div>
       </div>
     </>
   );

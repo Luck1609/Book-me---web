@@ -17,4 +17,6 @@ Route::inertia('/account-created', 'onboarding/success')->name('onboarding.succe
 Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::inertia('/verify-account', 'auth/account-verification')->name('account-verification');
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Route::resource('booking')
 });
