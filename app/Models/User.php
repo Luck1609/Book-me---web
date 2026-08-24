@@ -50,6 +50,10 @@ class User extends Authenticatable implements HasMedia, PasskeyUser
         'is_active' => true,
     ];
 
+    protected $appends = [
+        'avatar',
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -71,6 +75,11 @@ class User extends Authenticatable implements HasMedia, PasskeyUser
     {
         $this->addMediaCollection('avatar')
             ->singleFile();
+    }
+
+    public function getAvatarAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl('avatar') ?: $this->social_avatar;
     }
 
     /**
