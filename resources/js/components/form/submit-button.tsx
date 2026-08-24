@@ -22,8 +22,36 @@ export default function SubmitButton<T extends object>({ form, label = "Submit",
       className={cn("flex items-center", props?.className)}
       {...props}
     >
-      {/* {form.processing && <Loader />} */}
-      {label}
+      {
+        form.processing
+          ? <Loader />
+          : label
+      }
     </Button>
+  )
+}
+
+
+export function Loader1() {
+  return (
+    // < !--From Uiverse.io by dovatgabriel-- >
+    <div className="loader">
+      <div className="scanner">
+        <span className="text-transparent text-xs relative overflow-hidden">Please wait...</span>
+      </div>
+    </div>
+  )
+}
+
+export function Loader() {
+
+  return (
+    // < !--From Uiverse.io by ahmed150up-- >
+    <div className="flex justify-center">
+      <div className="bar"></div>
+      <div className="bar"></div>
+      <div className="bar"></div>
+      <div className="bar"></div>
+    </div>
   )
 }

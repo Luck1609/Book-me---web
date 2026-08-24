@@ -13,6 +13,7 @@ export default function AccountSelection({
       <Checkbox
         name="type"
         form={form}
+        multiple={false}
         options={[
           {
             label: (
@@ -60,7 +61,7 @@ export default function AccountSelection({
           field: {
             wrapper: 'bg-card lg:p-8',
             container: 'p-0! bg-overflow-hidden',
-            label: 'overflow-hidden border-none',
+            label: 'overflow-hidden border-none font-semibold',
             description: 'text-center text-sm',
           },
         }}

@@ -17,86 +17,86 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request, OtpService $otpService): JsonResponse
-    {
-        $data = $request->validated();
-        $user = User::query()->create([
-            'name' => $data['name'],
-            'email' => isset($data['email']) ? Str::lower($data['email']) : null,
-            'phone' => $data['phone'] ?? null,
-            'password' => $data['password'] ?? null,
-        ]);
-        $user->assignRole(Role::findOrCreate($data['account_type'], 'web'));
+  public function register(RegisterRequest $request, OtpService $otpService): JsonResponse
+  {
+    $data = $request->validated();
+    $user = User::query()->create([
+      'name' => $data['name'],
+      'email' => isset($data['email']) ? Str::lower($data['email']) : null,
+      'phone' => $data['phone'] ?? null,
+      'password' => $data['password'] ?? null,
+    ]);
+    $user->assignRole(Role::findOrCreate($data['account_type'], 'web'));
 
-        $verificationRequired = false;
+    $verificationRequired = false;
 
-        if ($user->phone !== null) {
-            $otpService->request($user->phone);
-            $verificationRequired = true;
-        }
-
-        return response()->json([
-            'data' => ['user' => $user, 'verification_required' => $verificationRequired],
-            'message' => 'Account created successfully.',
-        ], 201);
+    if ($user->phone !== null) {
+      $otpService->request($user->phone);
+      $verificationRequired = true;
     }
 
-    public function login(LoginRequest $request): JsonResponse
-    {
-        $identifier = trim($request->string('identifier')->toString());
-        $column = str_contains($identifier, '@') ? 'email' : 'phone';
-        $identifier = $column === 'email' ? Str::lower($identifier) : $identifier;
-        $user = User::query()->where($column, $identifier)->first();
+    return response()->json([
+      'data' => ['user' => $user, 'verification_required' => $verificationRequired],
+      'message' => 'Account created successfully.',
+    ], 201);
+  }
 
-        abort_unless(
-            $user !== null
-                && $user->is_active
-                && is_string($user->password)
-                && Hash::check($request->string('password')->toString(), $user->password),
-            422,
-            'Invalid credentials.',
-        );
-        abort_if($column === 'phone' && $user->phone_verified_at === null, 403, 'Verify your phone number before signing in.');
+  public function login(LoginRequest $request): JsonResponse
+  {
+    $identifier = trim($request->string('identifier')->toString());
+    $column = str_contains($identifier, '@') ? 'email' : 'phone';
+    $identifier = $column === 'email' ? Str::lower($identifier) : $identifier;
+    $user = User::query()->where($column, $identifier)->first();
 
-        return $this->tokenResponse($user, 'Logged in successfully.');
+    abort_unless(
+      $user !== null
+        && $user->is_active
+        && is_string($user->password)
+        && Hash::check($request->string('password')->toString(), $user->password),
+      422,
+      'Invalid credentials.',
+    );
+    abort_if($column === 'phone' && $user->phone_verified_at === null, 403, 'Verify your phone number before signing in.');
+
+    return $this->tokenResponse($user, 'Logged in successfully.');
+  }
+
+  public function requestOtp(RequestOtpRequest $request, OtpService $otpService): JsonResponse
+  {
+    $phone = $otpService->normalizePhone($request->string('phone')->toString());
+
+    if (User::query()->where('phone', $phone)->exists()) {
+      $otpService->request($phone);
     }
 
-    public function requestOtp(RequestOtpRequest $request, OtpService $otpService): JsonResponse
-    {
-        $phone = $otpService->normalizePhone($request->string('phone')->toString());
+    return response()->json(['message' => 'If the phone number is eligible, a verification code has been sent.']);
+  }
 
-        if (User::query()->where('phone', $phone)->exists()) {
-            $otpService->request($phone);
-        }
+  public function verifyOtp(VerifyOtpRequest $request, OtpService $otpService): JsonResponse
+  {
+    $phone = $otpService->normalizePhone($request->string('phone')->toString());
+    $user = $otpService->verify($phone, $request->string('code')->toString());
 
-        return response()->json(['message' => 'If the phone number is eligible, a verification code has been sent.']);
-    }
+    return $this->tokenResponse($user, 'Phone verified successfully.');
+  }
 
-    public function verifyOtp(VerifyOtpRequest $request, OtpService $otpService): JsonResponse
-    {
-        $phone = $otpService->normalizePhone($request->string('phone')->toString());
-        $user = $otpService->verify($phone, $request->string('code')->toString());
+  public function me(Request $request): JsonResponse
+  {
+    return response()->json(['data' => $request->user()]);
+  }
 
-        return $this->tokenResponse($user, 'Phone verified successfully.');
-    }
+  public function logout(Request $request): JsonResponse
+  {
+    $request->user()->currentAccessToken()->delete();
 
-    public function me(Request $request): JsonResponse
-    {
-        return response()->json(['data' => $request->user()]);
-    }
+    return response()->json(['message' => 'Logged out successfully.']);
+  }
 
-    public function logout(Request $request): JsonResponse
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logged out successfully.']);
-    }
-
-    private function tokenResponse(User $user, string $message): JsonResponse
-    {
-        return response()->json([
-            'data' => ['user' => $user, 'token' => $user->createToken('api')->plainTextToken],
-            'message' => $message,
-        ]);
-    }
+  private function tokenResponse(User $user, string $message): JsonResponse
+  {
+    return response()->json([
+      'data' => ['user' => $user, 'token' => $user->createToken('api')->plainTextToken],
+      'message' => $message,
+    ]);
+  }
 }

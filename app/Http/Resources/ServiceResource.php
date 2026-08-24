@@ -24,7 +24,11 @@ class ServiceResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'duration_minutes' => $this->duration_minutes,
+            'duration_minutes' => $this->min_duration_minutes === $this->max_duration_minutes
+                ? $this->min_duration_minutes
+                : null,
+            'min_duration_minutes' => $this->min_duration_minutes,
+            'max_duration_minutes' => $this->max_duration_minutes,
             'is_active' => $this->is_active,
             'requires_payment' => $this->requires_payment,
             'sort_order' => $this->sort_order,

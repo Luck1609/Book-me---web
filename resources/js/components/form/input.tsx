@@ -1,6 +1,6 @@
 import type { InertiaFormProps } from "@inertiajs/react"
 import { Eye, EyeClosed } from "lucide-react"
-import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/types/useHttp';
+import type { UseHttpPrecognitiveProps } from "node_modules/@inertiajs/react/types/useHttp";
 import * as React from "react"
 
 import { Input as InputComponent } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { cn, handleFormData } from "@/lib/utils"
 import type { Icon } from "@/types";
 
 
-type Props<T extends object> = Omit<React.ComponentProps<"input">, 'form'> & {
+type Props<T extends object> = Omit<React.ComponentProps<"input">, "form"> & {
   label?: string | React.ReactNode;
   name: string;
   classNames?: {
@@ -64,11 +64,11 @@ export function Input<T extends object>({ classNames, label, name, form, icons, 
 
 
   return (
-    <div className={cn('w-full space-y-1.5 relative', classNames?.wrapper)}>
+    <div className={cn("w-full space-y-1.5 relative", classNames?.wrapper)}>
       {
         label ?
-          typeof (label) === 'string'
-            ? <Label htmlFor={name} className={cn('font-medium', classNames?.label)}>{label}</Label>
+          typeof (label) === "string"
+            ? <Label htmlFor={name} className={cn("font-medium", classNames?.label)}>{label}</Label>
             : label
           : null
       }
@@ -78,13 +78,17 @@ export function Input<T extends object>({ classNames, label, name, form, icons, 
           id={name}
           name={name}
           {...componentProps}
-          className={cn("border-none shadow-none", componentProps.className)}
+          className={cn(
+            "absolute w-full h-full left-0 top-0 border-none z-0",
+            icons?.prefixIcon ? "pl-10" : "",
+            componentProps.className,
+          )}
         />
 
         {
           icons?.prefixIcon && (
             <InputGroupAddon align="inline-start">
-              <icons.prefixIcon className={cn('', classNames?.prefixIcon)} />
+              <icons.prefixIcon className={cn("z-1", classNames?.prefixIcon)} />
             </InputGroupAddon>
           )
         }
@@ -92,7 +96,7 @@ export function Input<T extends object>({ classNames, label, name, form, icons, 
           (icons?.prependIcon) && (
             <InputGroupAddon align="inline-end">
               {
-                icons?.prependIcon && <icons.prependIcon className={cn('', classNames?.prependIcon)} />
+                icons?.prependIcon && <icons.prependIcon className={cn("z-50 relative", classNames?.prependIcon)} />
               }
 
             </InputGroupAddon>
@@ -116,15 +120,15 @@ export function Password<T extends object>(options: Props<T>) {
   const toggleShowText = () => setShowText(prev => !prev)
 
   const Icon = () => !showText
-    ? <Eye onClick={toggleShowText} className="cursor-pointer" />
-    : <EyeClosed onClick={toggleShowText} className="cursor-pointer" />
+    ? <Eye onClick={toggleShowText} className={cn("cursor-pointer absolute right-3.5", props?.classNames?.prependIcon)} />
+    : <EyeClosed onClick={toggleShowText} className={cn("cursor-pointer absolute right-3.5", props?.classNames?.prependIcon)} />
 
   const { icons, ...props } = options
 
   const componentProps = {
-    type: showText ? 'text' : 'password',
+    type: showText ? "text" : "password",
     ...props,
-    className: cn("border-none", props.className),
+    className: cn("", props.className),
     icons: {
       ...icons,
       prependIcon: Icon,

@@ -31,7 +31,15 @@ class ServiceController extends Controller
     public function store(StoreServiceRequest $request): JsonResponse
     {
         Gate::authorize('create', Service::class);
-        $service = $request->user()->providerProfile->services()->create($request->validated());
+        $data = $request->validated();
+        $durationMinutes = $data['duration_minutes'];
+        unset($data['duration_minutes']);
+
+        $service = $request->user()->providerProfile->services()->create([
+            ...$data,
+            'min_duration_minutes' => $durationMinutes,
+            'max_duration_minutes' => $durationMinutes,
+        ]);
 
         return response()->json(['data' => new ServiceResource($service), 'message' => 'Service created successfully.'], 201);
     }
@@ -52,8 +60,16 @@ class ServiceController extends Controller
     public function update(UpdateServiceRequest $request, Service $service): ServiceResource
     {
         Gate::authorize('update', $service);
-        Gate::authorize('update', $service);
-        $service->update($request->validated());
+        $data = $request->validated();
+
+        if (array_key_exists('duration_minutes', $data)) {
+            $durationMinutes = $data['duration_minutes'];
+            unset($data['duration_minutes']);
+            $data['min_duration_minutes'] = $durationMinutes;
+            $data['max_duration_minutes'] = $durationMinutes;
+        }
+
+        $service->update($data);
 
         return new ServiceResource($service->fresh());
     }

@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import type { ComponentProps, Ref } from 'react';
 import { useState } from 'react';
-import { InputComponent } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 export default function PasswordInput({
@@ -13,7 +13,7 @@ export default function PasswordInput({
 
     return (
         <div className="relative">
-            <InputComponent
+            <Input
                 type={showPassword ? 'text' : 'password'}
                 className={cn('pr-10', className)}
                 ref={ref}

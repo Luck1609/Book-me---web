@@ -15,8 +15,8 @@ return new class extends Migration
       $table->uuid('id')->primary();
       $table->foreignUuid('provider_profile_id')->constrained()->cascadeOnDelete();
       $table->foreignUuid('user_id')->nullable()->constrained()->nullOnDelete();
-      $table->dateTime('starts_at');
-      $table->dateTime('ends_at');
+      $table->dateTime('starts_at')->nullable();
+      $table->dateTime('ends_at')->nullable();
       $table->string('type')->index();
       $table->string('reason')->nullable();
       $table->timestamps();

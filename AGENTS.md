@@ -213,3 +213,26 @@ Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `
 - IMPORTANT: Activate `inertia-react-development` when working with Inertia React client-side patterns.
 
 </laravel-boost-guidelines>
+
+# Development Commands
+
+## JavaScript
+
+This repository uses Bun exclusively for JavaScript dependencies and scripts.
+
+- Use `bun install`, never `npm install`
+- Use `bun add`, never `npm install <package>`
+- Use `bun run <script>`, never `npm run <script>`
+- Use `bunx`, never `npx`
+- Do not generate or modify `package-lock.json`
+- `bun.lock` is the authoritative JavaScript lockfile
+
+Examples:
+
+```bash
+bun install
+bun run dev
+bun run build
+bun add axios
+bun add -d prettier
+bunx shadcn@latest add button

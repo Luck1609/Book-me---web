@@ -1,14 +1,21 @@
+// import type { PageProps } from '@inertiajs/core';
+import { usePage } from '@inertiajs/react';
 import type { InertiaFormProps } from '@inertiajs/react';
 import FileUploader from '@/components/form/file-uploader';
 import { Input } from '@/components/form/input';
 import { Select } from '@/components/form/select';
 import { Textarea } from '@/components/form/textarea';
+import type { SelectOptions } from '@/types';
 
 export default function BasicInfo({
   form,
 }: {
   form: InertiaFormProps<Record<string, any>>;
-}) {
+  }) {
+  const { categories, ...props } = usePage<{ categories: SelectOptions[] }>().props
+
+  console.log('Category listing', categories, props)
+
   return (
     <div className="relative grid w-full gap-y-6 rounded-xl bg-card p-6 lg:p-8">
       <div className="w-1/2">
@@ -34,12 +41,7 @@ export default function BasicInfo({
           label="Business category"
           placeholder="Select category"
           form={form}
-          options={[
-            { label: 'Barbershop', value: 'barber' },
-            { label: 'Hair Salon', value: 'salon' },
-            { label: 'Spa &amp; Wellness', value: 'spa' },
-            { label: 'Tattoo Studio', value: 'tattoo' },
-          ]}
+          options={categories}
         />
       </div>
 
