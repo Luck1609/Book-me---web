@@ -9,22 +9,22 @@ Route::inertia('/privacy-policy', 'privacy-policy')->name('privacy');
 Route::inertia('/terms-and-conditions', 'terms-and-conditions')->name('terms');
 
 Route::prefix('media')->name('media.')->group(function () {
-    Route::get('/preview/{id}', function (string $id) {
-        // $media = Media::findOrFail($id);
+	Route::get('/preview/{id}', function (string $id) {
+		// $media = Media::findOrFail($id);
 
-        // return $media->getPath();
-    })->name('preview');
+		// return $media->getPath();
+	})->name('preview');
 
-    Route::get('/download/{id}', function (string $id) {
-        // $media = Media::findOrFail($id);
+	Route::get('/download/{id}', function (string $id) {
+		// $media = Media::findOrFail($id);
 
-        // return response()->download($media->getPath(), $media->file_name);
-    })->name('download');
+		// return response()->download($media->getPath(), $media->file_name);
+	})->name('download');
 
-    Route::delete('{id}', function (string $id) {
-        // $media = Media::findOrFail($id);
-        // $media->delete();
-    })->name('destroy');
+	Route::delete('{id}', function (string $id) {
+		// $media = Media::findOrFail($id);
+		// $media->delete();
+	})->name('destroy');
 });
 
 require __DIR__.'/settings.php';

@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('settings/services', ServiceController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->names('services');
+    Route::inertia('notifications', 'settings/notification')->name('notification.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
