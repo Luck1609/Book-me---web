@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CheckCheck, Inbox } from 'lucide-react';
+import { Bell, CheckCheck, Inbox, Moon, Sun } from 'lucide-react';
 import { AppContent } from '@/components/app-content';
 import AppLogo from '@/components/app-logo';
 import { AppShell } from '@/components/app-shell';
@@ -24,6 +24,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { NoticeProvider } from '@/contexts/notice-context';
+import { useAppearance } from '@/hooks/use-appearance';
 import { mainNavItems } from '@/lib/data';
 import { dashboard } from '@/routes';
 import notifications from '@/routes/notifications';
@@ -62,6 +63,29 @@ function notificationDate(createdAt: string): string {
     month: 'short',
     day: 'numeric',
   }).format(new Date(createdAt));
+}
+
+function ThemeToggle() {
+  const { resolvedAppearance, updateAppearance } = useAppearance();
+  const isDark = resolvedAppearance === 'dark';
+  const nextAppearance = isDark ? 'light' : 'dark';
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => updateAppearance(nextAppearance)}
+      aria-label={`Switch to ${nextAppearance} mode`}
+      title={`Switch to ${nextAppearance} mode`}
+      className="size-9 rounded-xl text-[#41645a] hover:bg-[#e9f8f0] hover:text-[#0f8a62] dark:text-[#c4d8d1] dark:hover:bg-[#0f8a62]/15 dark:hover:text-[#8fe0bb]"
+    >
+      {isDark ? (
+        <Sun aria-hidden="true" className="size-[18px]" />
+      ) : (
+        <Moon aria-hidden="true" className="size-[18px]" />
+      )}
+    </Button>
+  );
 }
 
 function NotificationPanel() {
@@ -213,7 +237,12 @@ export default function AppLayout({
               <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
 
-            <NotificationPanel />
+            <div className="flex gap-3">
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
+                <NotificationPanel />
+              </div>
+            </div>
           </header>
 
           {children}

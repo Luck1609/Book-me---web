@@ -4,7 +4,7 @@ export function AppLogo() {
   return (
     <div className="flex items-center gap-2.5">
       <AppLogoIcon />
-      <span className="text-[1.15rem] font-bold tracking-[-0.04em] text-[#162d35]">
+      <span className="text-[1.15rem] font-bold tracking-[-0.04em] text-[#162d35] dark:text-white">
         Book<span className="text-[#0f8a62]">Me</span>
       </span>
     </div>
