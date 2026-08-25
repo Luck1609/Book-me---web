@@ -4,7 +4,6 @@ import { useMobileNavigation } from './use-mobile-navigation';
 
 const useHelper = () => {
     const cleanup = useMobileNavigation();
-    const { auth: { user } } = usePage().props
 
     const handleLogout = () => {
         cleanup();

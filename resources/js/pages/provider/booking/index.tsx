@@ -8,17 +8,14 @@ import {
   ChevronRight,
   Clock3,
   Filter,
-  Plus,
   Search,
   Sparkles,
   Users,
   XCircle,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useNotice } from '@/contexts/notice-context';
+import { OpenBookingForm } from '@/components/form/components/booking-form';
 import booking from '@/routes/booking';
-import BookingForm, { OpenBookingForm } from '@/components/form/components/booking-form';
-import { Button } from '@/components/ui/button';
 
 type BookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
 
@@ -189,7 +186,6 @@ export default function BookingIndex({
     'all',
   );
   const [search, setSearch] = useState('');
-  const { show } = useNotice();
 
 
   const visibleBookings = useMemo(() => {

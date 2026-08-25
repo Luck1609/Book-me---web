@@ -1,15 +1,15 @@
 import { useForm } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 import type { FormEvent } from 'react';
 
 import { Input } from '@/components/form/input';
 import { Select } from '@/components/form/select';
 import SubmitButton from '@/components/form/submit-button';
+import { Textarea } from '@/components/form/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useNotice } from '@/contexts/notice-context';
-import { show, store } from '@/routes/booking';
-import { Textarea } from '@/components/form/textarea';
-import { Plus } from 'lucide-react';
+import { store } from '@/routes/booking';
 
 type BookingFormData = {
   client_name: string;
@@ -43,9 +43,6 @@ const durationOptions = [
   { label: '90 minutes', value: '90' },
 ];
 
-function FieldError({ message }: { message?: string }) {
-  return message ? <p className="text-sm text-red-500">{message}</p> : null;
-}
 
 export default function BookingForm() {
   const { hide } = useNotice();

@@ -33,7 +33,9 @@ export default function RichEditor<T extends object>({ name, form, className }: 
   });
 
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) {
+return;
+}
 
     const incomingContent = initialContent || '';
 

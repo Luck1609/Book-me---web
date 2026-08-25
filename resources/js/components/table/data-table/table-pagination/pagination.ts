@@ -19,10 +19,12 @@ export function pagination(currentPage: number, tableLength: number): (number | 
         rangeWithDots = [...rangeWithDots, "..."]
 			}
 		}
+
 		rangeWithDots = [...rangeWithDots, page]
     last = page;
     
     return rangeWithDots
   }, [])
+
 	return paginatedResult;
 }
