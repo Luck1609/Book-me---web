@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 
 export type * from './auth';
 export type * from './navigation';
+export type * from './notifications';
 export type * from './ui';
-
 
 export type Media = {
   id: string;
@@ -11,11 +11,10 @@ export type Media = {
   size: string;
   type: string;
   url: string;
-}
-
+};
 
 export type SelectOptions = {
   label: ReactNode;
   value: string;
-  description?: string
-}
+  description?: string;
+};

@@ -19,7 +19,11 @@ createInertiaApp({
         return AuthLayout;
       case name.startsWith('settings/'):
         return [AppLayout, SettingsLayout];
-      case name.startsWith('client/') || name.startsWith('provider/'):
+      case name.startsWith('notifications/'):
+        return AppLayout;
+      case name.startsWith('client/') ||
+        name.startsWith('provider/') ||
+        name.startsWith('user/'):
         return AppLayout;
       default:
         return GuestLayout;
