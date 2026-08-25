@@ -1,4 +1,4 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
   ArrowUpRight,
   Bell,
@@ -15,7 +15,10 @@ import {
   WalletCards,
 } from 'lucide-react';
 import { OpenBookingForm } from '@/components/form/components/booking-form';
+import { OpenTimeBlockForm } from '@/components/form/components/time-block-form';
 import { Button } from '@/components/ui/button';
+import notifications from '@/routes/notifications';
+import schedule from '@/routes/schedule';
 import type { User } from '@/types';
 
 type DashboardAppointment = {
@@ -66,6 +69,7 @@ type PageProps = {
     change_percentage: number;
     days: DashboardDay[];
   };
+  unreadNotificationCount?: number;
 };
 
 function getInitials(name: string): string {
@@ -117,7 +121,15 @@ function formatDateRange(startDate: string, endDate: string): string {
 }
 
 export default function Dashboard() {
-  const { auth, date, metrics, today, profile, weekly_revenue } =
+  const {
+    auth,
+    date,
+    metrics,
+    today,
+    profile,
+    weekly_revenue,
+    unreadNotificationCount = 0,
+  } =
     usePage<PageProps>().props;
   const firstName = auth.user.name.split(' ')[0] || 'there';
 
@@ -264,13 +276,13 @@ export default function Dashboard() {
                       : ` · Your next appointment is in ${today.next_appointment_in_minutes} min`}
                   </p>
                 </div>
-                <button
-                  type="button"
+                <Link
+                  href={schedule.index.url()}
                   className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-[#0f8a62] transition hover:text-[#0b6549] dark:text-[#8fe0bb]"
                 >
                   View calendar{' '}
                   <ArrowUpRight aria-hidden="true" className="size-4" />
-                </button>
+                </Link>
               </div>
 
               <div className="divide-y divide-[#e7f0ec] dark:divide-white/8">
@@ -332,13 +344,12 @@ export default function Dashboard() {
               </div>
 
               <div className="border-t border-[#e7f0ec] px-5 py-4 dark:border-white/8">
-                <button
-                  type="button"
+                <OpenTimeBlockForm
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#b9d5ca] py-3 text-sm font-bold text-[#0f8a62] transition hover:bg-[#f4fbf7] dark:border-[#376452] dark:text-[#8fe0bb] dark:hover:bg-[#0f8a62]/10"
                 >
                   <Plus aria-hidden="true" className="size-4" />
                   Add time block
-                </button>
+                </OpenTimeBlockForm>
               </div>
             </section>
 
@@ -466,8 +477,8 @@ export default function Dashboard() {
           </div>
 
           <section className="grid gap-4 sm:grid-cols-3">
-            <button
-              type="button"
+            <Link
+              href={schedule.index.url()}
               className="group flex items-center gap-4 rounded-2xl border border-[#dceae4] bg-white p-4 text-left shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#17221f]"
             >
               <span className="flex size-10 items-center justify-center rounded-xl bg-[#edf7fb] text-[#2d6980] dark:bg-[#2d6980]/15 dark:text-[#8ac5d7]">
@@ -485,9 +496,9 @@ export default function Dashboard() {
                 aria-hidden="true"
                 className="size-4 text-[#9ab2aa] transition group-hover:translate-x-0.5"
               />
-            </button>
-            <button
-              type="button"
+            </Link>
+            <Link
+              href={notifications.index.url()}
               className="group flex items-center gap-4 rounded-2xl border border-[#dceae4] bg-white p-4 text-left shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#17221f]"
             >
               <span className="flex size-10 items-center justify-center rounded-xl bg-[#fff4eb] text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]">
@@ -498,16 +509,18 @@ export default function Dashboard() {
                   Review notifications
                 </span>
                 <span className="mt-0.5 block text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                  2 reminders need your attention
+                  {unreadNotificationCount} {unreadNotificationCount === 1 ? 'notification' : 'notifications'} need your attention
                 </span>
               </span>
               <ChevronRight
                 aria-hidden="true"
                 className="size-4 text-[#9ab2aa] transition group-hover:translate-x-0.5"
               />
-            </button>
-            <button
-              type="button"
+            </Link>
+            <OpenTimeBlockForm
+              initialType="time_off"
+              title="Block time off"
+              description="Protect personal time from new bookings."
               className="group flex items-center gap-4 rounded-2xl border border-[#dceae4] bg-white p-4 text-left shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#17221f]"
             >
               <span className="flex size-10 items-center justify-center rounded-xl bg-[#f3f0ff] text-[#685bb4] dark:bg-[#806edc]/15 dark:text-[#c0b8ec]">
@@ -525,7 +538,7 @@ export default function Dashboard() {
                 aria-hidden="true"
                 className="size-4 text-[#9ab2aa] transition group-hover:translate-x-0.5"
               />
-            </button>
+            </OpenTimeBlockForm>
           </section>
         </div>
       </div>
