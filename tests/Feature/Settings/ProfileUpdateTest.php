@@ -4,13 +4,14 @@ namespace Tests\Feature\Settings;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class ProfileUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed()
+    public function test_profile_page_is_displayed(): void
     {
         $user = User::factory()->create();
 
@@ -21,7 +22,7 @@ class ProfileUpdateTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_profile_information_can_be_updated()
+    public function test_profile_information_can_be_updated(): void
     {
         $user = User::factory()->create();
 
@@ -43,7 +44,47 @@ class ProfileUpdateTest extends TestCase
         $this->assertNull($user->email_verified_at);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged()
+    public function test_profile_avatar_can_be_updated(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => UploadedFile::fake()->image('avatar.png'),
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $this->assertCount(1, $user->refresh()->getMedia('avatar'));
+        $this->assertNotNull($user->avatar);
+    }
+
+    public function test_profile_avatar_must_be_an_image(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('profile.edit'))
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => UploadedFile::fake()->create('avatar.pdf', 100, 'application/pdf'),
+            ]);
+
+        $response
+            ->assertSessionHasErrors('avatar')
+            ->assertRedirect(route('profile.edit'));
+
+        $this->assertCount(0, $user->refresh()->getMedia('avatar'));
+    }
+
+    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
         $user = User::factory()->create();
 
@@ -61,7 +102,7 @@ class ProfileUpdateTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
-    public function test_user_can_delete_their_account()
+    public function test_user_can_delete_their_account(): void
     {
         $user = User::factory()->create();
 
@@ -79,7 +120,7 @@ class ProfileUpdateTest extends TestCase
         $this->assertNull($user->fresh());
     }
 
-    public function test_correct_password_must_be_provided_to_delete_account()
+    public function test_correct_password_must_be_provided_to_delete_account(): void
     {
         $user = User::factory()->create();
 

@@ -299,3 +299,5 @@ const Form = ({
     </motion.div>
   );
 };
+
+export { Form as ServiceFields };
