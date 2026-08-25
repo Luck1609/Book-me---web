@@ -7,8 +7,9 @@ import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useNotice } from '@/contexts/notice-context';
-import { store } from '@/routes/booking';
+import { show, store } from '@/routes/booking';
 import { Textarea } from '@/components/form/textarea';
+import { Plus } from 'lucide-react';
 
 type BookingFormData = {
   client_name: string;
@@ -145,5 +146,30 @@ export default function BookingForm() {
         />
       </div>
     </form>
-  );
+    );
 }
+
+
+export const OpenBookingForm = () => {
+  const { show } = useNotice();
+
+  const handleShow = () => {
+    show({
+      type: 'modal',
+      title: 'Create a new booking',
+      description: 'Add a client appointment to your schedule.',
+      modalType: 'default',
+      classNames: {
+        content: 'sm:max-w-2xl',
+      },
+      content: <BookingForm />,
+    });
+  }
+
+  return (
+    <Button onClick={handleShow}>
+      <Plus aria-hidden="true" />
+      New booking
+    </Button>
+    )
+};

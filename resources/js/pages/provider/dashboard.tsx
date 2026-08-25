@@ -15,6 +15,8 @@ import {
   WalletCards,
 } from 'lucide-react';
 import type { User } from '@/types';
+import BookingForm, { OpenBookingForm } from '@/components/form/components/booking-form';
+import { Button } from '@/components/ui/button';
 
 type PageProps = {
   auth: {
@@ -111,6 +113,20 @@ export default function Dashboard() {
   const { auth } = usePage<PageProps>().props;
   const firstName = auth.user.name.split(' ')[0] || 'there';
 
+
+  const openBookingForm = () => {
+    show({
+      type: 'modal',
+      title: 'Create a new booking',
+      description: 'Add a client appointment to your schedule.',
+      modalType: 'default',
+      classNames: {
+        content: 'sm:max-w-2xl',
+      },
+      content: <BookingForm />,
+    });
+  };
+
   return (
     <>
       <Head title="Provider dashboard" />
@@ -146,20 +162,14 @@ export default function Dashboard() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0f8a62] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#0f8a62]/20 transition hover:bg-[#0d7955] focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
-                >
-                  <Plus aria-hidden="true" className="size-4" />
-                  New booking
-                </button>
-                <button
-                  type="button"
+                <OpenBookingForm />
+                <Button
+                  // variant=""
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
                 >
                   <Share2 aria-hidden="true" className="size-4" />
                   Share profile
-                </button>
+                </Button>
               </div>
             </div>
           </section>

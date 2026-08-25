@@ -17,7 +17,8 @@ import {
 import { useMemo, useState } from 'react';
 import { useNotice } from '@/contexts/notice-context';
 import booking from '@/routes/booking';
-import BookingForm from './form';
+import BookingForm, { OpenBookingForm } from '@/components/form/components/booking-form';
+import { Button } from '@/components/ui/button';
 
 type BookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
 
@@ -190,18 +191,6 @@ export default function BookingIndex({
   const [search, setSearch] = useState('');
   const { show } = useNotice();
 
-  const openBookingForm = () => {
-    show({
-      type: 'modal',
-      title: 'Create a new booking',
-      description: 'Add a client appointment to your schedule.',
-      modalType: 'default',
-      classNames: {
-        content: 'sm:max-w-2xl',
-      },
-      content: <BookingForm />,
-    });
-  };
 
   const visibleBookings = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -250,14 +239,7 @@ export default function BookingIndex({
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={openBookingForm}
-              className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#0f8a62] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#0f8a62]/20 transition hover:bg-[#0d7955] focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
-            >
-              <Plus aria-hidden="true" className="size-4" />
-              New booking
-            </button>
+            <OpenBookingForm />
           </section>
 
           <section
