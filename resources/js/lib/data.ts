@@ -1,4 +1,5 @@
 import {
+  CalendarCheck,
   CalendarRange,
   ChartNoAxesCombined,
   ContactRound,
@@ -10,6 +11,7 @@ import booking from '@/routes/booking';
 import client from '@/routes/client';
 import team from '@/routes/team';
 import type { NavItem } from '@/types';
+import schedule from '@/routes/schedule';
 
 export const mainNavItems: NavItem[] = [
   {
@@ -18,14 +20,19 @@ export const mainNavItems: NavItem[] = [
     icon: LayoutGrid,
   },
   {
-    title: 'Booking',
+    title: 'Bookings',
     href: booking.index.url(),
     icon: CalendarRange,
   },
   {
-    title: 'Client',
+    title: 'Clients',
     href: client.index.url(),
     icon: ContactRound,
+  },
+  {
+    title: 'Schedules',
+    href: schedule.index.url(),
+    icon: CalendarCheck,
   },
   {
     title: 'Team Management',

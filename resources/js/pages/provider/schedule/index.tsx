@@ -1,10 +1,20 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, CalendarDays, Clock3, Trash2 } from 'lucide-react';
+import { Form, Head, Link, router, usePage } from '@inertiajs/react';
+import {
+  ArrowLeft,
+  CalendarDays,
+  Check,
+  Clock3,
+  Save,
+  Trash2,
+} from 'lucide-react';
+import { Fragment, useState } from 'react';
 import { OpenTimeBlockForm } from '@/components/form/components/time-block-form';
 import { Button } from '@/components/ui/button';
 import { useNotice } from '@/contexts/notice-context';
 import { dashboard } from '@/routes';
 import availabilityBlocks from '@/routes/availability-blocks';
+import businessHoursRoutes from '@/routes/business-hours';
+import BusinessHourEditor from './form/business-hour-editor';
 
 type BusinessHour = {
   id: string;
@@ -35,21 +45,19 @@ type SchedulePageProps = {
   bookings: Booking[];
 };
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-function formatTime(value: string | null): string {
-  if (!value) {
-    return '—';
-  }
+const days = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
-  const [hours, minutes] = value.split(':').map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-
-  return new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(date);
+function inputTime(value: string | null): string {
+  return value?.slice(0, 5) ?? '';
 }
 
 function formatDateTime(value: string): string {
@@ -62,7 +70,82 @@ function formatDateTime(value: string): string {
   }).format(new Date(value));
 }
 
+function BusinessHourEditorLocal({ hour }: { hour: BusinessHour }) {
+  const [isClosed, setIsClosed] = useState(hour.is_closed);
+  const day = days[hour.day_of_week] ?? 'Day';
+
+  return (
+    <Form
+      {...businessHoursRoutes.update.form(hour.id)}
+      options={{ preserveScroll: true }}
+      className="border-b border-[#e7f0ec] py-4 last:border-b-0 dark:border-white/8"
+    >
+      {({ errors, processing, recentlySuccessful }) => (
+        <div className="grid gap-4 lg:grid-cols-[minmax(9rem,1fr)_minmax(16rem,2fr)_auto] lg:items-end">
+          <div>
+            <p className="font-semibold">{day}</p>
+            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 text-xs text-[#70908a] dark:text-[#9cb8b1]">
+              <input
+                type="checkbox"
+                name="is_closed"
+                value="1"
+                checked={isClosed}
+                onChange={(event) => setIsClosed(event.target.checked)}
+                className="size-4 rounded border-[#b7d1c5] accent-[#0f8a62]"
+              />
+              Closed
+            </label>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-xs font-medium text-[#70908a] dark:text-[#9cb8b1]">
+              Opens at
+              <input
+                name="opens_at"
+                type="time"
+                defaultValue={inputTime(hour.opens_at)}
+                disabled={isClosed}
+                className="h-10 rounded-xl border border-[#dfe9e3] bg-[#fbfcfa] px-3 text-sm text-[#17343c] transition outline-none focus:border-[#76c9a5] focus:ring-4 focus:ring-[#e3f6ee] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-[#e6f1ed]"
+              />
+              {errors.opens_at && (
+                <span className="text-xs text-red-500">{errors.opens_at}</span>
+              )}
+            </label>
+            <label className="grid gap-1.5 text-xs font-medium text-[#70908a] dark:text-[#9cb8b1]">
+              Closes at
+              <input
+                name="closes_at"
+                type="time"
+                defaultValue={inputTime(hour.closes_at)}
+                disabled={isClosed}
+                className="h-10 rounded-xl border border-[#dfe9e3] bg-[#fbfcfa] px-3 text-sm text-[#17343c] transition outline-none focus:border-[#76c9a5] focus:ring-4 focus:ring-[#e3f6ee] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-[#e6f1ed]"
+              />
+              {errors.closes_at && (
+                <span className="text-xs text-red-500">{errors.closes_at}</span>
+              )}
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2 lg:justify-end">
+            <Button type="submit" size="sm" disabled={processing}>
+              <Save aria-hidden="true" className="size-4" />
+              {processing ? 'Saving…' : 'Save'}
+            </Button>
+            {recentlySuccessful && (
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0f8a62]">
+                <Check aria-hidden="true" className="size-3.5" />
+                Saved
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </Form>
+  );
+}
+
 export default function Schedule() {
+  const [currentField, setCurrentField] = useState<number | null>(null)
   const { businessHours, blocks, bookings } =
     usePage<SchedulePageProps>().props;
   const { show } = useNotice();
@@ -81,6 +164,11 @@ export default function Schedule() {
     });
   };
 
+  const handleToggle = (index?: number) => {
+    console.log('Toggled index', index)
+    setCurrentField(index ?? null)
+  }
+console.log('Business hours', businessHours)
   return (
     <>
       <Head title="Provider calendar" />
@@ -103,7 +191,8 @@ export default function Schedule() {
                 Manage availability
               </h1>
               <p className="mt-2 max-w-xl text-sm text-[#b8c9c7]">
-                Review your working hours, upcoming bookings, and protected time.
+                Review your working hours, upcoming bookings, and protected
+                time.
               </p>
             </div>
             <OpenTimeBlockForm />
@@ -123,16 +212,18 @@ export default function Schedule() {
                 </div>
               </div>
               <div className="mt-5 divide-y divide-[#e7f0ec] dark:divide-white/8">
-                {businessHours.map((hour) => (
-                  <div key={hour.id} className="flex items-center justify-between py-3 text-sm">
-                    <span className="font-semibold">{days[hour.day_of_week] ?? 'Day'}</span>
-                    <span className="text-[#70908a] dark:text-[#9cb8b1]">
-                      {hour.is_closed
-                        ? 'Closed'
-                        : formatTime(hour.opens_at) + ' – ' + formatTime(hour.closes_at)}
-                    </span>
-                  </div>
-                ))}
+                {
+                  businessHours.map((hour, index) => (
+                    <div className="py-2" key={hour.id}>
+                      <BusinessHourEditor
+                        hour={hour}
+                        edit={currentField === index}
+                        toggle={handleToggle}
+                        index={index}
+                      />
+                    </div>
+                  ))
+                }
                 {businessHours.length === 0 && (
                   <p className="py-4 text-sm text-[#70908a] dark:text-[#9cb8b1]">
                     No working hours have been configured yet.
@@ -164,7 +255,9 @@ export default function Schedule() {
                         {block.type === 'time_off' ? 'Time off' : 'Break'}
                       </p>
                       <p className="mt-1 text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                        {formatDateTime(block.starts_at) + ' – ' + formatDateTime(block.ends_at)}
+                        {formatDateTime(block.starts_at) +
+                          ' – ' +
+                          formatDateTime(block.ends_at)}
                       </p>
                       {block.reason && (
                         <p className="mt-1 text-xs text-[#70908a] dark:text-[#9cb8b1]">
@@ -206,8 +299,13 @@ export default function Schedule() {
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {bookings.map((booking) => (
-                <div key={booking.id} className="rounded-xl border border-[#e7f0ec] p-4 dark:border-white/8">
-                  <p className="text-sm font-bold">{booking.service?.name ?? 'Appointment'}</p>
+                <div
+                  key={booking.id}
+                  className="rounded-xl border border-[#e7f0ec] p-4 dark:border-white/8"
+                >
+                  <p className="text-sm font-bold">
+                    {booking.service?.name ?? 'Appointment'}
+                  </p>
                   <p className="mt-1 text-xs text-[#70908a] dark:text-[#9cb8b1]">
                     {booking.user?.name ?? 'Client'}
                   </p>

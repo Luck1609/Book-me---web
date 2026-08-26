@@ -68,7 +68,7 @@ export function Input<T extends object>({ classNames, label, name, form, icons, 
       {
         label ?
           typeof (label) === "string"
-            ? <Label htmlFor={name} className={cn("font-medium", classNames?.label)}>{label}</Label>
+            ? <Label htmlFor={name} className={cn("font-medium font-medium text-xs text-[#70908a] dark:text-[#9cb8b1]", classNames?.label)}>{label}</Label>
             : label
           : null
       }

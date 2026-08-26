@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AvailabilityBlockController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BusinessHourController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TeamController;
+use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/onboarding', [OnboardingController::class, 'index'])
@@ -29,6 +31,8 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
 
     Route::resource('availability-blocks', AvailabilityBlockController::class)
         ->only(['store', 'destroy']);
+    Route::resource('business-hours', BusinessHourController::class)
+        ->only(['update'])->middleware([HandlePrecognitiveRequests::class]);
 
     Route::resource('booking', BookingController::class);
     Route::resource('client', ClientController::class);

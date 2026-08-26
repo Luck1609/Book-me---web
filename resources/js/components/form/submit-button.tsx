@@ -9,6 +9,7 @@ import type { buttonVariants } from '../ui/button'
 type Props<T extends object> = {
   label?: ReactNode;
   form: InertiaFormProps<T> | UseHttpPrecognitiveProps<T>
+  isIconButton?: boolean
 } & Omit<React.ComponentProps<"button">, "form"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
@@ -20,11 +21,18 @@ export default function SubmitButton<T extends object>({ form, label = "Submit",
       type="submit"
       disabled={form.processing}
       className={cn("flex items-center", props?.className)}
+      isIconButton={false}
       {...props}
     >
       {
         form.processing
-          ? <Loader />
+          ? props?.isIconButton
+            ? (
+                <svg viewBox="25 25 50 50" className="icon-loader">
+                  <circle r="20" cy="50" cx="50"></circle>
+                </svg>
+              )
+            : <Loader />
           : label
       }
     </Button>

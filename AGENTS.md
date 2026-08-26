@@ -50,7 +50,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Frontend Bundling
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `bun run build`, `bun run dev`, or `composer run dev`. Ask them.
 
 ## Documentation Files
 
@@ -173,7 +173,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Vite Error
 
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `bun run build` or ask the user to run `bun run dev` or `composer run dev`.
 
 === wayfinder/core rules ===
 
@@ -220,9 +220,9 @@ Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `
 
 This repository uses Bun exclusively for JavaScript dependencies and scripts.
 
-- Use `bun install`, never `npm install`
-- Use `bun add`, never `npm install <package>`
-- Use `bun run <script>`, never `npm run <script>`
+- Use `bun install`, never `bun install`
+- Use `bun add`, never `bun install <package>`
+- Use `bun run <script>`, never `bun run <script>`
 - Use `bunx`, never `npx`
 - Do not generate or modify `package-lock.json`
 - `bun.lock` is the authoritative JavaScript lockfile
@@ -236,3 +236,46 @@ bun run build
 bun add axios
 bun add -d prettier
 bunx shadcn@latest add button
+```
+
+
+This repository uses `useForm` together with the traditional html form tag.
+
+- Use the traditional html `form` instead of the `Form` component from inertia
+- Use `useForm` hook as the custom form components depends on it
+- Use form components from ./resources/js/components/form for any form that submits data to the backend
+- Forms should be used in addition to the `withPrecognition` option
+- Use the `SubmitButton` from ./resources/js/components/form/submit-button.tsx as the submit button for this type of form
+- The submit function for this form's name should be `handleSubmit`
+
+
+Examples
+
+```typescript
+import { useForm } from "@inertiajs/react";
+import { FormEvent } from "react";
+import { Input } from "@/components/form/input";
+import SubmitButton from "@/components/form/submit-button";
+
+const ExampleFormComponent = () => {
+  const form = useForm({
+    ...formFieldsHere
+  }).withPrecognition(endpoint)
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input name="name-goes-here" placeholder="placeholder goes here" form={form} />
+      ...otherFormComponents
+
+      <SubmitButton
+        label="submit button's label here"
+        form={form}
+      />
+    </form>
+  )
+}
+```
