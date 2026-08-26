@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
         ->only(['update'])->middleware([HandlePrecognitiveRequests::class]);
 
     Route::resource('booking', BookingController::class);
-    Route::resource('client', ClientController::class);
+    Route::resource('client', ClientController::class)
+        ->middleware([HandlePrecognitiveRequests::class]);
     Route::resource('team', TeamController::class);
 });
