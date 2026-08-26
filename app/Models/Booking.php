@@ -14,17 +14,32 @@ class Booking extends Model
 
     protected $keyType = 'string';
 
+    protected $attributes = [
+        'status' => self::STATUS_PENDING,
+    ];
+
     protected $fillable = [
         'user_id',
         'provider_profile_id',
         'service_id',
         'schedule',
+        'duration_minutes',
         'note',
+        'status',
     ];
 
     protected $casts = [
         'schedule' => 'datetime',
+        'duration_minutes' => 'integer',
     ];
+
+    public const STATUS_CONFIRMED = 'confirmed';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_COMPLETED = 'completed';
+
+    public const STATUS_CANCELLED = 'cancelled';
 
     /**
      * @return BelongsTo<User, $this>

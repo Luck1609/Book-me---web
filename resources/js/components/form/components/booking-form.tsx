@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
+import { useEffect } from 'react';
 import type { FormEvent } from 'react';
 
 import { Input } from '@/components/form/input';
@@ -14,47 +15,82 @@ import { store } from '@/routes/booking';
 type BookingFormData = {
   client_name: string;
   client_email: string;
-  service: string;
-  duration: string;
+  service_id: string;
+  duration_minutes: string;
   date: string;
   time: string;
   notes: string;
 };
 
-const serviceOptions = [
-  {
-    label: 'Traditional Hot Towel Shave',
-    value: 'Traditional Hot Towel Shave',
-  },
-  { label: 'Style Consultation & Trim', value: 'Style Consultation & Trim' },
-  {
-    label: 'Beard Sculpting & Oil Treatment',
-    value: 'Beard Sculpting & Oil Treatment',
-  },
-  { label: 'Signature Fade & Lineup', value: 'Signature Fade & Lineup' },
-  { label: 'Premium Cut & Finish', value: 'Premium Cut & Finish' },
-];
+export type BookingService = {
+  id: string;
+  name: string;
+  price: number;
+  min_duration_minutes: number;
+  max_duration_minutes: number;
+};
 
-const durationOptions = [
-  { label: '30 minutes', value: '30' },
-  { label: '45 minutes', value: '45' },
-  { label: '60 minutes', value: '60' },
-  { label: '75 minutes', value: '75' },
-  { label: '90 minutes', value: '90' },
-];
+type BookingFormProps = {
+  services?: BookingService[];
+};
 
-
-export default function BookingForm() {
+export default function BookingForm({ services = [] }: BookingFormProps) {
   const { hide } = useNotice();
   const form = useForm<BookingFormData>({
     client_name: '',
     client_email: '',
-    service: '',
-    duration: '60',
+    service_id: '',
+    duration_minutes: '',
     date: '',
     time: '',
     notes: '',
-  });
+  }).withPrecognition(store());
+
+  const selectedService = services.find(
+    (service) => service.id === form.data.service_id,
+  );
+  const durationOptions = selectedService
+    ? Array.from(
+        {
+          length:
+            Math.ceil(
+              (selectedService.max_duration_minutes -
+                selectedService.min_duration_minutes) /
+                15,
+            ) + 1,
+        },
+        (_, index) =>
+          Math.min(
+            selectedService.min_duration_minutes + index * 15,
+            selectedService.max_duration_minutes,
+          ),
+      )
+        .filter(
+          (minutes, index, durations) => durations.indexOf(minutes) === index,
+        )
+        .map((minutes) => ({
+          label: `${minutes} minutes`,
+          value: String(minutes),
+        }))
+    : [];
+
+  useEffect(() => {
+    if (!selectedService) {
+      return;
+    }
+
+    const currentDuration = Number(form.data.duration_minutes);
+    const durationIsValid =
+      currentDuration >= selectedService.min_duration_minutes &&
+      currentDuration <= selectedService.max_duration_minutes;
+
+    if (!durationIsValid) {
+      form.setData(
+        'duration_minutes',
+        String(selectedService.min_duration_minutes),
+      );
+    }
+  }, [form, form.data.duration_minutes, selectedService]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -92,14 +128,19 @@ export default function BookingForm() {
 
       <div className="grid gap-5 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">
         <Select
-          name="service"
+          name="service_id"
           label="Service"
-          placeholder="Choose a service"
-          options={serviceOptions}
+          placeholder={
+            services.length > 0 ? 'Choose a service' : 'Add a service first'
+          }
+          options={services.map((service) => ({
+            label: service.name,
+            value: service.id,
+          }))}
           form={form}
         />
         <Select
-          name="duration"
+          name="duration_minutes"
           label="Duration"
           options={durationOptions}
           form={form}
@@ -123,7 +164,9 @@ export default function BookingForm() {
           label={
             <Label htmlFor="notes">
               Notes{' '}
-              <span className="font-normal text-muted-foreground">(optional)</span>
+              <span className="font-normal text-muted-foreground">
+                (optional)
+              </span>
             </Label>
           }
           placeholder="Add anything you or the client should remember."
@@ -139,15 +182,14 @@ export default function BookingForm() {
         <SubmitButton
           form={form}
           label="Create booking"
-          className="rounded-xl bg-[#0f8a62] text-white hover:bg-[#0d7955]"
+          disabled={services.length === 0}
         />
       </div>
     </form>
-    );
+  );
 }
 
-
-export const OpenBookingForm = () => {
+export const OpenBookingForm = ({ services = [] }: BookingFormProps) => {
   const { show } = useNotice();
 
   const handleShow = () => {
@@ -159,14 +201,14 @@ export const OpenBookingForm = () => {
       classNames: {
         content: 'sm:max-w-2xl',
       },
-      content: <BookingForm />,
+      content: <BookingForm services={services} />,
     });
-  }
+  };
 
   return (
     <Button onClick={handleShow}>
       <Plus aria-hidden="true" />
       New booking
     </Button>
-    )
+  );
 };

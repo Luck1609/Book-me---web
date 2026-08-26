@@ -32,29 +32,13 @@ type BookingDetails = {
   time: string;
   duration: string;
   amount: string;
-  status: 'Confirmed' | 'Pending' | 'Completed';
+  status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
   statusMessage: string;
   note: string;
 };
 
 type BookingShowProps = {
-  booking?: BookingDetails;
-};
-
-const sampleBooking: BookingDetails = {
-  id: 'BK-240824',
-  client: 'John Doe',
-  initials: 'JD',
-  email: 'john.doe@example.com',
-  phone: '+1 (212) 555-0184',
-  service: 'Traditional Hot Towel Shave',
-  date: 'Tuesday, August 24, 2026',
-  time: '10:00 AM – 11:00 AM',
-  duration: '60 minutes',
-  amount: '$85.00',
-  status: 'Confirmed',
-  statusMessage: 'Client confirmed this appointment yesterday',
-  note: 'Looking for a clean, classic finish before an evening event. Please use the sandalwood oil finish if available.',
+  booking: BookingDetails;
 };
 
 function DetailRow({
@@ -84,19 +68,20 @@ function DetailRow({
 }
 
 function BookingStatus({ status }: { status: BookingDetails['status'] }) {
-  const isPending = status === 'Pending';
-  const isCompleted = status === 'Completed';
+  const isPending = status === 'pending';
+  const isCompleted = status === 'completed';
+  const isCancelled = status === 'cancelled';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${isPending ? 'bg-[#fff4eb] text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]' : isCompleted ? 'bg-[#edf4f0] text-[#5d8073] dark:bg-[#5d8073]/15 dark:text-[#a9c9bd]' : 'bg-[#e9f8f0] text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]'}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${isPending ? 'bg-[#fff4eb] text-[#a55c2d] dark:bg-[#a55c2d]/15 dark:text-[#f0b58b]' : isCompleted ? 'bg-[#edf4f0] text-[#5d8073] dark:bg-[#5d8073]/15 dark:text-[#a9c9bd]' : isCancelled ? 'bg-[#f8edf0] text-[#96546a] dark:bg-[#96546a]/15 dark:text-[#dea8b8]' : 'bg-[#e9f8f0] text-[#0f8a62] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]'}`}
     >
       {isPending ? (
         <Clock3 aria-hidden="true" className="size-3.5" />
       ) : (
         <CheckCircle2 aria-hidden="true" className="size-3.5" />
       )}
-      {status}
+      {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
 }
@@ -104,7 +89,7 @@ function BookingStatus({ status }: { status: BookingDetails['status'] }) {
 export default function BookingShow({
   booking: providedBooking,
 }: BookingShowProps) {
-  const currentBooking = providedBooking ?? sampleBooking;
+  const currentBooking = providedBooking;
 
   return (
     <>

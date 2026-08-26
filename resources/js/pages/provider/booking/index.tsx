@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
   ArrowDownUp,
   ArrowUpRight,
@@ -13,14 +13,16 @@ import {
   Users,
   XCircle,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { OpenBookingForm } from '@/components/form/components/booking-form';
+import type { BookingService } from '@/components/form/components/booking-form';
 import booking from '@/routes/booking';
 
 type BookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
 
 type BookingRecord = {
   id: string;
+  reference: string;
   client: string;
   initials: string;
   clientMeta: string;
@@ -30,100 +32,58 @@ type BookingRecord = {
   duration: string;
   amount: string;
   status: BookingStatus;
-  tone: string;
+};
+
+type BookingPaginator = {
+  data: BookingRecord[];
+  current_page: number;
+  last_page: number;
+  from: number | null;
+  to: number | null;
+  total: number;
+  links: { url: string | null; label: string; active: boolean }[];
 };
 
 type BookingPageProps = {
-  bookings?: BookingRecord[];
+  bookings: BookingPaginator;
+  services: BookingService[];
+  stats: {
+    total: number;
+    confirmed: number;
+    pending: number;
+    completed_this_month: number;
+  };
+  filters: {
+    search: string;
+    status: 'all' | BookingStatus;
+    service: string;
+    sort: 'newest' | 'oldest';
+  };
 };
-
-const sampleBookings: BookingRecord[] = [
-  {
-    id: 'BK-240824',
-    client: 'John Doe',
-    initials: 'JD',
-    clientMeta: 'Returning client · 8 visits',
-    service: 'Traditional Hot Towel Shave',
-    date: 'Today',
-    time: '10:00 AM',
-    duration: '60 min',
-    amount: '$85.00',
-    status: 'confirmed',
-    tone: 'bg-[#e6e1ff] text-[#594e9e]',
-  },
-  {
-    id: 'BK-240825',
-    client: 'Sarah Williams',
-    initials: 'SW',
-    clientMeta: 'New client · First visit',
-    service: 'Style Consultation & Trim',
-    date: 'Today',
-    time: '11:30 AM',
-    duration: '45 min',
-    amount: '$55.00',
-    status: 'pending',
-    tone: 'bg-[#ffead9] text-[#a55c2d]',
-  },
-  {
-    id: 'BK-240826',
-    client: 'Robert Chen',
-    initials: 'RC',
-    clientMeta: 'Regular client · 12 visits',
-    service: 'Beard Sculpting & Oil Treatment',
-    date: 'Today',
-    time: '01:00 PM',
-    duration: '60 min',
-    amount: '$70.00',
-    status: 'confirmed',
-    tone: 'bg-[#dcecf5] text-[#2d6980]',
-  },
-  {
-    id: 'BK-240827',
-    client: 'Elena Rodriguez',
-    initials: 'ER',
-    clientMeta: 'Returning client · 5 visits',
-    service: 'Signature Fade & Lineup',
-    date: 'Tomorrow',
-    time: '09:30 AM',
-    duration: '45 min',
-    amount: '$65.00',
-    status: 'confirmed',
-    tone: 'bg-[#d9f7e8] text-[#0f6b4d]',
-  },
-  {
-    id: 'BK-240828',
-    client: 'Marcus Thorne',
-    initials: 'MT',
-    clientMeta: 'Regular client · 24 visits',
-    service: 'Premium Cut & Finish',
-    date: 'Wednesday, Aug 26',
-    time: '02:00 PM',
-    duration: '75 min',
-    amount: '$120.00',
-    status: 'completed',
-    tone: 'bg-[#d9f7e8] text-[#0f6b4d]',
-  },
-  {
-    id: 'BK-240829',
-    client: 'Aisha Morgan',
-    initials: 'AM',
-    clientMeta: 'New client · First visit',
-    service: 'Consultation & Shape Up',
-    date: 'Thursday, Aug 27',
-    time: '04:30 PM',
-    duration: '30 min',
-    amount: '$40.00',
-    status: 'cancelled',
-    tone: 'bg-[#f2e8eb] text-[#96546a]',
-  },
-];
 
 const statusTabs: { label: string; value: 'all' | BookingStatus }[] = [
   { label: 'All bookings', value: 'all' },
   { label: 'Confirmed', value: 'confirmed' },
   { label: 'Pending', value: 'pending' },
   { label: 'Completed', value: 'completed' },
+  { label: 'Cancelled', value: 'cancelled' },
 ];
+
+function statusTone(status: BookingStatus): string {
+  if (status === 'pending') {
+    return 'bg-[#ffead9] text-[#a55c2d]';
+  }
+
+  if (status === 'completed') {
+    return 'bg-[#d9f7e8] text-[#0f6b4d]';
+  }
+
+  if (status === 'cancelled') {
+    return 'bg-[#f2e8eb] text-[#96546a]';
+  }
+
+  return 'bg-[#e6e1ff] text-[#594e9e]';
+}
 
 function statusDetails(status: BookingStatus): {
   label: string;
@@ -180,39 +140,61 @@ function BookingStatus({ status }: { status: BookingStatus }) {
 }
 
 export default function BookingIndex({
-  bookings = sampleBookings,
+  bookings,
+  services,
+  stats,
+  filters,
 }: BookingPageProps) {
   const [activeStatus, setActiveStatus] = useState<'all' | BookingStatus>(
-    'all',
+    filters.status,
   );
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(filters.search);
+  const [selectedService, setSelectedService] = useState(filters.service);
+  const [sort, setSort] = useState<'newest' | 'oldest'>(filters.sort);
+  const isInitialRender = useRef(true);
 
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
 
-  const visibleBookings = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
+      return;
+    }
 
-    return bookings.filter((item) => {
-      const matchesStatus =
-        activeStatus === 'all' || item.status === activeStatus;
-      const matchesSearch =
-        normalizedSearch.length === 0 ||
-        `${item.client} ${item.service} ${item.id}`
-          .toLowerCase()
-          .includes(normalizedSearch);
+    const timeout = window.setTimeout(() => {
+      const query: Record<string, string> = {};
 
-      return matchesStatus && matchesSearch;
-    });
-  }, [activeStatus, bookings, search]);
+      if (search.trim() !== '') {
+        query.search = search.trim();
+      }
 
-  const pendingCount = bookings.filter(
-    (item) => item.status === 'pending',
-  ).length;
-  const confirmedCount = bookings.filter(
-    (item) => item.status === 'confirmed',
-  ).length;
-  const completedCount = bookings.filter(
-    (item) => item.status === 'completed',
-  ).length;
+      if (activeStatus !== 'all') {
+        query.status = activeStatus;
+      }
+
+      if (selectedService !== '') {
+        query.service = selectedService;
+      }
+
+      if (sort !== 'newest') {
+        query.sort = sort;
+      }
+
+      router.visit(booking.index({ query }), {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+        only: ['bookings', 'stats', 'filters'],
+      });
+    }, 300);
+
+    return () => window.clearTimeout(timeout);
+  }, [activeStatus, search, selectedService, sort]);
+
+  const goToPage = (url: string | null) => {
+    if (url) {
+      router.visit(url, { preserveState: true, preserveScroll: true });
+    }
+  };
 
   return (
     <>
@@ -235,7 +217,7 @@ export default function BookingIndex({
               </p>
             </div>
 
-            <OpenBookingForm />
+            <OpenBookingForm services={services} />
           </section>
 
           <section
@@ -256,7 +238,7 @@ export default function BookingIndex({
                 Total bookings
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {bookings.length}
+                {stats.total}
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">
                 Across your current schedule
@@ -275,7 +257,7 @@ export default function BookingIndex({
                 Confirmed
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {confirmedCount}
+                {stats.confirmed}
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">Clients are all set</p>
             </div>
@@ -292,7 +274,7 @@ export default function BookingIndex({
                 Pending requests
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {pendingCount}
+                {stats.pending}
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">
                 Respond within 24 hours
@@ -312,7 +294,7 @@ export default function BookingIndex({
                 Completed this month
               </p>
               <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                {completedCount}
+                {stats.completed_this_month}
               </p>
               <p className="mt-1 text-xs text-[#91aaa2]">
                 A strong month so far
@@ -345,9 +327,9 @@ export default function BookingIndex({
                     className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition ${activeStatus === tab.value ? 'bg-[#17343c] text-white dark:bg-[#0f8a62]' : 'border border-[#dceae4] text-[#70908a] hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8'}`}
                   >
                     {tab.label}
-                    {tab.value === 'pending' && pendingCount > 0 && (
+                    {tab.value === 'pending' && stats.pending > 0 && (
                       <span className="ml-1.5 rounded-full bg-[#ffead9] px-1.5 py-0.5 text-[10px] text-[#a55c2d]">
-                        {pendingCount}
+                        {stats.pending}
                       </span>
                     )}
                   </button>
@@ -358,24 +340,37 @@ export default function BookingIndex({
             <div className="flex flex-col gap-3 border-b border-[#e7f0ec] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-white/8">
               <p className="text-sm text-[#70908a] dark:text-[#9cb8b1]">
                 <span className="font-bold text-[#17343c] dark:text-white">
-                  {visibleBookings.length}
+                  {bookings.data.length}
                 </span>{' '}
                 bookings shown
               </p>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#dceae4] px-3 py-2 text-xs font-bold text-[#70908a] transition hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8"
-                >
+                <label className="inline-flex items-center gap-2 rounded-lg border border-[#dceae4] px-3 py-2 text-xs font-bold text-[#70908a] transition hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8">
                   <Filter aria-hidden="true" className="size-3.5" />
-                  Filters
-                </button>
+                  <span className="sr-only">Filter by service</span>
+                  <select
+                    value={selectedService}
+                    onChange={(event) => setSelectedService(event.target.value)}
+                    className="bg-transparent outline-none"
+                    aria-label="Filter by service"
+                  >
+                    <option value="">All services</option>
+                    {services.map((service) => (
+                      <option key={service.id} value={service.id}>
+                        {service.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <button
                   type="button"
+                  onClick={() =>
+                    setSort(sort === 'newest' ? 'oldest' : 'newest')
+                  }
                   className="inline-flex items-center gap-2 rounded-lg border border-[#dceae4] px-3 py-2 text-xs font-bold text-[#70908a] transition hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#9cb8b1] dark:hover:bg-white/8"
                 >
                   <ArrowDownUp aria-hidden="true" className="size-3.5" />
-                  Newest first
+                  {sort === 'newest' ? 'Newest first' : 'Oldest first'}
                   <ChevronDown aria-hidden="true" className="size-3.5" />
                 </button>
               </div>
@@ -391,8 +386,8 @@ export default function BookingIndex({
             </div>
 
             <div className="divide-y divide-[#e7f0ec] dark:divide-white/8">
-              {visibleBookings.length > 0 ? (
-                visibleBookings.map((item) => (
+              {bookings.data.length > 0 ? (
+                bookings.data.map((item) => (
                   <Link
                     key={item.id}
                     href={booking.show.url(item.id)}
@@ -401,7 +396,7 @@ export default function BookingIndex({
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <span
-                        className={`flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${item.tone}`}
+                        className={`flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${statusTone(item.status)}`}
                       >
                         {item.initials}
                       </span>
@@ -419,7 +414,7 @@ export default function BookingIndex({
                         {item.service}
                       </p>
                       <p className="mt-0.5 text-xs text-[#91aaa2]">
-                        {item.id} · {item.duration}
+                        {item.reference} · {item.duration}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 pl-[52px] text-sm text-[#41645a] lg:pl-0 dark:text-[#c4d8d1]">
@@ -468,15 +463,22 @@ export default function BookingIndex({
 
             <div className="flex flex-col gap-3 border-t border-[#e7f0ec] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-white/8">
               <p className="text-xs text-[#91aaa2]">
-                Showing {visibleBookings.length} of {bookings.length} bookings
+                Showing {bookings.from ?? 0}–{bookings.to ?? 0} of{' '}
+                {bookings.total} bookings
               </p>
-              <button
-                type="button"
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#0f8a62] dark:text-[#8fe0bb]"
-              >
-                View booking history
-                <ArrowUpRight aria-hidden="true" className="size-3.5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {bookings.links.map((link, index) => (
+                  <button
+                    key={`${link.label}-${index}`}
+                    type="button"
+                    disabled={!link.url || link.active}
+                    onClick={() => goToPage(link.url)}
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-bold ${link.active ? 'bg-[#17343c] text-white dark:bg-[#0f8a62]' : 'text-[#70908a] hover:bg-[#f4fbf7] dark:text-[#9cb8b1] dark:hover:bg-white/8'} disabled:cursor-default disabled:opacity-50`}
+                  >
+                    {link.label.replace('&laquo;', '«').replace('&raquo;', '»')}
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
         </div>

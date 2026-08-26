@@ -49,6 +49,20 @@ class GetProviderDashboard
                 'appointments' => $todayBookings->map(fn (Booking $booking): array => $this->appointment($booking, $now))->values()->all(),
             ],
             'profile' => $this->profileCompletion($providerProfile),
+            'services' => $providerProfile->services()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get(['id', 'name', 'price', 'min_duration_minutes', 'max_duration_minutes'])
+                ->map(fn (Service $service): array => [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'price' => (float) $service->price,
+                    'min_duration_minutes' => $service->min_duration_minutes,
+                    'max_duration_minutes' => $service->max_duration_minutes,
+                ])
+                ->values()
+                ->all(),
             'weekly_revenue' => $this->weeklyRevenue($providerProfile, $weekStart, $weekEnd),
         ];
     }

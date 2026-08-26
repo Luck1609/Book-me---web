@@ -15,6 +15,7 @@ import {
   WalletCards,
 } from 'lucide-react';
 import { OpenBookingForm } from '@/components/form/components/booking-form';
+import type { BookingService } from '@/components/form/components/booking-form';
 import { OpenTimeBlockForm } from '@/components/form/components/time-block-form';
 import { Button } from '@/components/ui/button';
 import notifications from '@/routes/notifications';
@@ -62,6 +63,7 @@ type PageProps = {
     completion_percentage: number;
     checklist: { key: string; label: string; completed: boolean }[];
   };
+  services: BookingService[];
   weekly_revenue: {
     start_date: string;
     end_date: string;
@@ -127,10 +129,10 @@ export default function Dashboard() {
     metrics,
     today,
     profile,
+    services,
     weekly_revenue,
     unreadNotificationCount = 0,
-  } =
-    usePage<PageProps>().props;
+  } = usePage<PageProps>().props;
   const firstName = auth.user.name.split(' ')[0] || 'there';
 
   return (
@@ -168,7 +170,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <OpenBookingForm />
+                <OpenBookingForm services={services} />
                 <Button
                   // variant=""
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-[#8fe0bb] focus-visible:ring-offset-2 focus-visible:ring-offset-[#17343c]"
@@ -344,9 +346,7 @@ export default function Dashboard() {
               </div>
 
               <div className="border-t border-[#e7f0ec] px-5 py-4 dark:border-white/8">
-                <OpenTimeBlockForm
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#b9d5ca] py-3 text-sm font-bold text-[#0f8a62] transition hover:bg-[#f4fbf7] dark:border-[#376452] dark:text-[#8fe0bb] dark:hover:bg-[#0f8a62]/10"
-                >
+                <OpenTimeBlockForm className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#b9d5ca] py-3 text-sm font-bold text-[#0f8a62] transition hover:bg-[#f4fbf7] dark:border-[#376452] dark:text-[#8fe0bb] dark:hover:bg-[#0f8a62]/10">
                   <Plus aria-hidden="true" className="size-4" />
                   Add time block
                 </OpenTimeBlockForm>
@@ -509,7 +509,11 @@ export default function Dashboard() {
                   Review notifications
                 </span>
                 <span className="mt-0.5 block text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                  {unreadNotificationCount} {unreadNotificationCount === 1 ? 'notification' : 'notifications'} need your attention
+                  {unreadNotificationCount}{' '}
+                  {unreadNotificationCount === 1
+                    ? 'notification'
+                    : 'notifications'}{' '}
+                  need your attention
                 </span>
               </span>
               <ChevronRight
