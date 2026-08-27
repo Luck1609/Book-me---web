@@ -37,5 +37,7 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::resource('booking', BookingController::class);
     Route::resource('client', ClientController::class)
         ->middleware([HandlePrecognitiveRequests::class]);
-    Route::resource('team', TeamController::class);
+    Route::resource('team', TeamController::class)
+        ->only(['index', 'store', 'show'])
+        ->middleware([HandlePrecognitiveRequests::class]);
 });

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Booking;
 use App\Models\Service;
+use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,6 +43,12 @@ class StoreBookingRequest extends FormRequest
                     ->where(fn ($query) => $query
                         ->where('provider_profile_id', $providerProfileId)
                         ->where('is_active', true)),
+            ],
+            'staff_member_id' => [
+                'nullable',
+                'uuid',
+                Rule::exists((new StaffMember)->getTable(), 'id')
+                    ->where(fn ($query) => $query->where('provider_profile_id', $providerProfileId)->where('is_active', true)),
             ],
             'duration_minutes' => ['required', 'integer', 'min:1', 'max:1440'],
             'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],

@@ -112,6 +112,7 @@ class BookingController extends Controller
             $providerProfile->bookings()->create([
                 'user_id' => $client->id,
                 'service_id' => $data['service_id'],
+                'staff_member_id' => $data['staff_member_id'] ?? null,
                 'schedule' => "{$data['date']} {$data['time']}",
                 'duration_minutes' => $data['duration_minutes'],
                 'note' => $data['notes'] ?? null,

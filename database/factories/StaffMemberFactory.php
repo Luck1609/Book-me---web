@@ -21,7 +21,13 @@ class StaffMemberFactory extends Factory
         return [
             'provider_profile_id' => ProviderProfile::factory(),
             'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->e164PhoneNumber(),
+            'role' => fake()->randomElement(['Barber', 'Senior Stylist', 'Nail Technician']),
+            'status' => fake()->randomElement(['available', 'away', 'offline']),
+            'shift_start' => '09:00',
+            'shift_end' => '18:00',
+            'next_shift_at' => now()->startOfDay()->addHours(9),
             'photo_path' => null,
             'is_active' => true,
         ];

@@ -21,6 +21,7 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'provider_profile_id',
+        'staff_member_id',
         'service_id',
         'schedule',
         'duration_minutes',
@@ -55,6 +56,14 @@ class Booking extends Model
     public function providerProfile(): BelongsTo
     {
         return $this->belongsTo(ProviderProfile::class);
+    }
+
+    /**
+     * @return BelongsTo<StaffMember, $this>
+     */
+    public function staffMember(): BelongsTo
+    {
+        return $this->belongsTo(StaffMember::class);
     }
 
     /**
