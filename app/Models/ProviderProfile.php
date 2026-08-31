@@ -103,6 +103,14 @@ class ProviderProfile extends Model implements HasMedia
     }
 
     /**
+     * @return HasMany<Conversation, $this>
+     */
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
+    /**
      * @return HasMany<StaffMember, $this>
      */
     public function staffMembers(): HasMany

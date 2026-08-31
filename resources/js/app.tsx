@@ -21,6 +21,8 @@ createInertiaApp({
         return [AppLayout, SettingsLayout];
       case name.startsWith('notifications/'):
         return AppLayout;
+      case name.startsWith('chats/'):
+        return AppLayout;
       case name.startsWith('client/') ||
         name.startsWith('provider/') ||
         name.startsWith('user/'):

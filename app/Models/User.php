@@ -107,4 +107,20 @@ class User extends Authenticatable implements HasMedia, PasskeyUser
     {
         return $this->belongsToMany(ProviderProfile::class);
     }
+
+    /**
+     * @return HasMany<Conversation, $this>
+     */
+    public function clientConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'client_id');
+    }
+
+    /**
+     * @return HasMany<Message, $this>
+     */
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
 }

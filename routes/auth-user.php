@@ -3,6 +3,7 @@
 use App\Http\Controllers\AvailabilityBlockController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BusinessHourController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationsController;
@@ -28,6 +29,14 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::get('notifications/inbox', [NotificationsController::class, 'index'])->name('notifications.index');
+    Route::get('chats', [ChatController::class, 'index'])->name('chats.index');
+    Route::get('chats/{conversation}', [ChatController::class, 'show'])->name('chats.show');
+    Route::post('chats', [ChatController::class, 'store'])
+        ->middleware([HandlePrecognitiveRequests::class])
+        ->name('chats.store');
+    Route::post('chats/{conversation}/messages', [ChatController::class, 'storeMessage'])
+        ->middleware([HandlePrecognitiveRequests::class])
+        ->name('chats.messages.store');
     Route::get('report', [ReportController::class, 'index'])->name('report');
 
     Route::resource('availability-blocks', AvailabilityBlockController::class)

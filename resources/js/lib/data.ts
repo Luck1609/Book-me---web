@@ -8,6 +8,7 @@ import {
   MessageCircleMore,
   UsersRound,
 } from 'lucide-react';
+import { index as chatIndex } from '@/actions/App/Http/Controllers/ChatController';
 import { dashboard, report } from '@/routes';
 import booking from '@/routes/booking';
 import client from '@/routes/client';
@@ -31,9 +32,7 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => ([
   },
   {
     title: 'Chats',
-    href: accountType === UserType.PROVIDER
-    ? booking.index.url()
-    : client.booking.index.url(),
+    href: chatIndex.url(),
     icon: MessageCircleMore,
   },
   ...accountType !== UserType.PROVIDER
