@@ -1,286 +1,301 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
   ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
-  Flower2,
-  Moon,
-  Scissors,
-  Sun,
-  Sunrise,
-  UserRound,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  MapPin,
 } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useEffect } from 'react';
+import { store } from '@/actions/App/Http/Controllers/Client/BookingController';
+import { Input } from '@/components/form/input';
+import { Select } from '@/components/form/select';
+import SubmitButton from '@/components/form/submit-button';
+import { Textarea } from '@/components/form/textarea';
+import { Button } from '@/components/ui/button';
+import client from '@/routes/client';
 
-export default function Booking() {
+type Service = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  min_duration_minutes: number;
+  max_duration_minutes: number;
+  requires_payment: boolean;
+};
+type Provider = {
+  id: string;
+  slug: string;
+  business_name: string;
+  address: string | null;
+  city: string | null;
+};
+type BusinessHour = {
+  day_of_week: number;
+  is_closed: boolean;
+  opens_at: string | null;
+  closes_at: string | null;
+};
+type FormData = {
+  provider_profile_id: string;
+  service_id: string;
+  duration_minutes: string;
+  date: string;
+  time: string;
+  notes: string;
+};
+
+function currency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+function durationOptions(
+  service?: Service,
+): { label: string; value: string }[] {
+  if (!service) {
+    return [];
+  }
+
+  return Array.from(
+    {
+      length:
+        Math.floor(
+          (service.max_duration_minutes - service.min_duration_minutes) / 15,
+        ) + 1,
+    },
+    (_, index) => service.min_duration_minutes + index * 15,
+  ).map((minutes) => ({ label: `${minutes} minutes`, value: String(minutes) }));
+}
+function hoursForDate(
+  date: string,
+  businessHours: BusinessHour[],
+): string | null {
+  if (!date) {
+    return null;
+  }
+
+  const day = new Date(`${date}T12:00:00`).getDay();
+  const hour = businessHours.find((item) => item.day_of_week === day);
+
+  if (!hour) {
+    return null;
+  }
+
+  return hour.is_closed
+    ? 'Closed on this day'
+    : `Open ${hour.opens_at?.slice(0, 5)}–${hour.closes_at?.slice(0, 5)}`;
+}
+
+export default function BookingCreate({
+  provider,
+  services,
+  selectedService = '',
+  businessHours,
+}: {
+  provider: Provider;
+  services: Service[];
+  selectedService?: string;
+  businessHours: BusinessHour[];
+}) {
+  const initialService = selectedService || services[0]?.id || '';
+  const form = useForm<FormData>({
+    provider_profile_id: provider.id,
+    service_id: initialService,
+    duration_minutes: '',
+    date: '',
+    time: '',
+    notes: '',
+  }).withPrecognition(store());
+  const activeService = services.find(
+    (service) => service.id === form.data.service_id,
+  );
+
+  useEffect(() => {
+    if (
+      activeService &&
+      (!form.data.duration_minutes ||
+        Number(form.data.duration_minutes) <
+          activeService.min_duration_minutes ||
+        Number(form.data.duration_minutes) > activeService.max_duration_minutes)
+    ) {
+      form.setData(
+        'duration_minutes',
+        String(activeService.min_duration_minutes),
+      );
+    }
+  }, [activeService, form]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    form.post(store().url, { preserveScroll: true });
+  };
+
   return (
     <>
-      <Head title="The Classic Cut - Booking">
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-      <div className="min-h-screen bg-background pb-32 text-on-background">
-        <header className="fixed top-0 left-0 z-50 flex h-16 w-full items-center justify-between bg-surface px-margin-mobile shadow-sm">
-          <button
-            aria-label="Back to discovery"
-            className="flex items-center justify-center rounded-full p-2 transition-colors duration-150 hover:bg-surface-container-low active:scale-95"
+      <Head title={`Book at ${provider.business_name}`} />
+      <main className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
+        <div className="mx-auto max-w-5xl space-y-6 lg:space-y-8">
+          <Link
+            href={client.providers.show(provider.slug)}
+            className="inline-flex items-center gap-2 text-sm font-bold text-[#0f8a62]"
           >
-            <ArrowLeft aria-hidden="true" className="size-6 text-primary" />
-          </button>
-          <h1 className="font-md text-md font-bold text-primary">
-            The Classic Cut
-          </h1>
-          <div className="w-10"></div>
-        </header>
-        <main className="mx-auto max-w-container-max pt-16">
-          <section className="relative h-[265px] w-full overflow-hidden md:h-[397px]">
-            <div
-              className="absolute inset-0 h-full w-full bg-cover bg-center"
-              data-alt="A high-end, minimalist barber shop interior with black leather chairs, large mirrors, and warm ambient lighting. The atmosphere is sophisticated and clean, reflecting a premium grooming experience. Soft morning light filters through large windows, highlighting the polished wood floors and chrome details of the professional barbering stations."
-              style={{
-                backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDSUlvu1Tu5X-3sq8qmX7WMfzc8JxxN6lGS5ctIKlo4dcTxBIf76OOnQpd_sHCzZLH705jpPVu-fHb_tCLiy-dJWg-7SycbYb6Wi18Is9-23qrjh1FO0YGI6kZHEKzzmzQmPDjXsEm_33nizYtq79VrCKX-OzATkeJM-z9Yv152ZaI04HIpm_JF95pzx73m3cyapzv5AEW98qQmQuEF-fIPWSo2gNWlQO3RVJkpYLyh2RoQ-yq2myFKGZBhWqkNBMSI58CeKcFX6E4')",
-              }}
-            ></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div className="absolute bottom-6 left-margin-mobile text-white md:left-margin-desktop">
-              <span className="mb-2 inline-block rounded-full bg-secondary-container px-3 py-1 font-label-md text-label-md text-on-secondary-container">
-                PREMIUM BARBERING
-              </span>
-              <h2 className="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg">
-                Mastering the Craft
-              </h2>
-            </div>
+            <ArrowLeft className="size-4" />
+            Back to provider
+          </Link>
+          <section className="rounded-3xl bg-[#17343c] px-6 py-8 text-white shadow-[0_20px_55px_rgba(23,52,60,0.14)] sm:px-8 lg:px-10">
+            <p className="text-xs font-bold tracking-[0.16em] text-[#8fe0bb] uppercase">
+              Reserve a time
+            </p>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Book at {provider.business_name}
+            </h1>
+            <p className="mt-3 flex items-center gap-2 text-sm text-[#b8c9c7]">
+              <MapPin className="size-4" />
+              {provider.address || provider.city || 'Provider location'}
+            </p>
           </section>
-          <div className="mt-stack-lg flex flex-col gap-stack-lg px-margin-mobile md:px-margin-desktop">
-            <section>
-              <h3 className="mb-4 font-label-md text-label-md tracking-widest text-on-surface-variant uppercase">
-                Select Service
-              </h3>
-              <div className="grid grid-cols-1 gap-gutter md:grid-cols-3">
-                <label className="group relative block cursor-pointer">
-                  <input
-                    defaultChecked
-                    className="peer sr-only"
-                    name="service"
-                    type="radio"
-                  />
-                  <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_2px_4px_rgba(15,23,42,0.04)] transition-all duration-200 peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/10">
-                    <div className="mb-4 flex items-start justify-between">
-                      <Scissors
-                        aria-hidden="true"
-                        className="size-6 text-primary"
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6 rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] sm:p-7 dark:border-white/10 dark:bg-[#17221f]"
+            >
+              <div>
+                <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
+                  1. Choose your service
+                </p>
+                <div className="mt-4 grid gap-3">
+                  {services.map((service) => (
+                    <label
+                      key={service.id}
+                      className={`cursor-pointer rounded-xl border p-4 transition ${form.data.service_id === service.id ? 'border-[#0f8a62] bg-[#f4fbf7] dark:bg-[#0f8a62]/10' : 'border-[#e7f0ec] dark:border-white/8'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="service_id"
+                        value={service.id}
+                        checked={form.data.service_id === service.id}
+                        onChange={(event) =>
+                          form.setData('service_id', event.target.value)
+                        }
+                        className="sr-only"
                       />
-                      <span className="font-md text-md text-primary">
-                        $30
+                      <span className="flex items-start justify-between gap-4">
+                        <span>
+                          <span className="block font-bold text-[#17343c] dark:text-white">
+                            {service.name}
+                          </span>
+                          <span className="mt-1 block text-sm text-[#70908a] dark:text-[#b6ccc5]">
+                            {service.description ||
+                              'A tailored service with care and attention to detail.'}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-lg font-bold text-[#17343c] dark:text-white">
+                          {currency(service.price)}
+                        </span>
                       </span>
-                    </div>
-                    <h4 className="mb-1 font-body-lg text-body-lg font-bold">
-                      Haircut
-                    </h4>
-                    <p className="font-caption text-caption text-on-surface-variant">
-                      Precision cutting and styling tailored to your look.
-                    </p>
-                  </div>
-                </label>
-
-                <label className="group relative block cursor-pointer">
-                  <input className="peer sr-only" name="service" type="radio" />
-                  <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_2px_4px_rgba(15,23,42,0.04)] transition-all duration-200 peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/10">
-                    <div className="mb-4 flex items-start justify-between">
-                      <UserRound
-                        aria-hidden="true"
-                        className="size-6 text-primary"
-                      />
-                      <span className="font-md text-md text-primary">
-                        $20
+                      <span className="mt-3 flex items-center gap-2 text-xs font-semibold text-[#41645a] dark:text-[#c4d8d1]">
+                        <Clock3 className="size-3.5 text-[#0f8a62]" />
+                        {service.min_duration_minutes ===
+                        service.max_duration_minutes
+                          ? `${service.min_duration_minutes} min`
+                          : `${service.min_duration_minutes}–${service.max_duration_minutes} min`}
                       </span>
-                    </div>
-                    <h4 className="mb-1 font-body-lg text-body-lg font-bold">
-                      Beard Trim
-                    </h4>
-                    <p className="font-caption text-caption text-on-surface-variant">
-                      Sculpting and detailing for a sharp, clean beard line.
-                    </p>
-                  </div>
-                </label>
-
-                <label className="group relative block cursor-pointer">
-                  <input className="peer sr-only" name="service" type="radio" />
-                  <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-[0_2px_4px_rgba(15,23,42,0.04)] transition-all duration-200 peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/10">
-                    <div className="mb-4 flex items-start justify-between">
-                      <Flower2
-                        aria-hidden="true"
-                        className="size-6 text-primary"
-                      />
-                      <span className="font-md text-md text-primary">
-                        $45
-                      </span>
-                    </div>
-                    <h4 className="mb-1 font-body-lg text-body-lg font-bold">
-                      Full Grooming
-                    </h4>
-                    <p className="font-caption text-caption text-on-surface-variant">
-                      The signature experience: Cut, trim, and luxury hot towel
-                      shave.
-                    </p>
-                  </div>
-                </label>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </section>
-            <div className="grid grid-cols-1 gap-gutter md:grid-cols-2">
-              <section className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-6">
-                <div className="mb-6 flex items-center justify-between">
-                  <h3 className="font-label-md text-label-md text-on-surface-variant uppercase">
-                    Select Date
-                  </h3>
-                  <div className="flex gap-2">
-                    <button className="rounded-full p-1 transition-colors hover:bg-surface-container-highest">
-                      <ChevronLeft aria-hidden="true" className="size-3.5" />
-                    </button>
-                    <span className="font-label-md text-label-md text-primary">
-                      October 2023
-                    </span>
-                    <button className="rounded-full p-1 transition-colors hover:bg-surface-container-highest">
-                      <ChevronRight aria-hidden="true" className="size-3.5" />
-                    </button>
-                  </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Select
+                  name="duration_minutes"
+                  label="Duration"
+                  options={durationOptions(activeService)}
+                  placeholder="Choose duration"
+                  form={form}
+                />
+                <Input
+                  name="date"
+                  label="Date"
+                  type="date"
+                  min={new Date().toISOString().slice(0, 10)}
+                  required
+                  form={form}
+                />
+              </div>
+              {form.data.date && (
+                <p className="-mt-3 flex items-center gap-2 text-sm text-[#0f6b4d] dark:text-[#8fe0bb]">
+                  <CalendarDays className="size-4" />
+                  {hoursForDate(form.data.date, businessHours) ||
+                    'The provider will confirm opening hours'}
+                </p>
+              )}
+              <Input
+                name="time"
+                label="Start time"
+                type="time"
+                required
+                form={form}
+              />
+              <Textarea
+                name="notes"
+                label="Notes for your provider (optional)"
+                placeholder="Anything they should know before your visit?"
+                rows={4}
+                form={form}
+              />
+              <div className="flex flex-col-reverse gap-3 border-t border-[#e7f0ec] pt-5 sm:flex-row sm:justify-end dark:border-white/8">
+                <Button asChild variant="outline" className="rounded-xl">
+                  <Link href={client.providers.show(provider.slug)}>
+                    Cancel
+                  </Link>
+                </Button>
+                <SubmitButton
+                  form={form}
+                  label="Request booking"
+                  className="rounded-xl"
+                />
+              </div>
+            </form>
+            <aside className="space-y-4">
+              <div className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
+                <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
+                  What happens next
+                </p>
+                <div className="mt-5 space-y-5">
+                  {[
+                    'Your request is sent to the provider.',
+                    'They confirm the time or suggest an alternative.',
+                    'Your confirmed appointment appears in My bookings.',
+                  ].map((step, index) => (
+                    <div key={step} className="flex gap-3">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#d9f7e8] text-xs font-bold text-[#0f6b4d]">
+                        {index + 1}
+                      </span>
+                      <p className="pt-1 text-sm leading-5 text-[#41645a] dark:text-[#c4d8d1]">
+                        {step}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <div className="grid grid-cols-7 gap-1 text-center">
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    S
-                  </div>
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    M
-                  </div>
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    T
-                  </div>
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    W
-                  </div>
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    T
-                  </div>
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    F
-                  </div>
-                  <div className="py-2 font-caption text-caption text-on-surface-variant">
-                    S
-                  </div>
-
-                  <button className="flex aspect-square cursor-default items-center justify-center font-body-md text-body-md text-on-surface-variant/40">
-                    28
-                  </button>
-                  <button className="flex aspect-square cursor-default items-center justify-center font-body-md text-body-md text-on-surface-variant/40">
-                    29
-                  </button>
-                  <button className="flex aspect-square cursor-default items-center justify-center font-body-md text-body-md text-on-surface-variant/40">
-                    30
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    1
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    2
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    3
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    4
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    5
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg bg-primary font-body-md text-body-md font-bold text-on-primary shadow-[0_2px_4px_rgba(15,23,42,0.04)]">
-                    6
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    7
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    8
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    9
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    10
-                  </button>
-                  <button className="flex aspect-square items-center justify-center rounded-lg font-body-md text-body-md text-primary transition-all duration-200 ease-in-out hover:bg-surface-container-highest">
-                    11
-                  </button>
+              </div>
+              <div className="rounded-2xl border border-[#b9dccc] bg-[#f4fbf7] p-5 dark:bg-[#0f8a62]/10">
+                <div className="flex items-center gap-2 text-[#0f6b4d] dark:text-[#8fe0bb]">
+                  <CheckCircle2 className="size-4" />
+                  <p className="text-sm font-bold">No payment is taken yet</p>
                 </div>
-              </section>
-
-              <section className="flex flex-col gap-6">
-                <div>
-                  <h3 className="mb-3 flex items-center gap-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    <Sunrise aria-hidden="true" className="size-[18px]" />{' '}
-                    Morning
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button className="rounded-lg border border-outline-variant bg-surface px-4 py-2 font-body-md text-body-md transition-all duration-200 ease-in-out hover:border-primary active:scale-95">
-                      09:00 AM
-                    </button>
-                    <button className="rounded-lg border border-outline-variant bg-surface px-4 py-2 font-body-md text-body-md transition-all duration-200 ease-in-out hover:border-primary active:scale-95">
-                      10:30 AM
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="mb-3 flex items-center gap-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    <Sun aria-hidden="true" className="size-[18px]" /> Afternoon
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button className="rounded-lg bg-primary px-4 py-2 font-body-md text-body-md font-bold text-on-primary shadow-[0_2px_4px_rgba(15,23,42,0.04)] active:scale-95">
-                      01:00 PM
-                    </button>
-                    <button className="rounded-lg border border-outline-variant bg-surface px-4 py-2 font-body-md text-body-md transition-all duration-200 ease-in-out hover:border-primary active:scale-95">
-                      02:30 PM
-                    </button>
-                    <button className="rounded-lg border border-outline-variant bg-surface px-4 py-2 font-body-md text-body-md transition-all duration-200 ease-in-out hover:border-primary active:scale-95">
-                      04:00 PM
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="mb-3 flex items-center gap-2 font-label-md text-label-md text-on-surface-variant uppercase">
-                    <Moon aria-hidden="true" className="size-[18px]" /> Evening
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button className="rounded-lg border border-outline-variant bg-surface px-4 py-2 font-body-md text-body-md transition-all duration-200 ease-in-out hover:border-primary active:scale-95">
-                      06:00 PM
-                    </button>
-                    <button className="cursor-not-allowed rounded-lg border border-outline-variant bg-surface-container-high px-4 py-2 font-body-md text-body-md line-through opacity-30">
-                      07:30 PM
-                    </button>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-        </main>
-
-        <div className="fixed bottom-0 left-0 z-50 w-full border-t border-outline-variant/20 bg-surface px-margin-mobile py-6 shadow-[0_12px_24px_rgba(15,23,42,0.08)] md:px-margin-desktop">
-          <div className="mx-auto flex max-w-container-max items-center justify-between gap-gutter">
-            <div className="hidden md:block">
-              <p className="font-label-md text-label-md text-on-surface-variant uppercase">
-                Your Appointment
-              </p>
-              <p className="font-body-lg text-body-lg font-bold">
-                Haircut • Oct 6, 01:00 PM
-              </p>
-            </div>
-            <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-12 py-4 font-md text-md font-bold text-on-primary shadow-[0_12px_24px_rgba(15,23,42,0.08)] transition-all hover:opacity-90 active:scale-95 md:w-auto">
-              Confirm Booking{' '}
-              <ChevronRight aria-hidden="true" className="size-6" />
-            </button>
+                <p className="mt-2 text-xs leading-5 text-[#41645a] dark:text-[#b6ccc5]">
+                  This request is saved securely and only becomes confirmed
+                  after the provider accepts it.
+                </p>
+              </div>
+            </aside>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

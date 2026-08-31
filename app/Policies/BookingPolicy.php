@@ -12,7 +12,8 @@ class BookingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('service_provider') && $user->providerProfile()->exists();
+        return ($user->hasRole('service_provider') && $user->providerProfile()->exists())
+            || $user->hasRole('client');
     }
 
     /**
@@ -20,7 +21,8 @@ class BookingPolicy
      */
     public function view(User $user, Booking $booking): bool
     {
-        return $booking->providerProfile?->user_id === $user->id;
+        return $booking->providerProfile?->user_id === $user->id
+            || $booking->user_id === $user->id;
     }
 
     /**
@@ -44,7 +46,9 @@ class BookingPolicy
      */
     public function delete(User $user, Booking $booking): bool
     {
-        return false;
+        return $booking->user_id === $user->id
+            && $booking->status !== Booking::STATUS_CANCELLED
+            && $booking->schedule?->isFuture();
     }
 
     /**

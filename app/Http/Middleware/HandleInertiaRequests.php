@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
             'user' => $request?->user()
                 ? [
                     ...$request->user()->toArray(),
-                    'role' => $request->user()->roles()->first()->name
+                    'role' => $request->user()->roles()->first()?->name,
                 ]
                 : null,
             'unreadNotifications' => fn () => $request->user()
