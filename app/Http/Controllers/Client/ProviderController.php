@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Enums\UserTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Models\ProviderProfile;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -15,11 +16,14 @@ class ProviderController extends Controller
 {
     public function index(Request $request): Response
     {
-        abort_unless($request->user()?->hasRole(UserTypeEnum::CLIENT->value), 403);
+        $client = $this->clientFrom($request);
         $search = trim($request->string('search')->toString());
+        $favoritesOnly = $request->boolean('favorites');
+        $favoriteProviderIds = $client->favoriteProviders()->pluck('id');
         $providers = ProviderProfile::query()
             ->approved()
             ->where('is_accepting_bookings', true)
+            ->when($favoritesOnly, fn (Builder $query) => $query->whereKey($favoriteProviderIds))
             ->with(['services' => fn (Builder|Relation $query) => $query
                 ->where('is_active', true)
                 ->select(['id', 'provider_profile_id', 'name', 'price', 'min_duration_minutes', 'max_duration_minutes'])
@@ -40,17 +44,17 @@ class ProviderController extends Controller
             ->latest()
             ->paginate(12)
             ->withQueryString()
-            ->through(fn (ProviderProfile $provider): array => $this->providerData($provider));
+            ->through(fn (ProviderProfile $provider): array => $this->providerData($provider, $favoriteProviderIds->contains($provider->id)));
 
         return Inertia::render('client/providers/index', [
             'providers' => $providers,
-            'filters' => ['search' => $search],
+            'filters' => ['search' => $search, 'favorites' => $favoritesOnly],
         ]);
     }
 
     public function show(Request $request, ProviderProfile $providerProfile): Response
     {
-        abort_unless($request->user()?->hasRole(UserTypeEnum::CLIENT->value), 403);
+        $client = $this->clientFrom($request);
         abort_unless($providerProfile->status->value === 'approved' && $providerProfile->is_accepting_bookings, 404);
 
         $providerProfile->load([
@@ -63,7 +67,7 @@ class ProviderController extends Controller
         ]);
 
         return Inertia::render('client/providers/show', [
-            'provider' => $this->providerData($providerProfile),
+            'provider' => $this->providerData($providerProfile, $client->favoriteProviders()->whereKey($providerProfile->id)->exists()),
             'businessHours' => $providerProfile->businessHours->map(fn ($hour): array => [
                 'day_of_week' => $hour->day_of_week,
                 'is_closed' => $hour->is_closed,
@@ -74,7 +78,7 @@ class ProviderController extends Controller
     }
 
     /** @return array<string, mixed> */
-    private function providerData(ProviderProfile $provider): array
+    private function providerData(ProviderProfile $provider, bool $isFavorite = false): array
     {
         return [
             'id' => $provider->id,
@@ -86,6 +90,7 @@ class ProviderController extends Controller
             'address' => $provider->address,
             'city' => $provider->city,
             'avatar' => $provider->getFirstMediaUrl('avatar') ?: null,
+            'is_favorite' => $isFavorite,
             'services' => $provider->services->map(fn ($service): array => [
                 'id' => $service->id,
                 'name' => $service->name,
@@ -96,5 +101,14 @@ class ProviderController extends Controller
                 'requires_payment' => $service->requires_payment,
             ])->values()->all(),
         ];
+    }
+
+    private function clientFrom(Request $request): User
+    {
+        $user = $request->user();
+
+        abort_unless($user instanceof User && $user->hasRole(UserTypeEnum::CLIENT->value), 403);
+
+        return $user;
     }
 }

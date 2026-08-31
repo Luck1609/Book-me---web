@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowRight, MapPin, Search, Sparkles } from 'lucide-react';
+import { ArrowRight, Heart, MapPin, Search, Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import client from '@/routes/client';
@@ -11,6 +11,7 @@ type Provider = {
   description: string | null;
   city: string | null;
   avatar: string | null;
+  is_favorite: boolean;
   services: { id: string; name: string; price: number }[];
 };
 
@@ -42,10 +43,15 @@ export default function ProviderIndex({
   filters,
 }: {
   providers: Paginator;
-  filters: { search: string };
+  filters: { search: string; favorites: boolean };
 }) {
   const [search, setSearch] = useState(filters.search);
   const initialRender = useRef(true);
+  const favoritesFilter = useRef(filters.favorites);
+
+  useEffect(() => {
+    favoritesFilter.current = filters.favorites;
+  }, [filters.favorites]);
 
   useEffect(() => {
     if (initialRender.current) {
@@ -58,7 +64,10 @@ export default function ProviderIndex({
       () =>
         router.visit(
           client.providers.index({
-            query: search.trim() ? { search: search.trim() } : {},
+            query: {
+              ...(favoritesFilter.current ? { favorites: true } : {}),
+              ...(search.trim() ? { search: search.trim() } : {}),
+            },
           }),
           {
             preserveState: true,
@@ -72,6 +81,26 @@ export default function ProviderIndex({
 
     return () => window.clearTimeout(timeout);
   }, [search]);
+
+  const toggleFavorite = (provider: Provider): void => {
+    if (provider.is_favorite) {
+      router.delete(client.providers.unfavorite(provider.slug), {
+        preserveScroll: true,
+        only: ['providers', 'filters'],
+      });
+
+      return;
+    }
+
+    router.post(
+      client.providers.favorite(provider.slug),
+      {},
+      {
+        preserveScroll: true,
+        only: ['providers', 'filters'],
+      },
+    );
+  };
 
   return (
     <>
@@ -109,9 +138,20 @@ export default function ProviderIndex({
                 Browse trusted spaces
               </h2>
             </div>
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href={client.booking.index()}>My bookings</Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button asChild variant="outline" className="rounded-xl">
+                <Link
+                  href={client.providers.index({
+                    query: filters.favorites ? {} : { favorites: true },
+                  })}
+                >
+                  {filters.favorites ? 'All providers' : 'Saved providers'}
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl">
+                <Link href={client.booking.index()}>My bookings</Link>
+              </Button>
+            </div>
           </div>
           <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {providers.data.map((provider) => (
@@ -119,7 +159,7 @@ export default function ProviderIndex({
                 key={provider.id}
                 className="overflow-hidden rounded-2xl border border-[#dceae4] bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]"
               >
-                <div className="h-36 bg-gradient-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-5">
+                <div className="flex h-36 items-start justify-between bg-gradient-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-5">
                   {provider.avatar ? (
                     <img
                       src={provider.avatar}
@@ -131,6 +171,22 @@ export default function ProviderIndex({
                       {initials(provider.business_name)}
                     </span>
                   )}
+                  <button
+                    type="button"
+                    aria-label={
+                      provider.is_favorite
+                        ? `Remove ${provider.business_name} from saved providers`
+                        : `Save ${provider.business_name}`
+                    }
+                    aria-pressed={provider.is_favorite}
+                    onClick={() => toggleFavorite(provider)}
+                    className="flex size-10 items-center justify-center rounded-full bg-white/85 text-[#d46c7a] shadow-sm transition hover:bg-white"
+                  >
+                    <Heart
+                      aria-hidden="true"
+                      className={`size-5 ${provider.is_favorite ? 'fill-current' : ''}`}
+                    />
+                  </button>
                 </div>
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3">

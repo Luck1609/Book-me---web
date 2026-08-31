@@ -6,6 +6,7 @@ import {
   Heart,
   LayoutGrid,
   MessageCircleMore,
+  UserRoundCheck,
   UsersRound,
 } from 'lucide-react';
 import { index as chatIndex } from '@/actions/App/Http/Controllers/ChatController';
@@ -38,8 +39,13 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => ([
   ...accountType !== UserType.PROVIDER
   ? [
     {
+      title: 'Service Providers',
+      href: client.providers.index.url(),
+      icon: UserRoundCheck,
+    },
+    {
       title: 'Favorites',
-      href: client.booking.index.url(),
+      href: client.favorite.index.url(),
       icon: Heart,
     },
   ]

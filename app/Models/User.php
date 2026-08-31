@@ -109,6 +109,15 @@ class User extends Authenticatable implements HasMedia, PasskeyUser
     }
 
     /**
+     * @return BelongsToMany<ProviderProfile, $this>
+     */
+    public function favoriteProviders(): BelongsToMany
+    {
+        return $this->belongsToMany(ProviderProfile::class, 'provider_favorites', 'client_id', 'provider_profile_id')
+            ->withTimestamps();
+    }
+
+    /**
      * @return HasMany<Conversation, $this>
      */
     public function clientConversations(): HasMany

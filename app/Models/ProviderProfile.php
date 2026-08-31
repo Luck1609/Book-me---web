@@ -103,6 +103,15 @@ class ProviderProfile extends Model implements HasMedia
     }
 
     /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function favoriteClients(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'provider_favorites', 'provider_profile_id', 'client_id')
+            ->withTimestamps();
+    }
+
+    /**
      * @return HasMany<Conversation, $this>
      */
     public function conversations(): HasMany

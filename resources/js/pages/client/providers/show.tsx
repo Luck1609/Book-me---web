@@ -1,8 +1,9 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
   ArrowLeft,
   CalendarDays,
   Clock3,
+  Heart,
   Mail,
   MapPin,
   Phone,
@@ -21,6 +22,7 @@ type Provider = {
   address: string | null;
   city: string | null;
   avatar: string | null;
+  is_favorite: boolean;
   services: Service[];
 };
 type Service = {
@@ -80,6 +82,26 @@ export default function ProviderShow({
   provider: Provider;
   businessHours: BusinessHour[];
 }) {
+  const toggleFavorite = (): void => {
+    if (provider.is_favorite) {
+      router.delete(client.providers.unfavorite(provider.slug), {
+        preserveScroll: true,
+        only: ['provider', 'businessHours'],
+      });
+
+      return;
+    }
+
+    router.post(
+      client.providers.favorite(provider.slug),
+      {},
+      {
+        preserveScroll: true,
+        only: ['provider', 'businessHours'],
+      },
+    );
+  };
+
   return (
     <>
       <Head title={provider.business_name} />
@@ -121,16 +143,34 @@ export default function ProviderShow({
                       'A trusted local provider ready to help you feel your best.'}
                   </p>
                 </div>
-                <Button asChild className="rounded-xl">
-                  <Link
-                    href={client.booking.create({
-                      query: { provider: provider.id },
-                    })}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    aria-label={
+                      provider.is_favorite
+                        ? `Remove ${provider.business_name} from saved providers`
+                        : `Save ${provider.business_name}`
+                    }
+                    aria-pressed={provider.is_favorite}
+                    onClick={toggleFavorite}
+                    className="flex size-10 items-center justify-center rounded-xl border border-[#dceae4] text-[#d46c7a] transition hover:bg-[#fff4f5] dark:border-white/10"
                   >
-                    <CalendarDays className="size-4" />
-                    Book a visit
-                  </Link>
-                </Button>
+                    <Heart
+                      aria-hidden="true"
+                      className={`size-5 ${provider.is_favorite ? 'fill-current' : ''}`}
+                    />
+                  </button>
+                  <Button asChild className="rounded-xl">
+                    <Link
+                      href={client.booking.create({
+                        query: { provider: provider.id },
+                      })}
+                    >
+                      <CalendarDays className="size-4" />
+                      Book a visit
+                    </Link>
+                  </Button>
+                </div>
               </div>
               <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#41645a] dark:text-[#c4d8d1]">
                 {provider.phone && (

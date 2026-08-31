@@ -52,6 +52,7 @@ class DashboardController extends Controller
             ->latest('schedule')
             ->limit(4)
             ->get();
+        $favoriteProviderIds = $user->favoriteProviders()->pluck('id');
         $providers = ProviderProfile::query()
             ->approved()
             ->where('is_accepting_bookings', true)
@@ -63,7 +64,7 @@ class DashboardController extends Controller
             ->latest()
             ->limit(6)
             ->get()
-            ->map(fn (ProviderProfile $provider): array => $this->providerData($provider))
+            ->map(fn (ProviderProfile $provider): array => $this->providerData($provider, $favoriteProviderIds->contains($provider->id)))
             ->values()
             ->all();
 
@@ -74,7 +75,7 @@ class DashboardController extends Controller
             'stats' => [
                 'upcoming' => $user->bookings()->where('schedule', '>=', $now)->where('status', '!=', Booking::STATUS_CANCELLED)->count(),
                 'completed' => $user->bookings()->where('schedule', '<', $now)->where('status', '!=', Booking::STATUS_CANCELLED)->count(),
-                'savedProviders' => $user->clientProviders()->count(),
+                'savedProviders' => $user->favoriteProviders()->count(),
             ],
         ];
     }
@@ -98,7 +99,7 @@ class DashboardController extends Controller
     }
 
     /** @return array<string, mixed> */
-    private function providerData(ProviderProfile $provider): array
+    private function providerData(ProviderProfile $provider, bool $isFavorite = false): array
     {
         return [
             'id' => $provider->id,
@@ -107,6 +108,7 @@ class DashboardController extends Controller
             'description' => $provider->description,
             'city' => $provider->city,
             'avatar' => $provider->getFirstMediaUrl('avatar') ?: null,
+            'is_favorite' => $isFavorite,
             'services' => $provider->services->map(fn ($service): array => [
                 'id' => $service->id,
                 'name' => $service->name,

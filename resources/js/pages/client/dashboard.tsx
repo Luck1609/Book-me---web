@@ -234,12 +234,22 @@ export default function Dashboard({
                     Providers near you
                   </h2>
                 </div>
-                <Link
-                  href={client.providers.index()}
-                  className="text-sm font-bold text-[#0f8a62]"
-                >
-                  See all
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={client.providers.index({
+                      query: { favorites: true },
+                    })}
+                    className="text-sm font-bold text-[#0f8a62]"
+                  >
+                    Saved
+                  </Link>
+                  <Link
+                    href={client.providers.index()}
+                    className="text-sm font-bold text-[#0f8a62]"
+                  >
+                    See all
+                  </Link>
+                </div>
               </div>
               <div className="mt-5 space-y-3">
                 {providers.slice(0, 3).map((provider) => (
