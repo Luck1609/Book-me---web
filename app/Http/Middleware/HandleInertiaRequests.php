@@ -38,9 +38,13 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
-            'auth' => [
-                'user' => $request->user(),
-            ],
+            // 'user' => $request->user(),
+            'user' => $request?->user()
+                ? [
+                    ...$request->user()->toArray(),
+                    'role' => $request->user()->roles()->first()->name
+                ]
+                : null,
             'unreadNotifications' => fn () => $request->user()
               ? $request->user()
                   ->unreadNotifications()

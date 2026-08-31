@@ -29,3 +29,4 @@ Route::prefix('media')->name('media.')->group(function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth-user.php';
+require __DIR__.'/client.php';

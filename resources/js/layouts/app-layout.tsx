@@ -205,6 +205,10 @@ export default function AppLayout({
   breadcrumbs?: BreadcrumbItem[];
   children: React.ReactNode;
 }) {
+  const { user } = usePage().props
+
+  console.log('Auth user details', user)
+
   return (
     <NoticeProvider>
       <AppShell variant="sidebar">
@@ -222,7 +226,7 @@ export default function AppLayout({
           </SidebarHeader>
 
           <SidebarContent className="lg:mt-5">
-            <NavMain items={mainNavItems} />
+            <NavMain items={mainNavItems(user?.role)} />
           </SidebarContent>
 
           <SidebarFooter>

@@ -3,17 +3,20 @@ import {
   CalendarRange,
   ChartNoAxesCombined,
   ContactRound,
+  Heart,
   LayoutGrid,
+  MessageCircleMore,
   UsersRound,
 } from 'lucide-react';
 import { dashboard, report } from '@/routes';
 import booking from '@/routes/booking';
 import client from '@/routes/client';
-import team from '@/routes/team';
-import type { NavItem } from '@/types';
 import schedule from '@/routes/schedule';
+import team from '@/routes/team';
+import { UserType } from '@/types';
+import type { NavItem } from '@/types';
 
-export const mainNavItems: NavItem[] = [
+export const mainNavItems = (accountType?: UserType): NavItem[] => ([
   {
     title: 'Dashboard',
     href: dashboard(),
@@ -21,27 +24,46 @@ export const mainNavItems: NavItem[] = [
   },
   {
     title: 'Bookings',
-    href: booking.index.url(),
+    href: accountType === UserType.PROVIDER
+    ? booking.index.url()
+    : client.booking.index.url(),
     icon: CalendarRange,
   },
   {
-    title: 'Clients',
-    href: client.index.url(),
-    icon: ContactRound,
+    title: 'Chats',
+    href: accountType === UserType.PROVIDER
+    ? booking.index.url()
+    : client.booking.index.url(),
+    icon: MessageCircleMore,
   },
-  {
-    title: 'Schedules',
-    href: schedule.index.url(),
-    icon: CalendarCheck,
-  },
-  {
-    title: 'Team Management',
-    href: team.index.url(),
-    icon: UsersRound,
-  },
-  {
-    title: 'Report',
-    href: report(),
-    icon: ChartNoAxesCombined,
-  },
-];
+  ...accountType !== UserType.PROVIDER
+  ? [
+    {
+      title: 'Favorites',
+      href: client.booking.index.url(),
+      icon: Heart,
+    },
+  ]
+  : [
+    {
+      title: 'Clients',
+      href: client.index.url(),
+      icon: ContactRound,
+    },
+    {
+      title: 'Schedules',
+      href: schedule.index.url(),
+      icon: CalendarCheck,
+    },
+    {
+      title: 'Team Management',
+      href: team.index.url(),
+      icon: UsersRound,
+    },
+    {
+      title: 'Report',
+      href: report(),
+      icon: ChartNoAxesCombined,
+    },
+  ]
+]);
