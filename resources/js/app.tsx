@@ -12,20 +12,17 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
   layout: (name) => {
+      console.log('Directory name', name)
     switch (true) {
-      case name.startsWith('auth/'):
-        return AuthLayout;
-      case name.startsWith('onboarding'):
+      case name.startsWith('auth/') ||
+        name.startsWith('onboarding'):
         return AuthLayout;
       case name.startsWith('settings/'):
         return [AppLayout, SettingsLayout];
-      case name.startsWith('notifications/'):
-        return AppLayout;
-      case name.startsWith('chats/'):
-        return AppLayout;
       case name.startsWith('client/') ||
         name.startsWith('provider/') ||
-        name.startsWith('user/'):
+        name.startsWith('chats/') ||
+        name.startsWith('notifications/'):
         return AppLayout;
       default:
         return GuestLayout;

@@ -7,18 +7,18 @@ use App\Http\Controllers\Settings\ServiceController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', '/settings/profile');
+Route::middleware(['auth'])->prefix('settings')->group(function () {
+    Route::redirect('/', '/settings/profile');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('settings/business-profile', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
-    Route::patch('settings/business-profile', [BusinessProfileController::class, 'update'])->name('business-profile.update');
-    Route::inertia('settings/subscription', 'settings/subscription')->name('subscription.edit');
-    Route::resource('settings/services', ServiceController::class)
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('business-profile', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
+    Route::patch('business-profile', [BusinessProfileController::class, 'update'])->name('business-profile.update');
+    Route::inertia('subscription', 'settings/subscription')->name('subscription.edit');
+    Route::resource('services', ServiceController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->names('services');
-    Route::inertia('notifications', 'settings/notification')->name('notification.index');
+    Route::inertia('notifications', 'settings/notification/index')->name('notification.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

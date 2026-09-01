@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 import {
     index as confirmOptions,
     store as confirmStore,
@@ -10,57 +10,66 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { store } from '@/routes/password/confirm';
+import { goBack } from '@/routes'
+import { AuthLayoutProps } from '@/types';
+import { Undo2 } from 'lucide-react';
 
 export default function ConfirmPassword() {
     return (
         <>
-            <Head title="Confirm password" />
+        <Head title="Confirm password" />
 
-            <PasskeyVerify
-                routes={{
-                    options: confirmOptions(),
-                    submit: confirmStore(),
-                }}
-                label="Confirm with passkey"
-                loadingLabel="Confirming..."
-                separator="Or confirm with password"
-            />
+        <PasskeyVerify
+            routes={{
+                options: confirmOptions(),
+                submit: confirmStore(),
+            }}
+            label="Confirm with passkey"
+            loadingLabel="Confirming..."
+            separator="Or confirm with password"
+        />
 
-            <Form {...store.form()} resetOnSuccess={['password']}>
-                {({ processing, errors }) => (
-                    <div className="space-y-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                placeholder="Password"
-                                autoComplete="current-password"
-                                autoFocus
-                            />
+        <Form {...store.form()} resetOnSuccess={['password']}>
+            {({ processing, errors }) => (
+                <div className="space-y-6">
+                    <div className="grid gap-2">
+                        <Label htmlFor="password">Password</Label>
+                        <PasswordInput
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            autoComplete="current-password"
+                            autoFocus
+                        />
 
-                            <InputError message={errors.password} />
-                        </div>
-
-                        <div className="flex items-center">
-                            <Button
-                                className="w-full"
-                                disabled={processing}
-                                data-test="confirm-password-button"
-                            >
-                                {processing && <Spinner />}
-                                Confirm password
-                            </Button>
-                        </div>
+                        <InputError message={errors.password} />
                     </div>
+
+                    <div className="flex items-center">
+                        <Button
+                            className="w-full"
+                            disabled={processing}
+                            data-test="confirm-password-button"
+                        >
+                            {processing && <Spinner />}
+                            Confirm password
+                        </Button>
+                    </div>
+                </div>
                 )}
-            </Form>
+        </Form>
         </>
-    );
+        );
 }
 
 ConfirmPassword.layout = {
     title: 'Confirm password',
     description:
-        'This is a secure area of the application. Please confirm your password before continuing.',
-};
+    'This is a secure area of the application. Please confirm your password before continuing.',
+    asDirectChild: false,
+    redirect: {
+        label: "Go back",
+        href: goBack.url(),
+        icon: Undo2
+    }
+} as AuthLayoutProps;

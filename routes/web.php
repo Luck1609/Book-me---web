@@ -7,6 +7,7 @@ Route::inertia('/about', 'about')->name('about');
 Route::inertia('/contact', 'contact')->name('contact');
 Route::inertia('/privacy-policy', 'privacy-policy')->name('privacy');
 Route::inertia('/terms-and-conditions', 'terms-and-conditions')->name('terms');
+Route::get('/back', fn (Request $request) => back())->name('go-back');
 
 Route::prefix('media')->name('media.')->group(function () {
     Route::get('/preview/{id}', function (string $id) {

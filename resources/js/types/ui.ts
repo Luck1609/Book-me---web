@@ -26,6 +26,11 @@ export type AuthLayoutProps = {
     wrapper?: string;
     container?: string;
   };
+  redirect?: {
+    label?: ReactNode,
+    href?: string;
+    icon?: Icon
+  }
 };
 
 export type Icon = LucideIcon | ComponentType<SVGProps<SVGSVGElement>> | null;

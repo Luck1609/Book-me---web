@@ -21,7 +21,9 @@ export default function AuthLayout({
   icon,
   backgroundImage,
   asDirectChild = true,
+  redirect
 }: AuthLayoutProps) {
+  console.log('Auth layout applied')
   if (asDirectChild) {
     return <NoticeProvider>{children}</NoticeProvider>;
   }
@@ -33,7 +35,7 @@ export default function AuthLayout({
           className={cn(
             'mx-auto flex min-h-[calc(100dvh-2rem)] max-w-360 flex-col overflow-hidden rounded-4xl border border-[#e2ebe6] bg-white shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
             classNames?.wrapper,
-          )}
+            )}
         >
           <aside className="relative hidden overflow-hidden bg-[#17343c] p-8 text-white lg:flex lg:flex-col lg:p-10 xl:p-12">
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -43,8 +45,8 @@ export default function AuthLayout({
                 <div
                   className="absolute inset-0 bg-cover bg-center opacity-[0.08] mix-blend-screen"
                   style={{ backgroundImage: `url('${backgroundImage}')` }}
-                />
-              )}
+                  />
+                  )}
             </div>
 
             <Link
@@ -62,7 +64,7 @@ export default function AuthLayout({
               <div className="pointer-events-none absolute top-24 right-8 z-10 opacity-10">
                 {icon}
               </div>
-            )}
+              )}
 
             <div className="relative z-10 mt-auto max-w-lg">
               <p className="text-[11px] font-bold tracking-[0.16em] text-[#8fe0bb] uppercase">
@@ -153,11 +155,12 @@ export default function AuthLayout({
               </Link>
               <div className="hidden lg:block" />
               <Link
-                href={home()}
+                href={redirect ? redirect.href : home()}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#6b7e7e] transition-colors hover:text-[#0f8a62] sm:text-sm"
               >
-                Back to home
-                <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                { redirect?.icon && <redirect.icon className="size-3.5" />}
+                { redirect ? redirect.label : 'Back to home' }
+                { !redirect?.icon && <ArrowUpRight aria-hidden="true" className="size-3.5" />}
               </Link>
             </header>
 
@@ -166,7 +169,7 @@ export default function AuthLayout({
                 className={cn(
                   'mx-auto w-full max-w-124',
                   classNames?.container,
-                )}
+                  )}
               >
                 <div className="mb-8">
                   <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#c7e8d8] bg-[#effaf4] px-3 py-1.5 text-[10px] font-bold tracking-[0.12em] text-[#0f8a62] uppercase">
@@ -206,5 +209,5 @@ export default function AuthLayout({
         </div>
       </div>
     </NoticeProvider>
-  );
+    );
 }

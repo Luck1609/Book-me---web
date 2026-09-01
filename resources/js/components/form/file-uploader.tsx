@@ -218,8 +218,6 @@ export default function FileUploader<T extends object>({
     throw new Error("File uploader requires inertia useForm hook")
   }
 
-  // console.log('Selected fiel details', files)
-
   return (
     <>
       {label && <Label className="mb-1">{label}</Label>}
@@ -325,7 +323,7 @@ function UploaderButton<T extends object>({
       >
         {
           props?.icon && (
-            <div className={cn("w-16 h-16 bg-primary/10 flex items-center justify-center rounded-full text-primary", props?.icon?.classNames?.wrapper)}>
+            <div className={cn("size-16 bg-primary/10 flex items-center justify-center rounded-full text-primary", props?.icon?.classNames?.wrapper)}>
               {
                 props.icon?.item && <props.icon.item className={cn("size-10", props.icon?.classNames?.item)} />
               }
