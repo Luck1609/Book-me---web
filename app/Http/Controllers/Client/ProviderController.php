@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Client;
 
 use App\Enums\UserTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Models\AvailabilityBlock;
+use App\Models\Booking;
 use App\Models\ProviderProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +22,7 @@ class ProviderController extends Controller
         $search = trim($request->string('search')->toString());
         $favoritesOnly = $request->boolean('favorites');
         $favoriteProviderIds = $client->favoriteProviders()->pluck('id');
+
         $providers = ProviderProfile::query()
             ->approved()
             ->where('is_accepting_bookings', true)
@@ -66,6 +69,30 @@ class ProviderController extends Controller
             'businessHours:id,provider_profile_id,day_of_week,is_closed,opens_at,closes_at',
         ]);
 
+        $bookings = $providerProfile->bookings()
+            ->where('schedule', '>=', now())
+            ->where('status', '!=', Booking::STATUS_CANCELLED)
+            ->get(['schedule', 'duration_minutes'])
+            ->map(fn (Booking $booking): array => [
+                'date' => $booking->schedule->format('Y-m-d'),
+                'time' => $booking->schedule->format('H:i'),
+                'duration_minutes' => $booking->duration_minutes,
+            ])
+            ->values()
+            ->all();
+
+        $blockedTimes = $providerProfile->availabilityBlocks()
+            ->whereNotNull('starts_at')
+            ->whereNotNull('ends_at')
+            ->where('ends_at', '>=', now())
+            ->get(['starts_at', 'ends_at'])
+            ->map(fn (AvailabilityBlock $block): array => [
+                'starts_at' => $block->starts_at->format('Y-m-d H:i'),
+                'ends_at' => $block->ends_at->format('Y-m-d H:i'),
+            ])
+            ->values()
+            ->all();
+
         return Inertia::render('client/providers/show', [
             'provider' => $this->providerData($providerProfile, $client->favoriteProviders()->whereKey($providerProfile->id)->exists()),
             'businessHours' => $providerProfile->businessHours->map(fn ($hour): array => [
@@ -74,6 +101,8 @@ class ProviderController extends Controller
                 'opens_at' => $hour->opens_at,
                 'closes_at' => $hour->closes_at,
             ])->values()->all(),
+            'bookings' => $bookings,
+            'blockedTimes' => $blockedTimes,
         ]);
     }
 

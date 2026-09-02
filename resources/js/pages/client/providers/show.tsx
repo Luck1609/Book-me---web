@@ -10,7 +10,9 @@ import {
   Scissors,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNotice } from '@/contexts/notice-context';
 import client from '@/routes/client';
+import ClientBookingForm from './booking-form';
 
 type Provider = {
   id: string;
@@ -39,6 +41,15 @@ type BusinessHour = {
   is_closed: boolean;
   opens_at: string | null;
   closes_at: string | null;
+};
+type BookedTime = {
+  date: string;
+  time: string;
+  duration_minutes: number | null;
+};
+type BlockedTime = {
+  starts_at: string;
+  ends_at: string;
 };
 
 function initials(name: string): string {
@@ -78,10 +89,15 @@ function dayName(day: number): string {
 export default function ProviderShow({
   provider,
   businessHours,
+  bookings,
+  blockedTimes,
 }: {
   provider: Provider;
   businessHours: BusinessHour[];
+  bookings: BookedTime[];
+  blockedTimes: BlockedTime[];
 }) {
+  const { show } = useNotice();
   const toggleFavorite = (): void => {
     if (provider.is_favorite) {
       router.delete(client.providers.unfavorite(provider.slug), {
@@ -102,10 +118,27 @@ export default function ProviderShow({
     );
   };
 
+  const handleToggleBookingModal = (): void => {
+    show({
+      type: 'modal',
+      title: 'Book an appointment',
+      classNames: { content: 'sm:max-w-xl' },
+      content: (
+        <ClientBookingForm
+          provider={provider}
+          businessHours={businessHours}
+          bookings={bookings}
+          blockedTimes={blockedTimes}
+        />
+      ),
+    });
+  };
+
   return (
     <>
       <Head title={provider.business_name} />
-      <main className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
+
+      <div className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
         <div className="mx-auto max-w-5xl space-y-6 lg:space-y-8">
           <Link
             href={client.providers.index()}
@@ -114,6 +147,7 @@ export default function ProviderShow({
             <ArrowLeft className="size-4" />
             All providers
           </Link>
+
           <section className="overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
             <div className="h-48 bg-gradient-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-6">
               {provider.avatar ? (
@@ -160,15 +194,10 @@ export default function ProviderShow({
                       className={`size-5 ${provider.is_favorite ? 'fill-current' : ''}`}
                     />
                   </button>
-                  <Button asChild className="rounded-xl">
-                    <Link
-                      href={client.booking.create({
-                        query: { provider: provider.id },
-                      })}
-                    >
+
+                  <Button onClick={handleToggleBookingModal}>
                       <CalendarDays className="size-4" />
                       Book a visit
-                    </Link>
                   </Button>
                 </div>
               </div>
@@ -281,7 +310,7 @@ export default function ProviderShow({
             </aside>
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }

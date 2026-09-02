@@ -82,7 +82,7 @@ class BookingController extends Controller
                         'price',
                         'min_duration_minutes',
                         'max_duration_minutes',
-                        'requires_payment'
+                        'requires_payment',
                     ])
                     ->orderBy('sort_order')
                     ->orderBy('name'),
@@ -221,6 +221,7 @@ class BookingController extends Controller
     private function ensureNoBookingConflict(ProviderProfile $provider, CarbonImmutable $schedule, int $duration): void
     {
         $end = $schedule->addMinutes($duration);
+
         $hasConflict = $provider->bookings()
             ->whereDate('schedule', $schedule->toDateString())
             ->where('status', '!=', Booking::STATUS_CANCELLED)

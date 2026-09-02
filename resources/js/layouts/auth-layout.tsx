@@ -30,10 +30,10 @@ export default function AuthLayout({
 
   return (
     <NoticeProvider>
-      <div className="min-h-screen bg-[#fbfcfa] px-4 py-4 text-[#17343c] selection:bg-[#bce9d4] selection:text-[#17343c] sm:px-6 lg:px-10 lg:py-6">
+      <div className="min-h-screen bg-background px-4 py-4 text-[#17343c] selection:bg-[#bce9d4] selection:text-[#17343c] sm:px-6 lg:px-10 lg:py-6">
         <div
           className={cn(
-            'mx-auto flex min-h-[calc(100dvh-2rem)] max-w-360 flex-col overflow-hidden rounded-4xl border border-[#e2ebe6] bg-white shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
+            'mx-auto flex min-h-[calc(100dvh-2rem)] max-h-[] max-w-360 flex-col overflow-hidden rounded-4xl border border-[#e2ebe6] bg-white shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
             classNames?.wrapper,
             )}
         >
@@ -139,7 +139,7 @@ export default function AuthLayout({
             </div>
           </aside>
 
-          <section className="flex min-w-0 flex-1 flex-col bg-white">
+          <section className="flex min-w-0 flex-1 flex-col bg-card">
             <header className="flex items-center justify-between px-5 py-5 sm:px-8 lg:px-12 lg:py-7">
               <Link
                 href={home()}

@@ -92,11 +92,7 @@ export default function Services({ services = [] }: PageProps) {
               feel easy.
             </p>
           </div>
-          <Button
-            type="button"
-            onClick={openCreateModal}
-            className="w-fit rounded-xl bg-[#0f8a62] px-4 text-white shadow-[0_10px_22px_rgba(15,138,98,0.18)] hover:bg-[#0b7653]"
-          >
+          <Button onClick={openCreateModal}>
             <Plus aria-hidden="true" />
             Add service
           </Button>
@@ -113,7 +109,7 @@ export default function Services({ services = [] }: PageProps) {
             <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
               Total services
             </p>
-            <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
+            <p className="mt-1 text-3xl font-bold tracking-tight text-#17343c] dark:text-white">
               {services.length}
             </p>
           </div>
@@ -155,11 +151,7 @@ export default function Services({ services = [] }: PageProps) {
               Add your first service to start shaping a booking experience
               clients can understand at a glance.
             </p>
-            <Button
-              type="button"
-              onClick={openCreateModal}
-              className="mt-6 rounded-xl bg-[#0f8a62] text-white hover:bg-[#0b7653]"
-            >
+            <Button onClick={openCreateModal}>
               <Plus aria-hidden="true" />
               Add your first service
             </Button>
@@ -225,7 +217,6 @@ export default function Services({ services = [] }: PageProps) {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="flex-1 rounded-xl"
                       onClick={() => openEditModal(service)}
                     >
                       <Edit3 aria-hidden="true" />

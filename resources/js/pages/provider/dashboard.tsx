@@ -124,7 +124,7 @@ function formatDateRange(startDate: string, endDate: string): string {
 
 export default function Dashboard() {
   const {
-    auth,
+    user,
     date,
     metrics,
     today,
@@ -133,7 +133,7 @@ export default function Dashboard() {
     weekly_revenue,
     unreadNotificationCount = 0,
   } = usePage<PageProps>().props;
-  const firstName = auth.user.name.split(' ')[0] || 'there';
+  const firstName = user.name.split(' ')[0] || 'there';
 
   return (
     <>
@@ -365,7 +365,7 @@ export default function Dashboard() {
                     </h2>
                   </div>
                   <div className="flex size-10 items-center justify-center rounded-full bg-[#17343c] text-sm font-bold text-[#8fe0bb] dark:bg-[#0f8a62] dark:text-white">
-                    {getInitials(auth.user.name)}
+                    {getInitials(user.name)}
                   </div>
                 </div>
                 <div className="mt-5 flex items-center justify-between text-xs font-semibold">

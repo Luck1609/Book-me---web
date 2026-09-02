@@ -39,7 +39,7 @@ class ServiceRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:5000'],
+            'description' => ['nullable', 'string', 'max:5000'],
             'price' => ['required', 'numeric', 'min:0.01', 'decimal:0,2'],
             'min_duration' => ['required', 'integer', 'min:1', 'max:1440'],
             'max_duration' => ['required', 'integer', 'gte:min_duration', 'max:1440'],

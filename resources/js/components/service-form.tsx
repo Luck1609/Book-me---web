@@ -8,16 +8,6 @@ import { ServiceFields } from '@/pages/onboarding/shop/service';
 import type { ServiceFormData } from '@/pages/onboarding/types';
 import { store, update } from '@/routes/services';
 
-export type ServiceRecord = {
-  id: string;
-  name: string;
-  description: string | null;
-  price: string | number;
-  min_duration: number;
-  max_duration: number;
-  is_active: boolean;
-  image: string | null;
-};
 
 type Props = {
   service?: ServiceRecord;
@@ -47,30 +37,30 @@ export default function ServiceForm({ service }: Props) {
           }
         : emptyService,
     ],
-  });
+  }).withPrecognition(!service ? store() : update(service?.id));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (service) {
-      form
-        .transform((data) => ({ ...data.services[0], _method: 'PUT' }))
-        .post(update.url(service.id), {
-          forceFormData: true,
-          preserveScroll: true,
-          onSuccess: hide,
-        });
+    // if (service) {
+    //   form.transform((data) => ({ ...data.services[0] }))
 
-      return;
-    }
+    //   form.submit({
+    //       forceFormData: true,
+    //       preserveScroll: true,
+    //       onSuccess: hide,
+    //     });
 
-    form
-      .transform((data) => ({ ...data.services[0] }))
-      .post(store.url(), {
-        forceFormData: true,
-        preserveScroll: true,
-        onSuccess: hide,
-      });
+    //   return;
+    // }
+
+    form.transform((data) => ({ ...data.services[0] }))
+
+    form.submit({
+      forceFormData: true,
+      preserveScroll: true,
+      onSuccess: hide,
+    });
   };
 
   return (
@@ -89,7 +79,6 @@ export default function ServiceForm({ service }: Props) {
         <SubmitButton
           form={form}
           label={service ? 'Save changes' : 'Add service'}
-          className="rounded-xl bg-[#0f8a62] text-white hover:bg-[#0d7955]"
         />
       </div>
     </form>
