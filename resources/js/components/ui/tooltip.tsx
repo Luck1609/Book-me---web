@@ -4,6 +4,7 @@ import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { Children } from "@/types"
 
 function TooltipProvider({
   delayDuration = 0,
@@ -48,10 +49,27 @@ function TooltipContent({
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground" />
+        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )
 }
 
-export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger }
+type TooltipDirection = 'top' | 'bottom' | 'left' | 'right'
+
+type Props = Children<{
+  content: React.ReactNode;
+  direction?: TooltipDirection;
+  asChild?: boolean;
+}>
+
+function CustomTooltip({ children, direction = 'top', content, asChild = false }: Props) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild={asChild}>{ children }</TooltipTrigger>
+      <TooltipContent side={direction}>{ content }</TooltipContent>
+    </Tooltip>
+  )
+}
+
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, CustomTooltip }

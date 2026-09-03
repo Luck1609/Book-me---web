@@ -4,17 +4,11 @@ import { useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { Checkbox } from '@/components/form/checkbox';
 import { Input } from '@/components/form/input';
+import SubmitButton from '@/components/form/submit-button';
 import { Button } from '@/components/ui/button';
 import businessHours from '@/routes/business-hours';
-import SubmitButton from '@/components/form/submit-button';
+import type { BusinessHour } from '@/types/app';
 
-export type BusinessHour = {
-  id: string;
-  day_of_week: number;
-  is_closed: boolean;
-  opens_at: string | null;
-  closes_at: string | null;
-};
 
 const days = [
   'Sunday',

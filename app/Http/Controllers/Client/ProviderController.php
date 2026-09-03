@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Enums\ProviderStatus;
 use App\Enums\UserTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GetProviderAvailabilityRequest;
 use App\Models\AvailabilityBlock;
 use App\Models\Booking;
 use App\Models\ProviderProfile;
+use App\Models\Service;
 use App\Models\User;
+use App\Services\HelperService;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -69,40 +76,28 @@ class ProviderController extends Controller
             'businessHours:id,provider_profile_id,day_of_week,is_closed,opens_at,closes_at',
         ]);
 
-        $bookings = $providerProfile->bookings()
-            ->where('schedule', '>=', now())
-            ->where('status', '!=', Booking::STATUS_CANCELLED)
-            ->get(['schedule', 'duration_minutes'])
-            ->map(fn (Booking $booking): array => [
-                'date' => $booking->schedule->format('Y-m-d'),
-                'time' => $booking->schedule->format('H:i'),
-                'duration_minutes' => $booking->duration_minutes,
-            ])
-            ->values()
-            ->all();
-
-        $blockedTimes = $providerProfile->availabilityBlocks()
-            ->whereNotNull('starts_at')
-            ->whereNotNull('ends_at')
-            ->where('ends_at', '>=', now())
-            ->get(['starts_at', 'ends_at'])
-            ->map(fn (AvailabilityBlock $block): array => [
-                'starts_at' => $block->starts_at->format('Y-m-d H:i'),
-                'ends_at' => $block->ends_at->format('Y-m-d H:i'),
-            ])
-            ->values()
-            ->all();
-
         return Inertia::render('client/providers/show', [
             'provider' => $this->providerData($providerProfile, $client->favoriteProviders()->whereKey($providerProfile->id)->exists()),
-            'businessHours' => $providerProfile->businessHours->map(fn ($hour): array => [
-                'day_of_week' => $hour->day_of_week,
-                'is_closed' => $hour->is_closed,
-                'opens_at' => $hour->opens_at,
-                'closes_at' => $hour->closes_at,
-            ])->values()->all(),
-            'bookings' => $bookings,
-            'blockedTimes' => $blockedTimes,
+            'businessHours' => HelperService::getBusinessHours($providerProfile),
+        ]);
+    }
+
+    public function availability(GetProviderAvailabilityRequest $request, ProviderProfile $providerProfile): JsonResponse
+    {
+        $this->clientFrom($request);
+        abort_unless($providerProfile->status === ProviderStatus::Approved && $providerProfile->is_accepting_bookings, 404);
+
+        ['service_id' => $serviceId, 'date' => $date] = $request->validated();
+
+        $service = $providerProfile->services()
+            ->whereKey($serviceId)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $date = CarbonImmutable::createFromFormat('!Y-m-d', $date);
+
+        return response()->json([
+            'slots' => $this->availableSlots($providerProfile, $service, $date),
         ]);
     }
 
@@ -139,5 +134,72 @@ class ProviderController extends Controller
         abort_unless($user instanceof User && $user->hasRole(UserTypeEnum::CLIENT->value), 403);
 
         return $user;
+    }
+
+    /** @return array<int, string> */
+    private function availableSlots(ProviderProfile $providerProfile, Service $service, CarbonImmutable $date): array
+    {
+        $businessHour = $providerProfile->businessHours()
+            ->where('day_of_week', $date->dayOfWeek)
+            ->first();
+
+        if ($businessHour === null || $businessHour->is_closed || $businessHour->opens_at === null || $businessHour->closes_at === null) {
+            return [];
+        }
+
+        $openingMinutes = $this->timeToMinutes($businessHour->opens_at);
+        $closingMinutes = $this->timeToMinutes($businessHour->closes_at);
+        $duration = $service->min_duration_minutes;
+        $dayStart = $date->startOfDay();
+        $dayEnd = $date->endOfDay();
+
+        $bookings = $providerProfile->bookings()
+            ->whereDate('schedule', $date->toDateString())
+            ->where('status', '!=', Booking::STATUS_CANCELLED)
+            ->get(['schedule', 'duration_minutes']);
+
+        $blockedTimes = $providerProfile->availabilityBlocks()
+            ->whereNotNull('starts_at')
+            ->whereNotNull('ends_at')
+            ->where('starts_at', '<', $dayEnd)
+            ->where('ends_at', '>', $dayStart)
+            ->get(['starts_at', 'ends_at']);
+
+        $slots = [];
+
+        for ($startMinutes = $openingMinutes; $startMinutes + $duration <= $closingMinutes; $startMinutes += 30) {
+            $slotStart = $date->setTime(intdiv($startMinutes, 60), $startMinutes % 60);
+            $slotEnd = $slotStart->addMinutes($duration);
+
+            if ($slotStart->lessThanOrEqualTo(now())) {
+                continue;
+            }
+
+            $bookingOverlaps = $bookings->contains(function (Booking $booking) use ($slotStart, $slotEnd): bool {
+                $bookingStart = CarbonImmutable::instance($booking->schedule);
+                $bookingEnd = $bookingStart->addMinutes($booking->duration_minutes ?? 30);
+
+                return $bookingStart->lessThan($slotEnd) && $bookingEnd->greaterThan($slotStart);
+            });
+            $blockOverlaps = $blockedTimes->contains(function (AvailabilityBlock $block) use ($slotStart, $slotEnd): bool {
+                $blockStart = CarbonImmutable::instance($block->starts_at);
+                $blockEnd = CarbonImmutable::instance($block->ends_at);
+
+                return $blockStart->lessThan($slotEnd) && $blockEnd->greaterThan($slotStart);
+            });
+
+            if (! $bookingOverlaps && ! $blockOverlaps) {
+                $slots[] = $slotStart->format('H:i');
+            }
+        }
+
+        return $slots;
+    }
+
+    private function timeToMinutes(string $time): int
+    {
+        [$hours, $minutes] = array_map('intval', explode(':', substr($time, 0, 5)));
+
+        return ($hours * 60) + $minutes;
     }
 }

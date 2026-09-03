@@ -12,6 +12,7 @@ type Props<T extends object> = Omit<React.ComponentProps<"input">, 'form' | 'dis
   placeholder?: string;
   form: InertiaFormProps<T> | InertiaPrecognitiveFormProps<T>
   disabled?: React.ComponentProps<typeof Calendar>['disabled'];
+  onChange?: (value: string) => void;
   classNames?: {
     label?: string;
     error?: string;
@@ -23,7 +24,7 @@ type Props<T extends object> = Omit<React.ComponentProps<"input">, 'form' | 'dis
   }
 }
 
-export function CalendarDatePicker<T extends object>({ name, label, classNames, form, disabled }: Props<T>) {
+export function CalendarDatePicker<T extends object>({ name, label, classNames, form, disabled, onChange }: Props<T>) {
   if (!form) {
     throw new Error("DatePicker component requires inertia useForm hook")
   }
@@ -32,7 +33,10 @@ export function CalendarDatePicker<T extends object>({ name, label, classNames, 
   const error = formError
 
   const handleSelect = (date: Date | undefined) => {
-    handleFormChange?.(date ? formatDateForInput(date) : '')
+    const value = date ? formatDateForInput(date) : ''
+
+    handleFormChange?.(value)
+    onChange?.(value)
     touch?.()
     validate?.()
   }

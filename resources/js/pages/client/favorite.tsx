@@ -8,28 +8,12 @@ import {
   Search,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import client from '@/routes/client';
+import { useNotice } from '@/contexts/notice-context';
 import { useInitials } from '@/hooks/use-initials';
+import client from '@/routes/client';
+import type { ServiceProvider, ServiceRecord } from '@/types/app';
+import ClientBookingForm from './providers/form';
 
-type Provider = {
-  id: string;
-  slug: string;
-  business_name: string;
-  description: string | null;
-  city: string | null;
-  avatar: string | null;
-  is_favorite: boolean;
-  services: { id: string; name: string; price: number }[];
-};
-
-// function initials(name: string): string {
-//   return name
-//     .split(' ')
-//     .map((part) => part[0])
-//     .join('')
-//     .slice(0, 2)
-//     .toUpperCase();
-// }
 
 function currency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -39,19 +23,40 @@ function currency(amount: number): string {
   }).format(amount);
 }
 
-export default function Favorite({ data }: { data: Provider[] }) {
+export default function Favorite({ data }: { data: ServiceProvider[] }) {
+  const { show } = useNotice()
   const getInitials = useInitials();
-  const removeFavorite = (provider: Provider): void => {
+  const removeFavorite = (provider: ServiceProvider): void => {
     router.delete(client.providers.unfavorite(provider.slug), {
       preserveScroll: true,
       only: ['data'],
     });
   };
 
+
+
+  const handleToggleBookingModal = (provider: ServiceProvider, service?: ServiceRecord): void => {
+    show({
+      type: 'modal',
+      title: 'Book an appointment',
+      classNames: { content: 'sm:max-w-xl' },
+      content: (
+        <ClientBookingForm
+          provider={provider}
+          service={service}
+        />
+      ),
+    });
+  };
+
+
+  console.log('Provider details', data)
+
   return (
     <>
       <Head title="Saved providers" />
-      <main className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
+
+      <div className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
         <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
           <section className="relative overflow-hidden rounded-3xl bg-[#17343c] px-6 py-8 text-white shadow-[0_20px_55px_rgba(23,52,60,0.14)] sm:px-8 lg:px-10 lg:py-10">
             <div className="pointer-events-none absolute -top-24 right-0 size-72 rounded-full bg-[#0f8a62]/30 blur-3xl" />
@@ -79,6 +84,7 @@ export default function Favorite({ data }: { data: Provider[] }) {
                   takes only a few clicks.
                 </p>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 <Button
                   asChild
@@ -89,6 +95,7 @@ export default function Favorite({ data }: { data: Provider[] }) {
                     Find a provider
                   </Link>
                 </Button>
+
                 <Button
                   asChild
                   variant="outline"
@@ -123,7 +130,7 @@ export default function Favorite({ data }: { data: Provider[] }) {
                   key={provider.id}
                   className="overflow-hidden rounded-2xl border border-[#dceae4] bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]"
                 >
-                  <div className="flex h-36 items-start justify-between bg-gradient-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-5">
+                  <div className="flex h-36 items-start justify-between bg-linear-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-5">
                     {provider.avatar ? (
                       <img
                         src={provider.avatar}
@@ -132,12 +139,13 @@ export default function Favorite({ data }: { data: Provider[] }) {
                       />
                     ) : (
                       <span className="flex size-16 items-center justify-center rounded-2xl bg-white/80 text-lg font-bold text-[#594e9e]">
-                        {getInitials(provider.business_name)}
+                        {getInitials(provider.name)}
                       </span>
                     )}
+
                     <button
                       type="button"
-                      aria-label={`Remove ${provider.business_name} from saved providers`}
+                      aria-label={`Remove ${provider.name} from saved providers`}
                       onClick={() => removeFavorite(provider)}
                       className="flex size-10 items-center justify-center rounded-full bg-white/85 text-[#d46c7a] shadow-sm transition hover:bg-white"
                     >
@@ -147,11 +155,12 @@ export default function Favorite({ data }: { data: Provider[] }) {
                       />
                     </button>
                   </div>
+
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-bold text-[#17343c] dark:text-white">
-                          {provider.business_name}
+                          {provider.name}
                         </h3>
                         <p className="mt-1 flex items-center gap-1 text-sm text-[#70908a] dark:text-[#9cb8b1]">
                           <MapPin aria-hidden="true" className="size-3.5" />
@@ -162,15 +171,17 @@ export default function Favorite({ data }: { data: Provider[] }) {
                         Open
                       </span>
                     </div>
+
                     <p className="mt-4 line-clamp-2 min-h-10 text-sm leading-5 text-[#70908a] dark:text-[#b6ccc5]">
                       {provider.description ||
                         'A trusted local provider ready to help you feel your best.'}
                     </p>
+
                     <div className="mt-4 flex items-center justify-between border-t border-[#e7f0ec] pt-4 dark:border-white/8">
                       <span className="text-sm text-[#41645a] dark:text-[#c4d8d1]">
                         {provider.services.length} services
                         {provider.services[0]
-                          ? ` · from ${currency(provider.services[0].price)}`
+                          ? ` · from ${currency(provider.services[0].price as number)}`
                           : ''}
                       </span>
                       <Link
@@ -181,18 +192,19 @@ export default function Favorite({ data }: { data: Provider[] }) {
                         <ArrowRight aria-hidden="true" className="size-4" />
                       </Link>
                     </div>
+
                     <Button
-                      asChild
                       className="mt-4 w-full rounded-xl bg-[#17343c] text-white hover:bg-[#27525a]"
+                      onClick={() => handleToggleBookingModal(provider)}
                     >
-                      <Link
+                      {/* <Link
                         href={client.booking.create({
                           query: { provider: provider.id },
                         })}
-                      >
-                        <CalendarDays aria-hidden="true" className="size-4" />
-                        Book a visit
-                      </Link>
+                      > */}
+                      <CalendarDays aria-hidden="true" className="size-4" />
+                      Book a visit
+                      {/* </Link> */}
                     </Button>
                   </div>
                 </article>
@@ -219,7 +231,7 @@ export default function Favorite({ data }: { data: Provider[] }) {
             </section>
           )}
         </div>
-      </main>
+      </div>
     </>
   );
 }

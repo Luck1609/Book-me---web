@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClientBookingRequest;
 use App\Models\Booking;
 use App\Models\ProviderProfile;
+use App\Models\Service;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,7 +25,7 @@ class BookingController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-        abort_unless($user->hasRole(UserTypeEnum::CLIENT->value), 403);
+        abort_unless($user->hasRole(UserTypeEnum::CLIENT), 403);
         Gate::authorize('viewAny', Booking::class);
         $tab = $request->string('tab')->toString();
         $tab = in_array($tab, ['upcoming', 'past', 'cancelled'], true) ? $tab : 'upcoming';
@@ -58,89 +59,39 @@ class BookingController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response|RedirectResponse
-    {
-        abort_unless($request->user()?->hasRole(UserTypeEnum::CLIENT->value), 403);
-        $providerId = $request->string('provider')->toString();
-
-        if ($providerId === '') {
-            return to_route('client.providers.index');
-        }
-
-        $provider = ProviderProfile::query()
-            ->approved()
-            ->where('is_accepting_bookings', true)
-            ->where(fn (Builder $query) => $query->whereKey($providerId)->orWhere('slug', $providerId))
-            ->with([
-                'services' => fn (Builder|Relation $query) => $query
-                    ->where('is_active', true)
-                    ->select([
-                        'id',
-                        'provider_profile_id',
-                        'name',
-                        'description',
-                        'price',
-                        'min_duration_minutes',
-                        'max_duration_minutes',
-                        'requires_payment',
-                    ])
-                    ->orderBy('sort_order')
-                    ->orderBy('name'),
-                'businessHours:id,provider_profile_id,day_of_week,is_closed,opens_at,closes_at',
-            ])
-            ->firstOrFail();
-
-        return inertia('client/bookings/form/index', [
-            'provider' => [
-                'id' => $provider->id,
-                'slug' => $provider->slug,
-                'business_name' => $provider->business_name,
-                'address' => $provider->address,
-                'city' => $provider->city,
-            ],
-            'services' => $provider->services->map(fn ($service): array => [
-                'id' => $service->id,
-                'name' => $service->name,
-                'description' => $service->description,
-                'price' => (float) $service->price,
-                'min_duration_minutes' => $service->min_duration_minutes,
-                'max_duration_minutes' => $service->max_duration_minutes,
-                'requires_payment' => $service->requires_payment,
-            ])->values()->all(),
-            'selectedService' => $request->string('service')->toString(),
-            'businessHours' => $provider->businessHours->map(fn ($hour): array => [
-                'day_of_week' => $hour->day_of_week,
-                'is_closed' => $hour->is_closed,
-                'opens_at' => $hour->opens_at,
-                'closes_at' => $hour->closes_at,
-            ])->values()->all(),
-        ]);
-    }
 
     public function store(StoreClientBookingRequest $request): RedirectResponse
     {
         /** @var User $user */
         $user = $request->user();
-        $data = $request->validated();
-        $schedule = CarbonImmutable::createFromFormat('Y-m-d H:i', "{$data['date']} {$data['time']}");
-        $duration = (int) $data['duration_minutes'];
+        [
+          'time' => $time,
+          'date' => $date,
+          'provider_profile_id' => $providerId,
+          'service_id' => $serviceId,
+          'notes' => $notes
+        ] = $request->validated();
 
-        DB::transaction(function () use ($data, $schedule, $duration, $user): void {
-            $provider = ProviderProfile::query()->lockForUpdate()->findOrFail($data['provider_profile_id']);
+        $schedule = CarbonImmutable::createFromFormat('Y-m-d H:i', "{$date} {$time}");
+
+        $duration = Service::find($serviceId)?->max_duration_minutes;
+
+        DB::transaction(function () use ($serviceId, $providerId, $schedule, $duration, $user, $notes): void {
+            $provider = ProviderProfile::query()->lockForUpdate()->findOrFail($providerId);
             $this->ensureWithinBusinessHours($provider, $schedule, $duration);
             $this->ensureNoBookingConflict($provider, $schedule, $duration);
             $provider->clients()->syncWithoutDetaching([$user->id]);
             $provider->bookings()->create([
                 'user_id' => $user->id,
-                'service_id' => $data['service_id'],
+                'service_id' => $serviceId,
                 'schedule' => $schedule,
                 'duration_minutes' => $duration,
-                'note' => $data['notes'] ?? null,
+                'note' => $notes ?? null,
                 'status' => Booking::STATUS_PENDING,
             ]);
         });
 
-        return to_route('client.booking.index')->with('success', 'Booking requested. The provider will confirm it shortly.');
+        return back()->with('success', 'Booking requested. The provider will confirm it shortly.');
     }
 
     public function show(Request $request, Booking $booking): Response
@@ -194,6 +145,7 @@ class BookingController extends Controller
             'amount' => (float) ($booking->service?->price ?? 0),
             'status' => $status,
             'note' => $booking->note,
+            'booked_on' => $booking->created_at->format('l, M j, Y'),
             'can_cancel' => $status !== Booking::STATUS_COMPLETED
                 && $status !== Booking::STATUS_CANCELLED
                 && $booking->schedule?->isFuture(),

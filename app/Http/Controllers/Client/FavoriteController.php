@@ -7,6 +7,7 @@ use App\Enums\UserTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Models\ProviderProfile;
 use App\Models\User;
+use App\Services\HelperService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
@@ -31,11 +32,12 @@ class FavoriteController extends Controller
             ->map(fn (ProviderProfile $provider): array => [
                 'id' => $provider->id,
                 'slug' => $provider->slug,
-                'business_name' => $provider->business_name,
+                'name' => $provider->business_name,
                 'description' => $provider->description,
                 'city' => $provider->city,
                 'avatar' => $provider->getFirstMediaUrl('avatar') ?: null,
                 'is_favorite' => true,
+                'business_hours' => HelperService::getBusinessHours($provider),
                 'services' => $provider->services->map(fn ($service): array => [
                     'id' => $service->id,
                     'name' => $service->name,

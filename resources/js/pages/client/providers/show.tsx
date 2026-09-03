@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import {
   ArrowLeft,
+  CalendarCheck,
   CalendarDays,
   Clock3,
   Heart,
@@ -10,56 +11,16 @@ import {
   Scissors,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CustomTooltip } from '@/components/ui/tooltip';
 import { useNotice } from '@/contexts/notice-context';
+import { useInitials } from '@/hooks/use-initials';
+import { cn } from '@/lib/utils';
 import client from '@/routes/client';
-import ClientBookingForm from './booking-form';
+import type { BusinessHour, ServiceProvider, ServiceRecord } from '@/types/app';
+import ClientBookingForm from './form';
 
-type Provider = {
-  id: string;
-  slug: string;
-  business_name: string;
-  description: string | null;
-  phone: string | null;
-  email: string | null;
-  address: string | null;
-  city: string | null;
-  avatar: string | null;
-  is_favorite: boolean;
-  services: Service[];
-};
-type Service = {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  min_duration_minutes: number;
-  max_duration_minutes: number;
-  requires_payment: boolean;
-};
-type BusinessHour = {
-  day_of_week: number;
-  is_closed: boolean;
-  opens_at: string | null;
-  closes_at: string | null;
-};
-type BookedTime = {
-  date: string;
-  time: string;
-  duration_minutes: number | null;
-};
-type BlockedTime = {
-  starts_at: string;
-  ends_at: string;
-};
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
+
 function currency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -67,10 +28,10 @@ function currency(amount: number): string {
     maximumFractionDigits: 0,
   }).format(amount);
 }
-function duration(service: Service): string {
-  return service.min_duration_minutes === service.max_duration_minutes
-    ? `${service.min_duration_minutes} min`
-    : `${service.min_duration_minutes}–${service.max_duration_minutes} min`;
+function duration(service: ServiceRecord): string {
+  return service.min_duration === service.max_duration
+    ? `${service.min_duration} min`
+    : `${service.min_duration}–${service.max_duration} min`;
 }
 function dayName(day: number): string {
   return (
@@ -89,15 +50,12 @@ function dayName(day: number): string {
 export default function ProviderShow({
   provider,
   businessHours,
-  bookings,
-  blockedTimes,
 }: {
-  provider: Provider;
+    provider: ServiceProvider;
   businessHours: BusinessHour[];
-  bookings: BookedTime[];
-  blockedTimes: BlockedTime[];
 }) {
   const { show } = useNotice();
+  const getInitials = useInitials()
   const toggleFavorite = (): void => {
     if (provider.is_favorite) {
       router.delete(client.providers.unfavorite(provider.slug), {
@@ -118,7 +76,7 @@ export default function ProviderShow({
     );
   };
 
-  const handleToggleBookingModal = (): void => {
+  const handleToggleBookingModal = (service?: ServiceRecord): void => {
     show({
       type: 'modal',
       title: 'Book an appointment',
@@ -126,9 +84,8 @@ export default function ProviderShow({
       content: (
         <ClientBookingForm
           provider={provider}
+          service={service}
           businessHours={businessHours}
-          bookings={bookings}
-          blockedTimes={blockedTimes}
         />
       ),
     });
@@ -136,7 +93,7 @@ export default function ProviderShow({
 
   return (
     <>
-      <Head title={provider.business_name} />
+      <Head title={provider.name} />
 
       <div className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
         <div className="mx-auto max-w-5xl space-y-6 lg:space-y-8">
@@ -149,16 +106,16 @@ export default function ProviderShow({
           </Link>
 
           <section className="overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
-            <div className="h-48 bg-gradient-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-6">
+            <div className="h-48 bg-linear-to-br from-[#d9f7e8] via-[#f3f0ff] to-[#ffead9] p-6">
               {provider.avatar ? (
                 <img
-                  src={provider.avatar}
+                  src={String(provider.avatar)}
                   alt=""
                   className="size-24 rounded-3xl object-cover ring-4 ring-white/70"
                 />
               ) : (
                 <span className="flex size-24 items-center justify-center rounded-3xl bg-white/80 text-2xl font-bold text-[#594e9e]">
-                  {initials(provider.business_name)}
+                    {getInitials(provider.name)}
                 </span>
               )}
             </div>
@@ -166,7 +123,7 @@ export default function ProviderShow({
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-                    {provider.business_name}
+                    {provider.name}
                   </h1>
                   <p className="mt-2 flex items-center gap-2 text-sm text-[#70908a] dark:text-[#9cb8b1]">
                     <MapPin className="size-4" />
@@ -177,30 +134,32 @@ export default function ProviderShow({
                       'A trusted local provider ready to help you feel your best.'}
                   </p>
                 </div>
+
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     aria-label={
                       provider.is_favorite
-                        ? `Remove ${provider.business_name} from saved providers`
-                        : `Save ${provider.business_name}`
+                        ? `Remove ${provider.name} from saved providers`
+                        : `Save ${provider.name}`
                     }
-                    aria-pressed={provider.is_favorite}
+                    aria-pressed={provider.is_favorite as boolean}
                     onClick={toggleFavorite}
                     className="flex size-10 items-center justify-center rounded-xl border border-[#dceae4] text-[#d46c7a] transition hover:bg-[#fff4f5] dark:border-white/10"
                   >
                     <Heart
                       aria-hidden="true"
-                      className={`size-5 ${provider.is_favorite ? 'fill-current' : ''}`}
+                      className={cn("size-5", provider.is_favorite ? 'fill-current' : '')}
                     />
                   </button>
 
-                  <Button onClick={handleToggleBookingModal}>
+                  <Button onClick={() => handleToggleBookingModal()}>
                       <CalendarDays className="size-4" />
                       Book a visit
                   </Button>
                 </div>
               </div>
+
               <div className="mt-5 flex flex-wrap gap-4 text-sm text-[#41645a] dark:text-[#c4d8d1]">
                 {provider.phone && (
                   <a
@@ -211,6 +170,7 @@ export default function ProviderShow({
                     {provider.phone}
                   </a>
                 )}
+
                 {provider.email && (
                   <a
                     href={`mailto:${provider.email}`}
@@ -223,14 +183,17 @@ export default function ProviderShow({
               </div>
             </div>
           </section>
+
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
             <section className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
               <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
                 Choose your ritual
               </p>
+
               <h2 className="mt-1 text-2xl font-bold text-[#17343c] dark:text-white">
                 Services
               </h2>
+
               <div className="mt-5 space-y-3">
                 {provider.services.map((service) => (
                   <div
@@ -241,6 +204,7 @@ export default function ProviderShow({
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#d9f7e8] text-[#0f6b4d]">
                         <Scissors className="size-4" />
                       </span>
+
                       <div>
                         <h3 className="font-bold text-[#17343c] dark:text-white">
                           {service.name}
@@ -255,18 +219,22 @@ export default function ProviderShow({
                         </p>
                       </div>
                     </div>
+
                     <div className="flex items-center justify-between gap-4 sm:block sm:text-right">
                       <p className="text-lg font-bold text-[#17343c] dark:text-white">
-                        {currency(service.price)}
+                        {currency(service.price as number)}
                       </p>
-                      <Link
-                        href={client.booking.create({
-                          query: { provider: provider.id, service: service.id },
-                        })}
-                        className="text-sm font-bold text-[#0f8a62]"
-                      >
-                        Book this
-                      </Link>
+
+                      <CustomTooltip content="Book this service" asChild>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="border-emerald-500! hover:bg-emerald-400/10! hover:border-emerald-300! group"
+                          onClick={() => handleToggleBookingModal(service)}
+                        >
+                          <CalendarCheck className="group-hover:text-emerald-300 text-emerald-500" />
+                        </Button>
+                      </CustomTooltip>
                     </div>
                   </div>
                 ))}
@@ -277,13 +245,16 @@ export default function ProviderShow({
                 )}
               </div>
             </section>
+
             <aside className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
               <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
                 Opening hours
               </p>
+
               <h2 className="mt-1 text-xl font-bold text-[#17343c] dark:text-white">
                 Plan your visit
               </h2>
+
               <div className="mt-5 space-y-3">
                 {businessHours.length > 0 ? (
                   businessHours.map((hour) => (

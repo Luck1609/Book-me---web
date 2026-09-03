@@ -1,5 +1,5 @@
-import { User } from "./auth";
-import { ProviderStatus } from "./enums";
+import type { User } from "./auth";
+import type { ProviderStatus } from "./enums";
 
 
 
@@ -15,6 +15,7 @@ export type ServiceRecord = {
 };
 
 export type ServiceProvider = {
+	id: string;
 	name: string;
 	category: string;
 	region: string;
@@ -30,7 +31,11 @@ export type ServiceProvider = {
 	workingdays: string[];
 	worksOnHolidays: boolean
 	isAcceptingBookings: boolean;
-	services: ServiceRecord[]
+  services: ServiceRecord[];
+  businessHours: BusinessHour[]
+  slug: string;
+  avatar: string | null;
+	[x: string]: unknown;
 }
 
 export type BookingRecord = {
@@ -41,4 +46,15 @@ export type BookingRecord = {
 	notes: string | null;
 	client: User;
 	servant: User;
+	[x: string]: unknown;
 }
+
+
+export type BusinessHour = {
+  id: string;
+  day_of_week: number;
+  is_closed: boolean;
+  opens_at: string | null;
+  closes_at: string | null;
+	[x: string]: unknown;
+};

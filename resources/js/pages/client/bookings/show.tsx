@@ -11,7 +11,9 @@ import {
 } from 'lucide-react';
 import { destroy } from '@/actions/App/Http/Controllers/Client/BookingController';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import client from '@/routes/client';
+import { useNotice } from '@/contexts/notice-context';
 
 type Booking = {
   id: string;
@@ -53,7 +55,7 @@ function Status({ status }: { status: string }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold ${tone}`}
+      className={cn("inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold", tone)}
     >
       <Icon className="size-4" />
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -63,16 +65,25 @@ function Status({ status }: { status: string }) {
 
 export default function BookingShow({ booking }: { booking: Booking }) {
   const form = useForm({});
+  const { show } = useNotice()
+
   const handleCancel = () => {
-    if (window.confirm('Cancel this booking request?')) {
-      form.delete(destroy(booking.id).url);
-    }
+
+    show({
+      type: "notice",
+      title: "Cancel booking",
+      description: "Are you sure you want to cancel this booking. This action action clears you booking history, which may be unavailable for booking in the future.",
+      onConfirm: () => {
+        form.delete(destroy(booking.id).url);
+      }
+    })
   };
 
   return (
     <>
       <Head title={`${booking.service} · ${booking.provider}`} />
-      <main className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
+
+      <div className="min-h-[calc(100vh-3rem)] bg-[#f6faf8] px-4 py-6 text-[#17343c] sm:px-6 lg:px-8 lg:py-8 dark:bg-[#101917] dark:text-[#e6f1ed]">
         <div className="mx-auto max-w-5xl space-y-6 lg:space-y-8">
           <Link
             href={client.booking.index()}
@@ -81,6 +92,7 @@ export default function BookingShow({ booking }: { booking: Booking }) {
             <ArrowLeft className="size-4" />
             Back to my bookings
           </Link>
+
           <section className="flex flex-col gap-5 rounded-3xl bg-[#17343c] px-6 py-8 text-white shadow-[0_20px_55px_rgba(23,52,60,0.14)] sm:flex-row sm:items-end sm:justify-between sm:px-8 lg:px-10">
             <div>
               <p className="text-xs font-bold tracking-[0.16em] text-[#8fe0bb] uppercase">
@@ -95,6 +107,8 @@ export default function BookingShow({ booking }: { booking: Booking }) {
             </div>
             <Status status={booking.status} />
           </section>
+
+
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
             <div className="space-y-6">
               <section className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
@@ -145,6 +159,7 @@ export default function BookingShow({ booking }: { booking: Booking }) {
                 </p>
               </section>
             </div>
+
             <aside className="space-y-6">
               <section className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
                 <p className="text-xs font-bold tracking-[0.14em] text-[#70908a] uppercase dark:text-[#9cb8b1]">
@@ -171,6 +186,7 @@ export default function BookingShow({ booking }: { booking: Booking }) {
                   )}
                 </div>
               </section>
+
               <section className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-[#70908a]">
@@ -180,6 +196,7 @@ export default function BookingShow({ booking }: { booking: Booking }) {
                     {currency(booking.amount)}
                   </span>
                 </div>
+
                 {booking.can_cancel && (
                   <form
                     onSubmit={(event) => {
@@ -201,7 +218,7 @@ export default function BookingShow({ booking }: { booking: Booking }) {
             </aside>
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }

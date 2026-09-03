@@ -100,7 +100,7 @@ class ClientBookingTest extends TestCase
         $this->assertTrue($provider->clients()->whereKey($client->id)->exists());
     }
 
-    public function test_provider_availability_for_client_booking_excludes_cancelled_bookings(): void
+    public function test_provider_availability_slots_are_generated_without_booked_times(): void
     {
         $client = $this->createClient();
         [, $provider] = $this->createProvider('The Gilded Blade', ProviderStatus::Approved);
@@ -111,6 +111,12 @@ class ClientBookingTest extends TestCase
             'max_duration_minutes' => 45,
         ]);
         $date = now()->addDays(2)->setTime(10, 0);
+        BusinessHour::factory()->create([
+            'provider_profile_id' => $provider->id,
+            'day_of_week' => $date->dayOfWeek,
+            'opens_at' => '09:00',
+            'closes_at' => '17:00',
+        ]);
 
         $provider->bookings()->create([
             'user_id' => User::factory()->create()->id,
@@ -132,17 +138,16 @@ class ClientBookingTest extends TestCase
             'type' => 'break',
         ]);
 
-        $this->actingAs($client)
-            ->get(route('client.providers.show', $provider->slug))
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('client/providers/show')
-                ->has('bookings', 1)
-                ->where('bookings.0.date', $date->format('Y-m-d'))
-                ->where('bookings.0.time', '10:00')
-                ->where('bookings.0.duration_minutes', 45)
-                ->has('blockedTimes', 1)
-                ->where('blockedTimes.0.starts_at', $date->copy()->addHours(2)->format('Y-m-d H:i')));
+        $response = $this->actingAs($client)
+            ->get(route('client.providers.availability', $provider->slug).'?service_id='.$service->id.'&date='.$date->format('Y-m-d'))
+            ->assertOk();
+        $slots = $response->json('slots');
+
+        $this->assertContains('09:00', $slots);
+        $this->assertContains('11:00', $slots);
+        $this->assertContains('13:00', $slots);
+        $this->assertNotContains('10:00', $slots);
+        $this->assertNotContains('12:00', $slots);
     }
 
     public function test_client_cannot_book_a_time_that_is_already_booked_or_blocked(): void
