@@ -23,9 +23,11 @@ export default function AuthLayout({
   asDirectChild = true,
   redirect
 }: AuthLayoutProps) {
-  console.log('Auth layout applied')
+
   if (asDirectChild) {
-    return <NoticeProvider>{children}</NoticeProvider>;
+    return (
+      <NoticeProvider>{children}</NoticeProvider>
+    );
   }
 
   return (
@@ -33,9 +35,9 @@ export default function AuthLayout({
       <div className="min-h-screen bg-background px-4 py-4 text-[#17343c] selection:bg-[#bce9d4] selection:text-[#17343c] sm:px-6 lg:px-10 lg:py-6">
         <div
           className={cn(
-            'mx-auto flex min-h-[calc(100dvh-2rem)] max-h-[] max-w-360 flex-col overflow-hidden rounded-4xl border border-[#e2ebe6] bg-white shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
+            'mx-auto flex min-h-[calc(100dvh-2rem)] max-h-[] max-w-360 flex-col overflow-hidden rounded-4xl border border-[#e2ebe6] dark:border-[#e2ebe6]/10 bg-card shadow-[0_24px_70px_rgba(34,60,70,0.12)] lg:grid lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(350px,0.86fr)_minmax(0,1.14fr)]',
             classNames?.wrapper,
-            )}
+          )}
         >
           <aside className="relative hidden overflow-hidden bg-[#17343c] p-8 text-white lg:flex lg:flex-col lg:p-10 xl:p-12">
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -176,7 +178,7 @@ export default function AuthLayout({
                     <Sparkles aria-hidden="true" className="size-3" /> Book Me
                     account
                   </div>
-                  <h1 className="text-3xl leading-tight font-bold tracking-[-0.055em] text-[#17343c] sm:text-4xl">
+                  <h1 className="text-3xl leading-tight font-bold tracking-[-0.055em] text-emerald-950 sm:text-4xl">
                     {title}
                   </h1>
                   <p className="mt-3 max-w-lg text-sm leading-6 text-[#718282] sm:text-base">
@@ -188,7 +190,7 @@ export default function AuthLayout({
               </div>
             </div>
 
-            <footer className="flex flex-col gap-3 border-t border-[#edf1ef] px-5 py-5 text-[11px] text-[#8a9a9b] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+            <footer className="flex flex-col gap-3 border-t border-[#edf1ef] dark:border-[#edf1ef]/10 px-5 py-5 text-[11px] text-[#8a9a9b] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
               <span>Simple scheduling for growing businesses.</span>
               <div className="flex items-center gap-4">
                 <Link

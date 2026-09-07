@@ -38,7 +38,10 @@ class BookingPolicy
      */
     public function update(User $user, Booking $booking): bool
     {
-        return false;
+        return $booking->providerProfile?->user_id === $user->id
+            && $booking->status !== Booking::STATUS_CANCELLED
+            && $booking->status !== Booking::STATUS_COMPLETED
+            && $booking->schedule?->isFuture();
     }
 
     /**
@@ -46,7 +49,8 @@ class BookingPolicy
      */
     public function delete(User $user, Booking $booking): bool
     {
-        return $booking->user_id === $user->id
+        return ($booking->user_id === $user->id
+            || $booking->providerProfile?->user_id === $user->id)
             && $booking->status !== Booking::STATUS_CANCELLED
             && $booking->schedule?->isFuture();
     }

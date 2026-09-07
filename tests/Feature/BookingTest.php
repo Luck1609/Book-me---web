@@ -148,6 +148,87 @@ class BookingTest extends TestCase
         $this->assertSame(0, $profile->bookings()->count());
     }
 
+    public function test_provider_can_accept_and_cancel_a_pending_booking(): void
+    {
+        [$provider, $profile] = $this->createProvider();
+        $client = User::factory()->create();
+        $service = $profile->services()->create([
+            'name' => 'Classic cut',
+            'description' => 'A classic cut.',
+            'price' => 70,
+            'min_duration_minutes' => 30,
+            'max_duration_minutes' => 60,
+        ]);
+        $booking = $profile->bookings()->create([
+            'user_id' => $client->id,
+            'service_id' => $service->id,
+            'schedule' => now()->addDay(),
+            'duration_minutes' => 45,
+            'status' => Booking::STATUS_PENDING,
+        ]);
+
+        $this->actingAs($provider)
+            ->put(route('booking.update', $booking), ['action' => 'accept'])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertSame(Booking::STATUS_CONFIRMED, $booking->fresh()->status);
+
+        $this->actingAs($provider)
+            ->delete(route('booking.destroy', $booking))
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertSame(Booking::STATUS_CANCELLED, $booking->fresh()->status);
+    }
+
+    public function test_provider_can_reschedule_a_booking_and_detail_includes_client_service_history(): void
+    {
+        [$provider, $profile] = $this->createProvider();
+        $client = User::factory()->create(['name' => 'Jamie Client']);
+        $service = $profile->services()->create([
+            'name' => 'Signature haircut',
+            'description' => 'A tailored cut.',
+            'price' => 85,
+            'min_duration_minutes' => 45,
+            'max_duration_minutes' => 60,
+        ]);
+        $profile->bookings()->create([
+            'user_id' => $client->id,
+            'service_id' => $service->id,
+            'schedule' => now()->subDays(3),
+            'duration_minutes' => 45,
+            'status' => Booking::STATUS_CONFIRMED,
+        ]);
+        $booking = $profile->bookings()->create([
+            'user_id' => $client->id,
+            'service_id' => $service->id,
+            'schedule' => now()->addDay(),
+            'duration_minutes' => 45,
+            'status' => Booking::STATUS_CONFIRMED,
+        ]);
+        $newSchedule = now()->addDays(2)->setTime(14, 30);
+
+        $this->actingAs($provider)
+            ->put(route('booking.update', $booking), [
+                'action' => 'reschedule',
+                'date' => $newSchedule->format('Y-m-d'),
+                'time' => $newSchedule->format('H:i'),
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertTrue($booking->fresh()->schedule->equalTo($newSchedule));
+
+        $this->actingAs($provider)
+            ->get(route('booking.show', $booking))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('booking.client_id', $client->id)
+                ->where('booking.provider_profile_id', $profile->id)
+                ->where('booking.totalSpent', '$85.00')
+                ->where('booking.lastVisit', fn (string $lastVisit): bool => str_contains($lastVisit, 'day')));
+    }
+
     /** @return array{0: User, 1: ProviderProfile} */
     private function createProvider(): array
     {

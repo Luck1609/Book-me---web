@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
   ArrowLeft,
   CalendarCheck2,
@@ -18,11 +18,25 @@ import {
   Sparkles,
   UserRound,
   X,
+  XCircle,
 } from 'lucide-react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import {
+  destroy,
+  update,
+} from '@/actions/App/Http/Controllers/BookingController';
+import { store as startConversation } from '@/actions/App/Http/Controllers/ChatController';
+import { Input } from '@/components/form/input';
+import SubmitButton from '@/components/form/submit-button';
+import { Button } from '@/components/ui/button';
+import { useNotice } from '@/contexts/notice-context';
 import booking from '@/routes/booking';
 
 type BookingDetails = {
   id: string;
+  provider_profile_id: string;
+  client_id: string;
   client: string;
   initials: string;
   email: string;
@@ -35,11 +49,40 @@ type BookingDetails = {
   status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
   statusMessage: string;
   note: string;
+  schedule: string | null;
+  lastVisit: string;
+  totalSpent: string;
+  can_accept: boolean;
+  can_reschedule: boolean;
+  can_cancel: boolean;
 };
 
 type BookingShowProps = {
   booking: BookingDetails;
 };
+
+type BookingActionData = {
+  action: 'accept';
+};
+
+type RescheduleFormData = {
+  action: 'reschedule';
+  date: string;
+  time: string;
+};
+
+type ConversationFormData = {
+  provider_profile_id: string;
+  client_id: string | null;
+};
+
+function scheduleDate(schedule: string | null): string {
+  return schedule?.slice(0, 10) ?? '';
+}
+
+function scheduleTime(schedule: string | null): string {
+  return schedule?.slice(11, 16) ?? '';
+}
 
 function DetailRow({
   icon: Icon,
@@ -78,6 +121,8 @@ function BookingStatus({ status }: { status: BookingDetails['status'] }) {
     >
       {isPending ? (
         <Clock3 aria-hidden="true" className="size-3.5" />
+      ) : isCancelled ? (
+        <XCircle aria-hidden="true" className="size-3.5" />
       ) : (
         <CheckCircle2 aria-hidden="true" className="size-3.5" />
       )}
@@ -86,10 +131,125 @@ function BookingStatus({ status }: { status: BookingDetails['status'] }) {
   );
 }
 
+function RescheduleBookingForm({ booking }: { booking: BookingDetails }) {
+  const { hide } = useNotice();
+  const form = useForm<RescheduleFormData>({
+    action: 'reschedule',
+    date: scheduleDate(booking.schedule),
+    time: scheduleTime(booking.schedule),
+  }).withPrecognition(update(booking.id));
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    form.put(update.url(booking.id), {
+      preserveScroll: true,
+      onSuccess: hide,
+    });
+  };
+
+  return (
+    <form className="grid gap-5" onSubmit={handleSubmit}>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Input
+          name="date"
+          label="New date"
+          type="date"
+          min={new Date().toISOString().slice(0, 10)}
+          required
+          form={form}
+        />
+        <Input
+          name="time"
+          label="New start time"
+          type="time"
+          required
+          form={form}
+        />
+      </div>
+      <div className="flex flex-col-reverse gap-3 border-t border-[#e7f0ec] pt-5 sm:flex-row sm:justify-end dark:border-white/8">
+        <Button type="button" variant="outline" onClick={hide}>
+          Keep current time
+        </Button>
+        <SubmitButton form={form} label="Save new time" />
+      </div>
+    </form>
+  );
+}
+
 export default function BookingShow({
   booking: providedBooking,
 }: BookingShowProps) {
   const currentBooking = providedBooking;
+  const { hide, show, toggleLoading } = useNotice();
+  const [copied, setCopied] = useState(false);
+  const acceptForm = useForm<BookingActionData>({ action: 'accept' });
+  const cancelForm = useForm({});
+  const messageForm = useForm<ConversationFormData>({
+    provider_profile_id: '',
+    client_id: null,
+  });
+
+  const handleCopyBookingId = async () => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(currentBooking.id);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = currentBooking.id;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+    }
+
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
+  const handleAccept = () => {
+    acceptForm.put(update.url(currentBooking.id), {
+      preserveScroll: true,
+    });
+  };
+
+  const handleCancel = () => {
+    show({
+      type: 'notice',
+      title: 'Cancel this booking?',
+      description:
+        'The client will receive an update that this appointment has been cancelled.',
+      onConfirm: () => {
+        toggleLoading(true);
+        cancelForm.delete(destroy.url(currentBooking.id), {
+          preserveScroll: true,
+          onSuccess: hide,
+          onFinish: () => toggleLoading(false),
+        });
+      },
+    });
+  };
+
+  const handleReschedule = () => {
+    show({
+      type: 'modal',
+      title: 'Reschedule booking',
+      description:
+        'Choose a new date and start time for this client appointment.',
+      modalType: 'default',
+      classNames: { content: 'sm:max-w-2xl' },
+      content: <RescheduleBookingForm booking={currentBooking} />,
+    });
+  };
+
+  const handleMessageClient = () => {
+    messageForm.transform(() => ({
+      provider_profile_id: currentBooking.provider_profile_id,
+      client_id: currentBooking.client_id,
+    }));
+    messageForm.post(startConversation.url());
+  };
 
   return (
     <>
@@ -110,10 +270,16 @@ export default function BookingShow({
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={handleCopyBookingId}
+                aria-live="polite"
                 className="inline-flex items-center gap-2 rounded-xl border border-[#dceae4] bg-white px-3.5 py-2.5 text-sm font-bold text-[#41645a] transition hover:bg-[#f4fbf7] dark:border-white/10 dark:bg-[#17221f] dark:text-[#c4d8d1] dark:hover:bg-white/8"
               >
-                <Copy aria-hidden="true" className="size-4" />
-                Copy booking ID
+                {copied ? (
+                  <Check aria-hidden="true" className="size-4" />
+                ) : (
+                  <Copy aria-hidden="true" className="size-4" />
+                )}
+                {copied ? 'Copied!' : 'Copy booking ID'}
               </button>
               <button
                 type="button"
@@ -282,7 +448,7 @@ export default function BookingShow({
                       Client profile
                     </p>
                     <h2 className="mt-1 text-lg font-bold tracking-tight text-[#17343c] dark:text-white">
-                      Get to know John
+                      Get to know {currentBooking.client.split(' ')[0]}
                     </h2>
                   </div>
                   <button
@@ -302,7 +468,7 @@ export default function BookingShow({
                       {currentBooking.client}
                     </p>
                     <p className="mt-0.5 text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                      Returning client · 8 visits
+                      Client
                     </p>
                   </div>
                 </div>
@@ -330,10 +496,14 @@ export default function BookingShow({
                 </div>
                 <button
                   type="button"
+                  onClick={handleMessageClient}
+                  disabled={messageForm.processing}
                   className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-[#dceae4] py-3 text-sm font-bold text-[#0f8a62] transition hover:bg-[#f4fbf7] dark:border-white/10 dark:text-[#8fe0bb] dark:hover:bg-white/8"
                 >
                   <MessageCircle aria-hidden="true" className="size-4" />
-                  Message client
+                  {messageForm.processing
+                    ? 'Opening conversation…'
+                    : 'Message client'}
                 </button>
               </section>
 
@@ -353,16 +523,33 @@ export default function BookingShow({
                   />
                 </div>
                 <div className="mt-5 grid gap-2">
+                  {currentBooking.can_accept && (
+                    <button
+                      type="button"
+                      onClick={handleAccept}
+                      disabled={acceptForm.processing}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 text-sm font-bold text-[#0f6b4d] transition hover:bg-[#effcf5] disabled:cursor-wait disabled:opacity-60"
+                    >
+                      <Check aria-hidden="true" className="size-4" />
+                      {acceptForm.processing ? 'Accepting…' : 'Accept booking'}
+                    </button>
+                  )}
                   <button
                     type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 text-sm font-bold text-[#0f6b4d] transition hover:bg-[#effcf5]"
+                    onClick={handleReschedule}
+                    disabled={!currentBooking.can_reschedule}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 text-sm font-bold text-[#0f6b4d] transition hover:bg-[#effcf5] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Edit3 aria-hidden="true" className="size-4" />
                     Reschedule booking
                   </button>
                   <button
                     type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/25 py-3 text-sm font-bold text-white transition hover:bg-white/10"
+                    onClick={handleCancel}
+                    disabled={
+                      !currentBooking.can_cancel || cancelForm.processing
+                    }
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/25 py-3 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <X aria-hidden="true" className="size-4" />
                     Cancel booking
@@ -384,7 +571,7 @@ export default function BookingShow({
                       Service history
                     </p>
                     <p className="mt-0.5 text-sm font-bold text-[#17343c] dark:text-white">
-                      Last visit 18 days ago
+                      Last visit {currentBooking.lastVisit}
                     </p>
                   </div>
                 </div>
@@ -393,7 +580,7 @@ export default function BookingShow({
                     Total spent
                   </span>
                   <span className="text-sm font-bold text-[#17343c] dark:text-white">
-                    $680.00
+                    {currentBooking.totalSpent}
                   </span>
                 </div>
               </section>

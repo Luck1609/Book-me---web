@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Booking;
 use App\Models\ProviderProfile;
 use App\Models\Service;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -137,24 +139,58 @@ class BookingController extends Controller
         ]);
 
         return Inertia::render('provider/booking/show', [
-            'booking' => $this->bookingData($booking),
+            'booking' => [
+                ...$this->bookingData($booking),
+                ...$this->serviceHistory($booking),
+            ],
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateBookingRequest $request, Booking $booking): RedirectResponse
     {
-        //
+        Gate::authorize('update', $booking);
+        $data = $request->validated();
+
+        if ($data['action'] === 'accept') {
+            abort_if($booking->status !== Booking::STATUS_PENDING, 422, 'Only pending bookings can be accepted.');
+            $booking->update(['status' => Booking::STATUS_CONFIRMED]);
+
+            return back()->with('success', 'Booking accepted.');
+        }
+
+        $schedule = CarbonImmutable::createFromFormat('Y-m-d H:i', "{$data['date']} {$data['time']}");
+        $providerProfile = $booking->providerProfile()->firstOrFail();
+        $duration = $booking->duration_minutes ?? $booking->service?->max_duration_minutes ?? $booking->service?->min_duration_minutes ?? 0;
+
+        abort_if($schedule->isPast(), 422, 'The new appointment time must be in the future.');
+
+        DB::transaction(function () use ($booking, $providerProfile, $schedule, $duration): void {
+            $providerProfile = ProviderProfile::query()->lockForUpdate()->findOrFail($providerProfile->id);
+            $this->ensureWithinBusinessHours($providerProfile, $schedule, $duration);
+            $this->ensureNoBookingConflict($providerProfile, $booking, $schedule, $duration);
+
+            $booking->update([
+                'schedule' => $schedule,
+                'status' => Booking::STATUS_CONFIRMED,
+            ]);
+        });
+
+        return back()->with('success', 'Booking rescheduled.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, Booking $booking): RedirectResponse
     {
-        //
+        abort_unless($request->user()?->hasRole('service_provider'), 403);
+        Gate::authorize('delete', $booking);
+        $booking->update(['status' => Booking::STATUS_CANCELLED]);
+
+        return back()->with('success', 'Booking cancelled.');
     }
 
     /** @return array<int, string> */
@@ -226,6 +262,8 @@ class BookingController extends Controller
 
         return [
             'id' => $booking->id,
+            'provider_profile_id' => $booking->provider_profile_id,
+            'client_id' => $booking->user_id,
             'reference' => '#'.strtoupper(substr($booking->id, 0, 8)),
             'client' => $clientName,
             'initials' => collect(explode(' ', $clientName))->map(fn (string $part): string => substr($part, 0, 1))->join(''),
@@ -241,6 +279,13 @@ class BookingController extends Controller
             'email' => $booking->user?->email ?? 'No email provided',
             'phone' => $booking->user?->phone ?? 'No phone provided',
             'schedule' => $booking->schedule?->toIso8601String(),
+            'can_accept' => $booking->status === Booking::STATUS_PENDING && $booking->schedule?->isFuture(),
+            'can_reschedule' => $booking->status !== Booking::STATUS_CANCELLED
+                && $booking->status !== Booking::STATUS_COMPLETED
+                && $booking->schedule?->isFuture(),
+            'can_cancel' => $booking->status !== Booking::STATUS_CANCELLED
+                && $booking->status !== Booking::STATUS_COMPLETED
+                && $booking->schedule?->isFuture(),
         ];
     }
 
@@ -261,5 +306,67 @@ class BookingController extends Controller
             Booking::STATUS_CANCELLED => 'This booking has been cancelled.',
             default => 'This appointment is confirmed.',
         };
+    }
+
+    /** @return array<string, string> */
+    private function serviceHistory(Booking $booking): array
+    {
+        $completedBookings = Booking::query()
+            ->where('provider_profile_id', $booking->provider_profile_id)
+            ->where('user_id', $booking->user_id)
+            ->where('status', '!=', Booking::STATUS_CANCELLED)
+            ->where('schedule', '<=', now())
+            ->with('service:id,price')
+            ->orderByDesc('schedule')
+            ->get(['id', 'service_id', 'schedule', 'status']);
+        $lastVisit = $completedBookings->first()?->schedule;
+        $totalSpent = $completedBookings->sum(fn (Booking $completedBooking): float => (float) ($completedBooking->service?->price ?? 0));
+
+        return [
+            'lastVisit' => $lastVisit?->diffForHumans() ?? 'No previous visits',
+            'totalSpent' => '$'.number_format($totalSpent, 2),
+        ];
+    }
+
+    private function ensureWithinBusinessHours(ProviderProfile $provider, CarbonImmutable $schedule, int $duration): void
+    {
+        $hour = $provider->businessHours()
+            ->where('day_of_week', $schedule->dayOfWeek)
+            ->first();
+
+        if ($hour === null) {
+            return;
+        }
+
+        $start = $schedule->format('H:i');
+        $end = $schedule->addMinutes($duration)->format('H:i');
+        $opensAt = substr((string) $hour->opens_at, 0, 5);
+        $closesAt = substr((string) $hour->closes_at, 0, 5);
+
+        abort_if($hour->is_closed || $hour->opens_at === null || $hour->closes_at === null || $start < $opensAt || $end > $closesAt, 422, 'The selected time is outside the provider\'s business hours.');
+    }
+
+    private function ensureNoBookingConflict(ProviderProfile $provider, Booking $booking, CarbonImmutable $schedule, int $duration): void
+    {
+        $end = $schedule->addMinutes($duration);
+        $hasConflict = $provider->bookings()
+            ->where('id', '!=', $booking->id)
+            ->whereDate('schedule', $schedule->toDateString())
+            ->where('status', '!=', Booking::STATUS_CANCELLED)
+            ->lockForUpdate()
+            ->get(['schedule', 'duration_minutes'])
+            ->contains(function (Booking $existingBooking) use ($schedule, $end): bool {
+                $bookingEnd = $existingBooking->schedule?->addMinutes($existingBooking->duration_minutes ?? 0);
+
+                return $bookingEnd !== null && $existingBooking->schedule < $end && $bookingEnd > $schedule;
+            });
+
+        $hasBlockedTime = $provider->availabilityBlocks()
+            ->where('starts_at', '<', $end)
+            ->where('ends_at', '>', $schedule)
+            ->lockForUpdate()
+            ->exists();
+
+        abort_if($hasConflict || $hasBlockedTime, 422, 'That time is no longer available. Please choose another slot.');
     }
 }

@@ -54,6 +54,37 @@ class ChatTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_conversation_latest_message_uses_ordering_instead_of_uuid_aggregation(): void
+    {
+        [$provider, $providerProfile] = $this->createProvider();
+        $client = $this->createClient();
+        $providerProfile->clients()->attach($client);
+        $conversation = Conversation::query()->create([
+            'provider_profile_id' => $providerProfile->id,
+            'client_id' => $client->id,
+        ]);
+        $conversation->messages()->create([
+            'sender_id' => $client->id,
+            'body' => 'The first message',
+            'created_at' => now()->subMinute(),
+            'updated_at' => now()->subMinute(),
+        ]);
+        $latestMessage = $conversation->messages()->create([
+            'sender_id' => $provider->id,
+            'body' => 'The latest message',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $conversation->load('latestMessage');
+
+        $this->assertSame($latestMessage->id, $conversation->latestMessage->id);
+        $this->assertStringNotContainsString(
+            'max("messages"."id")',
+            strtolower($conversation->latestMessage()->toRawSql()),
+        );
+    }
+
     public function test_client_can_start_a_conversation_and_provider_receives_new_messages(): void
     {
         $client = $this->createClient();

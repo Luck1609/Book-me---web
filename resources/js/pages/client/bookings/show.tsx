@@ -11,9 +11,9 @@ import {
 } from 'lucide-react';
 import { destroy } from '@/actions/App/Http/Controllers/Client/BookingController';
 import { Button } from '@/components/ui/button';
+import { useNotice } from '@/contexts/notice-context';
 import { cn } from '@/lib/utils';
 import client from '@/routes/client';
-import { useNotice } from '@/contexts/notice-context';
 
 type Booking = {
   id: string;
