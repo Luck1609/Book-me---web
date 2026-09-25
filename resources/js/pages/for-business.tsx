@@ -17,6 +17,7 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
+import Container from '@/components/container';
 import {
   register,
 } from '@/routes';
@@ -80,6 +81,7 @@ const appointmentTimes = ['9:00 AM', '10:30 AM', '1:00 PM', '2:30 PM'];
 
 
 function BookingPreview() {
+
   return (
     <div className="relative mx-auto w-full max-w-155">
       <div className="absolute -top-8 -right-3 hidden size-20 rounded-full bg-[#ffc77d]/50 blur-2xl sm:block" />
@@ -205,7 +207,8 @@ export default function Welcome() {
           <div className="absolute top-104 -left-48 size-112 rounded-full bg-[#fff0d6] blur-3xl" />
           <div className="absolute top-0 left-1/2 h-full w-px bg-[#ebf1ed]" />
         </div>
-        <div className="mx-auto max-w-7xl">
+
+        <Container>
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#c7e8d8] bg-[#effaf4] px-3.5 py-2 text-[11px] font-bold tracking-[0.08em] text-[#0f8a62] uppercase">
               <span className="size-1.5 rounded-full bg-[#0f8a62]" />{' '}
@@ -253,11 +256,11 @@ export default function Welcome() {
           <div className="mt-16 sm:mt-20">
             <BookingPreview />
           </div>
-        </div>
+        </Container>
       </section>
 
       <section className="border-y border-[#e8eeeb] bg-white px-5 py-8 sm:px-8 lg:px-12">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 md:flex-row">
+        <Container className="mx-auto flex flex-col items-center justify-between gap-5 md:flex-row">
           <p className="text-center text-[11px] font-bold tracking-widest text-[#91a09f] uppercase md:text-left">
             Trusted by people who put clients first
           </p>
@@ -276,14 +279,14 @@ export default function Welcome() {
               4.9 average
             </span>
           </div>
-        </div>
+        </Container>
       </section>
 
       <section
         id="how-it-works"
         className="scroll-mt-20 bg-[#17343c] px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12"
       >
-        <div className="mx-auto max-w-7xl">
+        <Container>
           <div className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <div>
               <p className="mb-5 text-[11px] font-bold tracking-[0.14em] text-[#72d5ac] uppercase">
@@ -328,14 +331,14 @@ export default function Welcome() {
               ))}
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       <section
         id="features"
         className="scroll-mt-20 bg-[#fbfcfa] px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
       >
-        <div className="mx-auto max-w-7xl">
+        <Container>
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div className="max-w-xl">
               <p className="mb-5 text-[11px] font-bold tracking-[0.14em] text-[#0f8a62] uppercase">
@@ -374,14 +377,14 @@ export default function Welcome() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       <section
         id="solutions"
         className="scroll-mt-20 bg-[#fff6e8] px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
       >
-        <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <Container className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="mb-5 text-[11px] font-bold tracking-[0.14em] text-[#c47632] uppercase">
               Made to feel like you
@@ -482,14 +485,14 @@ export default function Welcome() {
               </div>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       <section
         id="stories"
         className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
       >
-        <div className="mx-auto max-w-7xl">
+        <Container>
           <div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
             <div>
               <p className="mb-5 text-[11px] font-bold tracking-[0.14em] text-[#0f8a62] uppercase">
@@ -571,11 +574,11 @@ export default function Welcome() {
               </p>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       <section className="px-5 py-16 sm:px-8 sm:py-24 lg:px-12">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[30px] bg-[#0f8a62] px-6 py-16 text-center text-white sm:px-12 sm:py-20">
+        <Container className="relative overflow-hidden rounded-[30px] bg-[#0f8a62] px-6 py-16 text-center text-white sm:px-12 sm:py-20">
           <div className="absolute -top-28 -left-20 size-72 rounded-full border-36 border-white/10" />
           <div className="absolute -right-24 -bottom-40 size-96 rounded-full border-45 border-[#72d5ac]/20" />
           <div className="relative">
@@ -602,7 +605,7 @@ export default function Welcome() {
               No credit card required · Cancel anytime
             </p>
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );

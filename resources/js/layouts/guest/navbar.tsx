@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react'
 import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react'
 import { useState } from 'react';
 import AppLogo from '@/components/app-logo';
+import Container from '@/components/container';
 import { about, contact, home, login, register } from '@/routes'
 
 export default function Navbar() {
@@ -11,10 +12,11 @@ export default function Navbar() {
 
   return (
     <header className="relative z-50 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-19 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+      <Container className="mx-auto flex h-19 items-center justify-between px-5 sm:px-8 lg:px-12">
         <Link href={home()} aria-label="Book Me home" onClick={closeMenu}>
           <AppLogo />
         </Link>
+
         <nav className="hidden items-center gap-8 text-[13px] font-semibold text-[#5c7072] lg:flex">
           <a
             className="transition-colors hover:text-[#0f8a62]"
@@ -80,7 +82,8 @@ export default function Navbar() {
             <Menu aria-hidden="true" className="size-5" />
           )}
         </button>
-      </div>
+      </Container>
+      
       {isMenuOpen && (
         <nav className="absolute inset-x-0 top-full border-b border-[#e5ece8] bg-[#fbfcfa] px-5 py-5 shadow-lg lg:hidden">
           <div className="flex flex-col gap-4 text-sm font-semibold text-[#5c7072]">

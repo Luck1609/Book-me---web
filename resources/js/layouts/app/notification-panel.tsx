@@ -1,11 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, CheckCheck, Inbox, Moon, Sun } from 'lucide-react';
-import { AppContent } from '@/components/app-content';
-import AppLogo from '@/components/app-logo';
-import { AppShell } from '@/components/app-shell';
-import { Breadcrumbs } from '@/components/breadcrumbs';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
+import { Bell, CheckCheck, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,22 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { NoticeProvider } from '@/contexts/notice-context';
-import { useAppearance } from '@/hooks/use-appearance';
-import { mainNavItems } from '@/lib/data';
-import { dashboard } from '@/routes';
 import notifications from '@/routes/notifications';
-import type { BreadcrumbItem, UserNotification } from '@/types';
+import type { UserNotification } from '@/types';
 
 type NotificationPanelProps = {
   unreadNotifications?: UserNotification[];
@@ -65,30 +45,8 @@ function notificationDate(createdAt: string): string {
   }).format(new Date(createdAt));
 }
 
-function ThemeToggle() {
-  const { resolvedAppearance, updateAppearance } = useAppearance();
-  const isDark = resolvedAppearance === 'dark';
-  const nextAppearance = isDark ? 'light' : 'dark';
 
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={() => updateAppearance(nextAppearance)}
-      aria-label={`Switch to ${nextAppearance} mode`}
-      title={`Switch to ${nextAppearance} mode`}
-      className="size-9 rounded-xl text-[#41645a] hover:bg-[#e9f8f0] hover:text-[#0f8a62] dark:text-[#c4d8d1] dark:hover:bg-[#0f8a62]/15 dark:hover:text-[#8fe0bb]"
-    >
-      {isDark ? (
-        <Sun aria-hidden="true" className="size-[18px]" />
-      ) : (
-        <Moon aria-hidden="true" className="size-[18px]" />
-      )}
-    </Button>
-  );
-}
-
-function NotificationPanel() {
+export default function NotificationPanel() {
   const { unreadNotifications = [], unreadNotificationCount = 0 } =
     usePage<NotificationPanelProps>().props;
   const notificationCountLabel =
@@ -107,7 +65,7 @@ function NotificationPanel() {
           }
           className="relative size-9 rounded-xl text-[#41645a] hover:bg-[#e9f8f0] hover:text-[#0f8a62] dark:text-[#c4d8d1] dark:hover:bg-[#0f8a62]/15 dark:hover:text-[#8fe0bb]"
         >
-          <Bell aria-hidden="true" className="size-[18px]" />
+          <Bell aria-hidden="true" className="size-4.5" />
           {unreadNotificationCount > 0 && (
             <span className="absolute -top-1 -right-1 flex min-w-4 items-center justify-center rounded-full bg-[#0f8a62] px-1 text-[10px] leading-4 font-bold text-white ring-2 ring-background">
               {notificationCountLabel}
@@ -136,7 +94,7 @@ function NotificationPanel() {
         </div>
 
         {unreadNotifications.length > 0 ? (
-          <div className="max-h-[360px] overflow-y-auto p-2">
+          <div className="max-h-90 overflow-y-auto p-2">
             {unreadNotifications.map((notification) => (
               <DropdownMenuItem
                 key={notification.id}
@@ -195,63 +153,5 @@ function NotificationPanel() {
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-export default function AppLayout({
-  breadcrumbs = [],
-  children,
-}: {
-  breadcrumbs?: BreadcrumbItem[];
-  children: React.ReactNode;
-}) {
-  const { user } = usePage().props
-
-  console.log('Auth user details', user)
-
-  return (
-    <NoticeProvider>
-      <AppShell variant="sidebar">
-        <Sidebar collapsible="icon" variant="inset">
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size="lg" asChild>
-                  <Link href={dashboard()} prefetch>
-                    <AppLogo />
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-
-          <SidebarContent className="lg:mt-5">
-            <NavMain items={mainNavItems(user?.role)} />
-          </SidebarContent>
-
-          <SidebarFooter>
-            <NavUser />
-          </SidebarFooter>
-        </Sidebar>
-
-        <AppContent variant="sidebar" className="overflow-x-hidden">
-          <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="-ml-1" />
-              <Breadcrumbs breadcrumbs={breadcrumbs} />
-            </div>
-
-            <div className="flex gap-3">
-              <div className="flex items-center gap-1">
-                <ThemeToggle />
-                <NotificationPanel />
-              </div>
-            </div>
-          </header>
-
-          {children}
-        </AppContent>
-      </AppShell>
-    </NoticeProvider>
   );
 }
