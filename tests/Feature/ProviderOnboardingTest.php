@@ -18,12 +18,12 @@ class ProviderOnboardingTest extends TestCase
     public function test_provider_onboarding_persists_the_profile_hours_and_services(): void
     {
         $user = User::factory()->create();
-        $region = Region::query()->create(['name' => 'Ashanti']);
-        $district = District::query()->create([
+        $region = Region::create(['name' => 'Ashanti']);
+        $district = District::create([
             'name' => 'Kumasi Metropolitan',
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => 'Beauty']);
+        $category = Category::create(['name' => 'Beauty']);
 
         $response = $this->actingAs($user)->post(route('onboarding.store'), [
             'type' => 'provider',
@@ -89,18 +89,18 @@ class ProviderOnboardingTest extends TestCase
         $this->assertTrue($user->has_onboarded);
         $this->assertTrue($user->hasRole('client'));
         $this->assertFalse($user->providerProfile()->exists());
-        $this->assertSame(0, BusinessHour::query()->count());
+        $this->assertSame(0, BusinessHour::count());
     }
 
     public function test_provider_onboarding_can_skip_services(): void
     {
         $user = User::factory()->create();
-        $region = Region::query()->create(['name' => 'Ashanti']);
-        $district = District::query()->create([
+        $region = Region::create(['name' => 'Ashanti']);
+        $district = District::create([
             'name' => 'Kumasi Metropolitan',
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => 'Beauty']);
+        $category = Category::create(['name' => 'Beauty']);
 
         $response = $this->actingAs($user)->post(route('onboarding.store'), [
             'type' => 'provider',

@@ -98,7 +98,7 @@ class TeamTest extends TestCase
 
         $response->assertSessionHasNoErrors()->assertRedirect(route('team.index'));
 
-        $member = StaffMember::query()->where('email', 'new-member@example.com')->firstOrFail();
+        $member = StaffMember::where('email', 'new-member@example.com')->firstOrFail();
 
         $this->assertModelExists($member);
         $this->assertSame($profile->id, $member->provider_profile_id);
@@ -127,12 +127,12 @@ class TeamTest extends TestCase
         $provider = User::factory()->create();
         Role::findOrCreate('service_provider', 'web');
         $provider->assignRole('service_provider');
-        $region = Region::query()->create(['name' => fake()->unique()->word()]);
-        $district = District::query()->create([
+        $region = Region::create(['name' => fake()->unique()->word()]);
+        $district = District::create([
             'name' => fake()->unique()->city(),
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => fake()->unique()->word()]);
+        $category = Category::create(['name' => fake()->unique()->word()]);
         $profile = $provider->providerProfile()->create([
             'region_id' => $region->id,
             'district_id' => $district->id,

@@ -37,16 +37,14 @@ class BusinessProfileController extends Controller
                 'category_id',
                 'is_accepting_bookings',
             ]),
-            'categories' => Category::query()
-                ->select(['id', 'name'])
+            'categories' => Category::select(['id', 'name'])
                 ->orderBy('name')
                 ->get()
                 ->map(fn (Category $category): array => [
                     'label' => $category->name,
                     'value' => $category->id,
                 ]),
-            'regions' => Region::query()
-                ->with(['districts:id,name,region_id'])
+            'regions' => Region::with(['districts:id,name,region_id'])
                 ->select(['id', 'name'])
                 ->orderBy('name')
                 ->get()

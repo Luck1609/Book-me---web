@@ -37,7 +37,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'phone', 'password', 'is_active', 'has_onboarded'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'social_platform', 'social_platform_id', 'social_avatar', 'is_active', 'has_onboarded'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements HasMedia, PasskeyUser
 {

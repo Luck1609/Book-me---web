@@ -120,12 +120,12 @@ class BusinessHourTest extends TestCase
         Role::findOrCreate('service_provider', 'web');
         $provider->assignRole('service_provider');
 
-        $region = Region::query()->create(['name' => fake()->unique()->city()]);
-        $district = District::query()->create([
+        $region = Region::create(['name' => fake()->unique()->city()]);
+        $district = District::create([
             'name' => fake()->unique()->city(),
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => fake()->unique()->word()]);
+        $category = Category::create(['name' => fake()->unique()->word()]);
 
         $provider->providerProfile()->create([
             'region_id' => $region->id,

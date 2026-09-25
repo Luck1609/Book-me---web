@@ -1,8 +1,25 @@
 <?php
 
+use App\Http\Controllers\Auth\SocialAuthController;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::prefix('auth')->name('auth.')->group(function (): void {
+    Route::get('/{provider}/redirect', [SocialAuthController::class, 'redirect'])
+        ->whereIn('provider', ['google', 'facebook', 'tiktok'])
+        ->name('social.redirect');
+    Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])
+        ->whereIn('provider', ['google', 'facebook', 'tiktok'])
+        ->name('social.callback');
+    Route::get('/social/email', [SocialAuthController::class, 'emailForm'])
+        ->name('social.email.create');
+    Route::post('/social/email', [SocialAuthController::class, 'completeEmail'])
+        ->middleware('precognitive')
+        ->name('social.email.store');
+});
+
+Route::inertia('/', 'index')->name('home');
+Route::inertia('/for-business', 'for-business')->name('for-business');
 Route::inertia('/about', 'about')->name('about');
 Route::inertia('/contact', 'contact')->name('contact');
 Route::inertia('/privacy-policy', 'privacy-policy')->name('privacy');

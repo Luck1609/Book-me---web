@@ -28,8 +28,7 @@ class StoreClientRequest extends FormRequest
      */
     public function rules(): array
     {
-        $existingUserId = User::query()
-            ->where('email', $this->string('email')->toString())
+        $existingUserId = User::where('email', $this->string('email')->toString())
             ->value('id');
 
         return [

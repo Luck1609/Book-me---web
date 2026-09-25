@@ -68,10 +68,10 @@ class ClientController extends Controller
         $data = $request->validated();
 
         DB::transaction(function () use ($data, $providerProfile): void {
-            $client = User::query()->where('email', $data['email'])->first();
+            $client = User::where('email', $data['email'])->first();
 
             if ($client === null) {
-                $client = User::query()->create($data);
+                $client = User::create($data);
             } else {
                 $client->update([
                     'name' => $data['name'],
@@ -114,7 +114,7 @@ class ClientController extends Controller
      */
     private function clientQuery(ProviderProfile $providerProfile): Builder
     {
-        return User::query()->where(function (Builder $query) use ($providerProfile): void {
+        return User::where(function (Builder $query) use ($providerProfile): void {
             $query
                 ->whereHas('clientProviders', fn (Builder $providerQuery) => $providerQuery->whereKey($providerProfile->id))
                 ->orWhereHas('bookings', fn (Builder $bookingQuery) => $bookingQuery->whereBelongsTo($providerProfile, 'providerProfile'));

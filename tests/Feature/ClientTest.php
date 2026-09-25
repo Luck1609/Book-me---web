@@ -119,7 +119,7 @@ class ClientTest extends TestCase
 
         $response->assertSessionHasNoErrors()->assertRedirect(route('client.index'));
 
-        $client = User::query()->where('email', 'new-client@example.com')->firstOrFail();
+        $client = User::where('email', 'new-client@example.com')->firstOrFail();
 
         $this->assertModelExists($client);
         $this->assertTrue($profile->clients()->whereKey($client->id)->exists());
@@ -131,12 +131,12 @@ class ClientTest extends TestCase
         $provider = User::factory()->create();
         Role::findOrCreate('service_provider', 'web');
         $provider->assignRole('service_provider');
-        $region = Region::query()->create(['name' => fake()->unique()->word()]);
-        $district = District::query()->create([
+        $region = Region::create(['name' => fake()->unique()->word()]);
+        $district = District::create([
             'name' => fake()->unique()->city(),
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => fake()->unique()->word()]);
+        $category = Category::create(['name' => fake()->unique()->word()]);
         $profile = $provider->providerProfile()->create([
             'region_id' => $region->id,
             'district_id' => $district->id,

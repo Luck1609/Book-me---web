@@ -77,7 +77,7 @@ class BookingController extends Controller
         $duration = Service::find($serviceId)?->max_duration_minutes;
 
         DB::transaction(function () use ($serviceId, $providerId, $schedule, $duration, $user, $notes): void {
-            $provider = ProviderProfile::query()->lockForUpdate()->findOrFail($providerId);
+            $provider = ProviderProfile::lockForUpdate()->findOrFail($providerId);
             $this->ensureWithinBusinessHours($provider, $schedule, $duration);
             $this->ensureNoBookingConflict($provider, $schedule, $duration);
             $provider->clients()->syncWithoutDetaching([$user->id]);

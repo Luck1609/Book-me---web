@@ -246,7 +246,7 @@ export default function ChatsIndex({
             </div>
           </section>
 
-          <section className="grid min-h-[620px] overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_12px_35px_rgba(23,52,60,0.06)] lg:grid-cols-[320px_minmax(0,1fr)] dark:border-white/10 dark:bg-[#17221f]">
+          <section className="grid min-h-155 overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_12px_35px_rgba(23,52,60,0.06)] lg:grid-cols-[320px_minmax(0,1fr)] dark:border-white/10 dark:bg-[#17221f]">
             <aside className="border-b border-[#e7f0ec] lg:border-r lg:border-b-0 dark:border-white/8">
               <div className="border-b border-[#e7f0ec] px-5 py-5 dark:border-white/8">
                 <p className="text-xs font-bold tracking-[0.14em] text-[#0f8a62] uppercase dark:text-[#8fe0bb]">
@@ -258,7 +258,7 @@ export default function ChatsIndex({
                 </p>
               </div>
 
-              <div className="max-h-[290px] overflow-y-auto p-3 lg:max-h-[390px]">
+              <div className="max-h-72.5 overflow-y-auto p-3 lg:max-h-97.5">
                 {conversations.map((conversation) => (
                   <Link
                     key={conversation.id}
@@ -350,7 +350,7 @@ export default function ChatsIndex({
 
                   <div
                     ref={messageListRef}
-                    className="flex min-h-[390px] flex-1 flex-col gap-4 overflow-y-auto bg-[#fbfefc] px-5 py-6 sm:px-7 dark:bg-[#14201d]"
+                    className="flex min-h-97.5 flex-1 flex-col gap-4 overflow-y-auto bg-[#fbfefc] px-5 py-6 sm:px-7 dark:bg-[#14201d]"
                   >
                     {messages.length > 0 ? (
                       messages.map((message) => {

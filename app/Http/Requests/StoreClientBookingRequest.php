@@ -51,7 +51,7 @@ class StoreClientBookingRequest extends FormRequest
   public function after(): array
   {
     return [function (Validator $validator): void {
-      $service = Service::query()->find($this->input('service_id'));
+      $service = Service::find($this->input('service_id'));
       $duration = (int) $this->input('duration_minutes');
 
       if ($service === null || $duration < $service->min_duration_minutes || $duration > $service->max_duration_minutes) {

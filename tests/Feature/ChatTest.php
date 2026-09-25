@@ -23,7 +23,7 @@ class ChatTest extends TestCase
         $client = $this->createClient();
         $otherClient = $this->createClient();
         $providerProfile->clients()->attach($client);
-        $conversation = Conversation::query()->create([
+        $conversation = Conversation::create([
             'provider_profile_id' => $providerProfile->id,
             'client_id' => $client->id,
         ]);
@@ -59,7 +59,7 @@ class ChatTest extends TestCase
         [$provider, $providerProfile] = $this->createProvider();
         $client = $this->createClient();
         $providerProfile->clients()->attach($client);
-        $conversation = Conversation::query()->create([
+        $conversation = Conversation::create([
             'provider_profile_id' => $providerProfile->id,
             'client_id' => $client->id,
         ]);
@@ -95,7 +95,7 @@ class ChatTest extends TestCase
             'provider_profile_id' => $providerProfile->id,
         ]);
 
-        $conversation = Conversation::query()->firstOrFail();
+        $conversation = Conversation::firstOrFail();
         $response->assertRedirect(route('chats.show', $conversation));
 
         $this->actingAs($client)
@@ -129,7 +129,7 @@ class ChatTest extends TestCase
             'client_id' => $client->id,
         ]);
 
-        $conversation = Conversation::query()->firstOrFail();
+        $conversation = Conversation::firstOrFail();
         $response->assertRedirect(route('chats.show', $conversation));
 
         $this->actingAs($provider)
@@ -151,12 +151,12 @@ class ChatTest extends TestCase
         $provider = User::factory()->create();
         Role::findOrCreate('service_provider', 'web');
         $provider->assignRole('service_provider');
-        $region = Region::query()->create(['name' => fake()->unique()->word()]);
-        $district = District::query()->create([
+        $region = Region::create(['name' => fake()->unique()->word()]);
+        $district = District::create([
             'name' => fake()->unique()->city(),
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => fake()->unique()->word()]);
+        $category = Category::create(['name' => fake()->unique()->word()]);
         $profile = $provider->providerProfile()->create([
             'region_id' => $region->id,
             'district_id' => $district->id,

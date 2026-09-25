@@ -29,7 +29,7 @@ class FoundationTest extends TestCase
             ->assertJsonPath('data.user.email', 'client@example.com')
             ->assertJsonPath('data.verification_required', false);
 
-        $user = User::query()->where('email', 'client@example.com')->firstOrFail();
+        $user = User::where('email', 'client@example.com')->firstOrFail();
         $this->assertMatchesRegularExpression('/^[0-9a-f-]{36}$/', $user->id);
         $this->assertTrue($user->hasRole('client'));
 
@@ -73,7 +73,7 @@ class FoundationTest extends TestCase
         ]);
 
         $response->assertOk()->assertJsonStructure(['data' => ['user', 'token']]);
-        $this->assertNotNull(User::query()->where('phone', '+233501234567')->firstOrFail()->phone_verified_at);
+        $this->assertNotNull(User::where('phone', '+233501234567')->firstOrFail()->phone_verified_at);
     }
 
     public function test_expired_or_invalid_otp_cannot_be_used(): void
@@ -117,7 +117,7 @@ class FoundationTest extends TestCase
             ->patchJson('/api/v1/provider/services/'.$service['id'], ['name' => 'Hijacked'])
             ->assertForbidden();
 
-        ProviderProfile::query()->findOrFail($profile['id'])->update(['status' => 'approved']);
+        ProviderProfile::findOrFail($profile['id'])->update(['status' => 'approved']);
         $this->getJson('/api/v1/providers')->assertOk()->assertJsonFragment(['id' => $profile['id']]);
     }
 }

@@ -72,8 +72,7 @@ class GetProviderDashboard
      */
     private function todayBookings(ProviderProfile $providerProfile, CarbonImmutable $today): Collection
     {
-        return Booking::query()
-            ->whereBelongsTo($providerProfile)
+        return Booking::whereBelongsTo($providerProfile)
             ->with([
                 'user:id,name',
                 'service:id,name,min_duration_minutes,max_duration_minutes,price',
@@ -85,8 +84,7 @@ class GetProviderDashboard
 
     private function bookingsCount(ProviderProfile $providerProfile, CarbonImmutable $start, CarbonImmutable $end): int
     {
-        return Booking::query()
-            ->whereBelongsTo($providerProfile)
+        return Booking::whereBelongsTo($providerProfile)
             ->whereBetween('schedule', [$start, $end])
             ->count();
     }
@@ -96,8 +94,7 @@ class GetProviderDashboard
         $bookingTable = (new Booking)->getTable();
         $serviceTable = (new Service)->getTable();
 
-        return (float) Booking::query()
-            ->whereBelongsTo($providerProfile)
+        return (float) Booking::whereBelongsTo($providerProfile)
             ->join($serviceTable, "{$serviceTable}.id", '=', "{$bookingTable}.service_id")
             ->whereBetween("{$bookingTable}.schedule", [$start, $end])
             ->sum("{$serviceTable}.price");
@@ -105,8 +102,7 @@ class GetProviderDashboard
 
     private function returningClientsPercentage(ProviderProfile $providerProfile, CarbonImmutable $start, CarbonImmutable $end): float
     {
-        $clientVisitCounts = Booking::query()
-            ->whereBelongsTo($providerProfile)
+        $clientVisitCounts = Booking::whereBelongsTo($providerProfile)
             ->whereBetween('schedule', [$start, $end])
             ->whereNotNull('user_id')
             ->select('user_id')
@@ -130,8 +126,7 @@ class GetProviderDashboard
     {
         $bookingTable = (new Booking)->getTable();
 
-        return Booking::query()
-            ->whereBelongsTo($providerProfile)
+        return Booking::whereBelongsTo($providerProfile)
             ->whereNotNull('user_id')
             ->whereBetween('schedule', [$start, $end])
             ->whereNotExists(function ($query) use ($bookingTable, $providerProfile, $start): void {
@@ -220,8 +215,7 @@ class GetProviderDashboard
         $previousWeekTotal = $this->revenue($providerProfile, $previousWeekStart, $previousWeekStart->endOfWeek());
         $bookingTable = (new Booking)->getTable();
 
-        $bookings = Booking::query()
-            ->whereBelongsTo($providerProfile)
+        $bookings = Booking::whereBelongsTo($providerProfile)
             ->with('service:id,price')
             ->whereBetween("{$bookingTable}.schedule", [$weekStart, $weekEnd])
             ->get(['id', 'service_id', 'schedule']);

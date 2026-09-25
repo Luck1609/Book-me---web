@@ -29,7 +29,7 @@ class OtpService
 
         $code = (string) random_int(100000, 999999);
 
-        OtpChallenge::query()->create([
+        OtpChallenge::create([
             'phone' => $phone,
             'code_hash' => Hash::make($code),
             'expires_at' => now()->addMinutes(10),
@@ -41,8 +41,7 @@ class OtpService
     public function verify(string $phone, string $code): User
     {
         return DB::transaction(function () use ($phone, $code): User {
-            $challenge = OtpChallenge::query()
-                ->where('phone', $phone)
+            $challenge = OtpChallenge::where('phone', $phone)
                 ->whereNull('verified_at')
                 ->where('expires_at', '>', now())
                 ->latest()
@@ -61,7 +60,7 @@ class OtpService
 
             $challenge->forceFill(['verified_at' => now()])->save();
 
-            $user = User::query()->where('phone', $phone)->first();
+            $user = User::where('phone', $phone)->first();
 
             if ($user === null) {
                 throw ValidationException::withMessages(['phone' => 'No account is registered with this phone number.']);

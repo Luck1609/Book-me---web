@@ -110,8 +110,7 @@ class GetProviderReport
     /** @return Builder<Booking> */
     private function bookingQuery(ProviderProfile $providerProfile, CarbonImmutable $start, CarbonImmutable $end): Builder
     {
-        return Booking::query()
-            ->whereBelongsTo($providerProfile)
+        return Booking::whereBelongsTo($providerProfile)
             ->whereBetween('schedule', [$start, $end])
             ->where('status', '!=', Booking::STATUS_CANCELLED);
     }

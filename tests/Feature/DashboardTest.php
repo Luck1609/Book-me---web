@@ -35,12 +35,12 @@ class DashboardTest extends TestCase
     public function test_provider_dashboard_returns_provider_scoped_dashboard_data(): void
     {
         $provider = User::factory()->create();
-        $region = Region::query()->create(['name' => 'Ashanti']);
-        $district = District::query()->create([
+        $region = Region::create(['name' => 'Ashanti']);
+        $district = District::create([
             'name' => 'Kumasi Metropolitan',
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => 'Beauty']);
+        $category = Category::create(['name' => 'Beauty']);
         $profile = $provider->providerProfile()->create([
             'region_id' => $region->id,
             'district_id' => $district->id,
@@ -62,7 +62,7 @@ class DashboardTest extends TestCase
             'day_of_week' => now()->dayOfWeek,
         ]);
         $client = User::factory()->create(['name' => 'Jamie Client']);
-        Booking::query()->create([
+        Booking::create([
             'user_id' => $client->id,
             'provider_profile_id' => $profile->id,
             'service_id' => $service->id,

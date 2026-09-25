@@ -53,8 +53,7 @@ class DashboardController extends Controller
             ->limit(4)
             ->get();
         $favoriteProviderIds = $user->favoriteProviders()->pluck('id');
-        $providers = ProviderProfile::query()
-            ->approved()
+        $providers = ProviderProfile::approved()
             ->where('is_accepting_bookings', true)
             ->with(['services' => fn (Builder|Relation $query) => $query
                 ->where('is_active', true)

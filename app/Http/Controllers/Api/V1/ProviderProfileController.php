@@ -19,7 +19,7 @@ class ProviderProfileController extends Controller
   public function index(): AnonymousResourceCollection
   {
     return ProviderProfileResource::collection(
-      ProviderProfile::query()->approved()->latest()->paginate(),
+      ProviderProfile::approved()->latest()->paginate(),
     );
   }
 

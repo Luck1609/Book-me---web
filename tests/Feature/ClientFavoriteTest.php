@@ -98,12 +98,12 @@ class ClientFavoriteTest extends TestCase
         $provider = User::factory()->create();
         Role::findOrCreate($role, 'web');
         $provider->assignRole($role);
-        $region = Region::query()->create(['name' => fake()->unique()->word()]);
-        $district = District::query()->create([
+        $region = Region::create(['name' => fake()->unique()->word()]);
+        $district = District::create([
             'name' => fake()->unique()->city(),
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => fake()->unique()->word()]);
+        $category = Category::create(['name' => fake()->unique()->word()]);
 
         return $provider->providerProfile()->create([
             'region_id' => $region->id,

@@ -57,8 +57,8 @@ class BusinessProfileTest extends TestCase
     public function test_provider_cannot_assign_a_district_from_another_region(): void
     {
         [$user, , $region, , $category] = $this->createProvider();
-        $otherRegion = Region::query()->create(['name' => 'Central']);
-        $otherDistrict = District::query()->create([
+        $otherRegion = Region::create(['name' => 'Central']);
+        $otherDistrict = District::create([
             'name' => 'Cape Coast Metropolitan',
             'region_id' => $otherRegion->id,
         ]);
@@ -85,12 +85,12 @@ class BusinessProfileTest extends TestCase
         $user = User::factory()->create();
         Role::findOrCreate('service_provider', 'web');
         $user->assignRole('service_provider');
-        $region = Region::query()->create(['name' => 'Ashanti']);
-        $district = District::query()->create([
+        $region = Region::create(['name' => 'Ashanti']);
+        $district = District::create([
             'name' => 'Kumasi Metropolitan',
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => 'Beauty']);
+        $category = Category::create(['name' => 'Beauty']);
         $profile = $user->providerProfile()->create([
             'region_id' => $region->id,
             'district_id' => $district->id,

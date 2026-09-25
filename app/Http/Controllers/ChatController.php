@@ -178,8 +178,7 @@ class ChatController extends Controller
   {
     if ($user->hasRole('service_provider')) {
       $providerProfile = $user->providerProfile()->firstOrFail();
-      $clients = User::query()
-        ->where(function (Builder $query) use ($providerProfile): void {
+      $clients = User::where(function (Builder $query) use ($providerProfile): void {
           $query
             ->whereHas('clientProviders', fn(Builder $providerQuery) => $providerQuery->whereKey($providerProfile->id))
             ->orWhereHas('bookings', fn(Builder $bookingQuery) => $bookingQuery->whereBelongsTo($providerProfile, 'providerProfile'));
@@ -198,8 +197,7 @@ class ChatController extends Controller
       ])->all();
     }
 
-    $providers = ProviderProfile::query()
-      ->where(function (Builder $query) use ($user): void {
+    $providers = ProviderProfile::where(function (Builder $query) use ($user): void {
         $query
           ->whereHas('clients', fn(Builder $clientQuery) => $clientQuery->whereKey($user->id))
           ->orWhereHas('bookings', fn(Builder $bookingQuery) => $bookingQuery->whereBelongsTo($user));

@@ -9,7 +9,7 @@ Broadcast::channel('App.Models.User.{id}', function (User $user, string $id): bo
 });
 
 Broadcast::channel('chat.{conversation}', function (User $user, string $conversation): bool {
-    $chat = Conversation::query()->find($conversation);
+    $chat = Conversation::find($conversation);
 
     return $chat !== null && $user->can('view', $chat);
 });

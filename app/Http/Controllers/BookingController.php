@@ -106,7 +106,7 @@ class BookingController extends Controller
         $data = $request->validated();
 
         DB::transaction(function () use ($data, $providerProfile): void {
-            $client = User::query()->firstOrCreate(
+      $client = User::firstOrCreate(
                 ['email' => $data['client_email']],
                 ['name' => $data['client_name']],
             );
@@ -168,7 +168,7 @@ class BookingController extends Controller
         abort_if($schedule->isPast(), 422, 'The new appointment time must be in the future.');
 
         DB::transaction(function () use ($booking, $providerProfile, $schedule, $duration): void {
-            $providerProfile = ProviderProfile::query()->lockForUpdate()->findOrFail($providerProfile->id);
+      $providerProfile = ProviderProfile::lockForUpdate()->findOrFail($providerProfile->id);
             $this->ensureWithinBusinessHours($providerProfile, $schedule, $duration);
             $this->ensureNoBookingConflict($providerProfile, $booking, $schedule, $duration);
 
@@ -311,8 +311,7 @@ class BookingController extends Controller
     /** @return array<string, string> */
     private function serviceHistory(Booking $booking): array
     {
-        $completedBookings = Booking::query()
-            ->where('provider_profile_id', $booking->provider_profile_id)
+        $completedBookings = Booking::where('provider_profile_id', $booking->provider_profile_id)
             ->where('user_id', $booking->user_id)
             ->where('status', '!=', Booking::STATUS_CANCELLED)
             ->where('schedule', '<=', now())

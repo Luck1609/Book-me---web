@@ -53,7 +53,7 @@ class AvailabilityBlockTest extends TestCase
     public function test_provider_can_view_the_schedule_and_delete_their_block(): void
     {
         $provider = $this->createProvider();
-        $block = AvailabilityBlock::query()->create([
+        $block = AvailabilityBlock::create([
             'provider_profile_id' => $provider->providerProfile->id,
             'starts_at' => now()->addDay()->setTime(12, 0),
             'ends_at' => now()->addDay()->setTime(13, 0),
@@ -80,7 +80,7 @@ class AvailabilityBlockTest extends TestCase
     {
         $provider = $this->createProvider();
         $otherProvider = $this->createProvider();
-        $block = AvailabilityBlock::query()->create([
+        $block = AvailabilityBlock::create([
             'provider_profile_id' => $otherProvider->providerProfile->id,
             'starts_at' => now()->addDay()->setTime(12, 0),
             'ends_at' => now()->addDay()->setTime(13, 0),
@@ -100,12 +100,12 @@ class AvailabilityBlockTest extends TestCase
         Role::findOrCreate('service_provider', 'web');
         $provider->assignRole('service_provider');
 
-        $region = Region::query()->create(['name' => fake()->unique()->city()]);
-        $district = District::query()->create([
+        $region = Region::create(['name' => fake()->unique()->city()]);
+        $district = District::create([
             'name' => fake()->unique()->city(),
             'region_id' => $region->id,
         ]);
-        $category = Category::query()->create(['name' => fake()->unique()->word()]);
+        $category = Category::create(['name' => fake()->unique()->word()]);
 
         $provider->providerProfile()->create([
             'region_id' => $region->id,

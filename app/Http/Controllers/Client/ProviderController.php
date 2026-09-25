@@ -30,8 +30,7 @@ class ProviderController extends Controller
         $favoritesOnly = $request->boolean('favorites');
         $favoriteProviderIds = $client->favoriteProviders()->pluck('id');
 
-        $providers = ProviderProfile::query()
-            ->approved()
+        $providers = ProviderProfile::approved()
             ->where('is_accepting_bookings', true)
             ->when($favoritesOnly, fn (Builder $query) => $query->whereKey($favoriteProviderIds))
             ->with(['services' => fn (Builder|Relation $query) => $query
