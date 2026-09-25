@@ -19,8 +19,6 @@ import client from '@/routes/client';
 import type { BusinessHour, ServiceProvider, ServiceRecord } from '@/types/app';
 import ClientBookingForm from './form';
 
-
-
 function currency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -51,11 +49,11 @@ export default function ProviderShow({
   provider,
   businessHours,
 }: {
-    provider: ServiceProvider;
+  provider: ServiceProvider;
   businessHours: BusinessHour[];
 }) {
   const { show } = useNotice();
-  const getInitials = useInitials()
+  const getInitials = useInitials();
   const toggleFavorite = (): void => {
     if (provider.is_favorite) {
       router.delete(client.providers.unfavorite(provider.slug), {
@@ -115,7 +113,7 @@ export default function ProviderShow({
                 />
               ) : (
                 <span className="flex size-24 items-center justify-center rounded-3xl bg-white/80 text-2xl font-bold text-[#594e9e]">
-                    {getInitials(provider.name)}
+                  {getInitials(provider.name)}
                 </span>
               )}
             </div>
@@ -149,13 +147,16 @@ export default function ProviderShow({
                   >
                     <Heart
                       aria-hidden="true"
-                      className={cn("size-5", provider.is_favorite ? 'fill-current' : '')}
+                      className={cn(
+                        'size-5',
+                        provider.is_favorite ? 'fill-current' : '',
+                      )}
                     />
                   </button>
 
                   <Button onClick={() => handleToggleBookingModal()}>
-                      <CalendarDays className="size-4" />
-                      Book a visit
+                    <CalendarDays className="size-4" />
+                    Book a visit
                   </Button>
                 </div>
               </div>
@@ -229,10 +230,10 @@ export default function ProviderShow({
                         <Button
                           size="icon"
                           variant="outline"
-                          className="border-emerald-500! hover:bg-emerald-400/10! hover:border-emerald-300! group"
+                          className="group border-emerald-500! hover:border-emerald-300! hover:bg-emerald-400/10!"
                           onClick={() => handleToggleBookingModal(service)}
                         >
-                          <CalendarCheck className="group-hover:text-emerald-300 text-emerald-500" />
+                          <CalendarCheck className="text-emerald-500 group-hover:text-emerald-300" />
                         </Button>
                       </CustomTooltip>
                     </div>

@@ -109,7 +109,7 @@ export default function Services({ services = [] }: PageProps) {
             <p className="mt-5 text-sm font-medium text-[#70908a] dark:text-[#9cb8b1]">
               Total services
             </p>
-            <p className="mt-1 text-3xl font-bold tracking-tight text-#17343c] dark:text-white">
+            <p className="text-#17343c] mt-1 text-3xl font-bold tracking-tight dark:text-white">
               {services.length}
             </p>
           </div>

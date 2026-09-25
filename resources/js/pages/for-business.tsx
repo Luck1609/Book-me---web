@@ -18,9 +18,7 @@ import {
   Zap,
 } from 'lucide-react';
 import Container from '@/components/container';
-import {
-  register,
-} from '@/routes';
+import { register } from '@/routes';
 
 const steps = [
   {
@@ -79,9 +77,7 @@ const features = [
 
 const appointmentTimes = ['9:00 AM', '10:30 AM', '1:00 PM', '2:30 PM'];
 
-
 function BookingPreview() {
-
   return (
     <div className="relative mx-auto w-full max-w-155">
       <div className="absolute -top-8 -right-3 hidden size-20 rounded-full bg-[#ffc77d]/50 blur-2xl sm:block" />
@@ -196,7 +192,6 @@ function BookingPreview() {
 }
 
 export default function Welcome() {
-
   return (
     <>
       <Head title="Simple scheduling for growing businesses" />
@@ -211,17 +206,16 @@ export default function Welcome() {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#c7e8d8] bg-[#effaf4] px-3.5 py-2 text-[11px] font-bold tracking-[0.08em] text-[#0f8a62] uppercase">
-              <span className="size-1.5 rounded-full bg-[#0f8a62]" />{' '}
-              Scheduling that feels human
+              <span className="size-1.5 rounded-full bg-[#0f8a62]" /> Scheduling
+              that feels human
             </div>
             <h1 className="text-[clamp(2.9rem,6vw,5.7rem)] leading-[0.98] font-bold tracking-[-0.07em] text-[#17343c]">
               More time for the work that{' '}
               <span className="text-[#0f8a62]">matters.</span>
             </h1>
             <p className="mx-auto mt-7 max-w-2xl text-base leading-7 text-[#6c7d7e] sm:text-lg sm:leading-8">
-              Book Me makes scheduling feel effortless. Give clients a
-              beautiful way to book, while you stay focused on doing your
-              best work.
+              Book Me makes scheduling feel effortless. Give clients a beautiful
+              way to book, while you stay focused on doing your best work.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
@@ -249,8 +243,8 @@ export default function Welcome() {
                 aria-hidden="true"
                 className="size-3.5 text-[#0f8a62]"
               />{' '}
-              No credit card required{' '}
-              <span className="text-[#c6d0cc]">·</span> Set up in minutes
+              No credit card required <span className="text-[#c6d0cc]">·</span>{' '}
+              Set up in minutes
             </div>
           </div>
           <div className="mt-16 sm:mt-20">
@@ -349,8 +343,8 @@ export default function Welcome() {
               </h2>
             </div>
             <p className="max-w-sm text-sm leading-6 text-[#708081]">
-              A thoughtful toolkit for independent professionals and teams
-              who care about every client touchpoint.
+              A thoughtful toolkit for independent professionals and teams who
+              care about every client touchpoint.
             </p>
           </div>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -420,8 +414,7 @@ export default function Welcome() {
               className="mt-9 inline-flex items-center gap-2 rounded-full bg-[#17343c] px-6 py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#234950]"
               href={register()}
             >
-              Make it yours{' '}
-              <ArrowRight aria-hidden="true" className="size-4" />
+              Make it yours <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </div>
           <div className="relative mx-auto w-full max-w-xl">
@@ -459,9 +452,7 @@ export default function Welcome() {
                     <span className="text-[10px] font-bold text-[#4d5d5e]">
                       Choose a service
                     </span>
-                    <span className="text-[9px] text-[#acb5b2]">
-                      1 of 2
-                    </span>
+                    <span className="text-[9px] text-[#acb5b2]">1 of 2</span>
                   </div>
                   {[
                     'Consultation · 30 min',
@@ -526,8 +517,8 @@ export default function Welcome() {
               </div>
               <blockquote className="mt-6 max-w-2xl text-2xl leading-tight font-semibold tracking-[-0.04em] text-[#29464a] sm:text-3xl">
                 “Book Me took the awkward back-and-forth out of my business.
-                Clients book when they’re ready, and I get to focus on the
-                work I’m actually here to do.”
+                Clients book when they’re ready, and I get to focus on the work
+                I’m actually here to do.”
               </blockquote>
               <div className="mt-8 flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-full bg-[#f1c5a1] text-sm font-bold text-[#9b5632]">
@@ -569,9 +560,7 @@ export default function Welcome() {
               <p className="text-3xl font-bold tracking-[-0.06em] text-[#17343c]">
                 1 link
               </p>
-              <p className="mt-1 text-xs text-[#7e8c8c]">
-                to share everywhere
-              </p>
+              <p className="mt-1 text-xs text-[#7e8c8c]">to share everywhere</p>
             </div>
           </div>
         </Container>
@@ -591,8 +580,8 @@ export default function Welcome() {
               Your next great booking is closer than you think.
             </h2>
             <p className="mx-auto mt-5 max-w-lg text-base leading-7 text-[#c5f0dc]">
-              Join the people making more room for meaningful work. Start
-              free and see how simple scheduling can be.
+              Join the people making more room for meaningful work. Start free
+              and see how simple scheduling can be.
             </p>
             <Link
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-[#0f8a62] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#f4fff9]"

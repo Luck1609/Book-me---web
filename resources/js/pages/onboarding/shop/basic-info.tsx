@@ -11,10 +11,11 @@ export default function BasicInfo({
   form,
 }: {
   form: InertiaFormProps<Record<string, any>>;
-  }) {
-  const { categories, ...props } = usePage<{ categories: SelectOptions[] }>().props
+}) {
+  const { categories, ...props } = usePage<{ categories: SelectOptions[] }>()
+    .props;
 
-  console.log('Category listing', categories, props)
+  console.log('Category listing', categories, props);
 
   return (
     <div className="relative grid w-full gap-y-6 rounded-xl bg-card p-6 lg:p-8">

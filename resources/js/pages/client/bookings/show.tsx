@@ -55,7 +55,10 @@ function Status({ status }: { status: string }) {
 
   return (
     <span
-      className={cn("inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold", tone)}
+      className={cn(
+        'inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold',
+        tone,
+      )}
     >
       <Icon className="size-4" />
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -65,18 +68,18 @@ function Status({ status }: { status: string }) {
 
 export default function BookingShow({ booking }: { booking: Booking }) {
   const form = useForm({});
-  const { show } = useNotice()
+  const { show } = useNotice();
 
   const handleCancel = () => {
-
     show({
-      type: "notice",
-      title: "Cancel booking",
-      description: "Are you sure you want to cancel this booking. This action action clears you booking history, which may be unavailable for booking in the future.",
+      type: 'notice',
+      title: 'Cancel booking',
+      description:
+        'Are you sure you want to cancel this booking. This action action clears you booking history, which may be unavailable for booking in the future.',
       onConfirm: () => {
         form.delete(destroy(booking.id).url);
-      }
-    })
+      },
+    });
   };
 
   return (
@@ -107,7 +110,6 @@ export default function BookingShow({ booking }: { booking: Booking }) {
             </div>
             <Status status={booking.status} />
           </section>
-
 
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
             <div className="space-y-6">

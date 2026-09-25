@@ -5,113 +5,74 @@ import type { ReactNode } from 'react';
 import AppLogo from '@/components/app-logo';
 import Container from '@/components/container';
 import { cn } from '@/lib/utils';
-import {
-  about,
-  contact,
-  forBusiness,
-  home,
-  login,
-  register,
-  search,
-} from '@/routes';
+import { home, login, register } from '@/routes';
 import ThemeToggle from '../app/theme-toggler';
-
 
 type Props = {
   className?: string;
-  component?: ReactNode
-}
+  container?: string;
+  component?: ReactNode;
+};
 
-export default function Navbar({ className = "", component = <></> }: Props) {
+export default function Navbar({
+  className = '',
+  component = <></>,
+  container,
+}: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className={cn("relative z-50 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md", className)}>
-      <Container className="mx-auto flex h-19 items-center justify-between px-5 sm:px-8 lg:px-12">
+    <header
+      className={cn(
+        'relative z-50 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md',
+        className,
+      )}
+    >
+      <Container
+        className={cn(
+          'mx-auto flex h-25 items-center justify-between',
+          container,
+        )}
+      >
         <Link href={home()} aria-label="Book Me home" onClick={closeMenu}>
           <AppLogo />
         </Link>
 
-        {/* <nav className="hidden items-center gap-8 text-[13px] font-semibold text-[#5c7072] lg:flex">
-          <a
-            className="transition-colors hover:text-[#0f8a62]"
-            href="#features"
-          >
-            Features
-          </a>
-          <Link
-            className="transition-colors hover:text-[#0f8a62]"
-            href={search()}
-          >
-            Find a provider
-          </Link>
-          <a
-            className="transition-colors hover:text-[#0f8a62]"
-            href="#how-it-works"
-          >
-            How it works
-          </a>
-          <a
-            className="flex items-center gap-1 transition-colors hover:text-[#0f8a62]"
-            href="#solutions"
-          >
-            Solutions <ChevronDown aria-hidden="true" className="size-3.5" />
-          </a>
-          <a className="transition-colors hover:text-[#0f8a62]" href="#stories">
-            Customer stories
-          </a>
-          <Link
-            className="transition-colors hover:text-[#0f8a62]"
-            href={about()}
-          >
-            About us
-          </Link>
-          <Link
-            className="transition-colors hover:text-[#0f8a62]"
-            href={forBusiness()}
-          >
-            For business
-          </Link>
-          <Link
-            className="transition-colors hover:text-[#0f8a62]"
-            href={contact()}
-          >
-            Contact
-          </Link>
-        </nav> */}
+        {component}
 
-        { component }
+        <div className="">
+          <div className="hidden items-center gap-5 lg:flex">
+            <ThemeToggle />
 
-        <div className="hidden items-center gap-5 lg:flex">
-          <ThemeToggle />
+            <Link
+              className="text-[13px] font-bold text-[#53696b] transition-colors hover:text-[#0f8a62]"
+              href={login()}
+            >
+              Log in
+            </Link>
 
-          <Link
-            className="text-[13px] font-bold text-[#53696b] transition-colors hover:text-[#0f8a62]"
-            href={login()}
+            <Link
+              className="inline-flex items-center gap-2 rounded-full bg-[#0f8a62] px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_7px_16px_rgba(15,138,98,0.18)] transition hover:-translate-y-0.5 hover:bg-[#0b7653]"
+              href={register()}
+            >
+              Create account{' '}
+              <ArrowRight aria-hidden="true" className="size-3.5" />
+            </Link>
+          </div>
+          <button
+            className="flex size-10 items-center justify-center rounded-xl text-[#17343c] lg:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            Log in
-          </Link>
-
-          <Link
-            className="inline-flex items-center gap-2 rounded-full bg-[#0f8a62] px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_7px_16px_rgba(15,138,98,0.18)] transition hover:-translate-y-0.5 hover:bg-[#0b7653]"
-            href={register()}
-          >
-            Create account <ArrowRight aria-hidden="true" className="size-3.5" />
-          </Link>
+            {isMenuOpen ? (
+              <X aria-hidden="true" className="size-5" />
+            ) : (
+              <Menu aria-hidden="true" className="size-5" />
+            )}
+          </button>
         </div>
-        <button
-          className="flex size-10 items-center justify-center rounded-xl text-[#17343c] lg:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-        >
-          {isMenuOpen ? (
-            <X aria-hidden="true" className="size-5" />
-          ) : (
-            <Menu aria-hidden="true" className="size-5" />
-          )}
-        </button>
       </Container>
 
       {/* {isMenuOpen && (

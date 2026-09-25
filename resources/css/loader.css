@@ -7,36 +7,55 @@
 } */
 
 .scanner span::before {
-  content: "Please wait...";
+  content: 'Please wait...';
   position: absolute;
   top: 0;
   left: 0;
   width: 0;
   height: 100%;
-  border-right: 4px solid #17FEFF;
+  border-right: 4px solid #17feff;
   overflow: hidden;
-  color: #FFF;
+  color: #fff;
   animation: load91371 2s linear infinite;
 }
 
 @keyframes load91371 {
-  0%, 10%, 100% {
+  0%,
+  10%,
+  100% {
     width: 0;
   }
 
-  10%,20%,30%,40%,50%,60%,70%,80%,90%,100% {
+  10%,
+  20%,
+  30%,
+  40%,
+  50%,
+  60%,
+  70%,
+  80%,
+  90%,
+  100% {
     border-right-color: transparent;
   }
 
-  11%,21%,31%,41%,51%,61%,71%,81%,91% {
-    border-right-color: #FFF;
+  11%,
+  21%,
+  31%,
+  41%,
+  51%,
+  61%,
+  71%,
+  81%,
+  91% {
+    border-right-color: #fff;
   }
 
-  60%, 80% {
+  60%,
+  80% {
     width: 100%;
   }
 }
-
 
 /* From Uiverse.io by ahmed150up */
 .loader {
@@ -50,7 +69,7 @@
   margin: 0 5px;
   border-radius: 10px;
   animation: loading_5192 1s ease-in-out infinite;
-  background-color: #FFF;
+  background-color: #fff;
 }
 
 .bar:nth-child(1) {
@@ -83,7 +102,6 @@
   }
 }
 
-
 /* From Uiverse.io by barisdogansutcu */
 .icon-loader {
   width: 3.25em;
@@ -91,35 +109,34 @@
   animation: rotate4 2s linear infinite;
 
   circle {
-   fill: none;
-   stroke: #fff;
-   stroke-width: 4;
-   stroke-dasharray: 1, 200;
-   stroke-dashoffset: 0;
-   stroke-linecap: round;
-   animation: dash4 1.5s ease-in-out infinite;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 4;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: dash4 1.5s ease-in-out infinite;
   }
 }
 
-
 @keyframes rotate4 {
- 100% {
-  transform: rotate(360deg);
- }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes dash4 {
- 0% {
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
- }
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
 
- 50% {
-  stroke-dasharray: 90, 200;
-  stroke-dashoffset: -35px;
- }
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
 
- 100% {
-  stroke-dashoffset: -125px;
- }
+  100% {
+    stroke-dashoffset: -125px;
+  }
 }

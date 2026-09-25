@@ -41,7 +41,6 @@ const categories = [
   'Photography',
 ];
 
-
 function currency(amount: number): string {
   return new Intl.NumberFormat('en-GH', {
     style: 'currency',
@@ -60,7 +59,7 @@ export default function ProviderIndex({
   const [search, setSearch] = useState(filters.search);
   const initialRender = useRef(true);
   const favoritesFilter = useRef(filters.favorites);
-  const getInitials = useInitials()
+  const getInitials = useInitials();
 
   useEffect(() => {
     favoritesFilter.current = filters.favorites;

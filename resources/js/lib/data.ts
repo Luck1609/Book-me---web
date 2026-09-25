@@ -18,7 +18,7 @@ import team from '@/routes/team';
 import { UserType } from '@/types';
 import type { NavItem } from '@/types';
 
-export const mainNavItems = (accountType?: UserType): NavItem[] => ([
+export const mainNavItems = (accountType?: UserType): NavItem[] => [
   {
     title: 'Dashboard',
     href: dashboard(),
@@ -26,9 +26,10 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => ([
   },
   {
     title: 'Bookings',
-    href: accountType === UserType.PROVIDER
-    ? booking.index.url()
-    : client.booking.index.url(),
+    href:
+      accountType === UserType.PROVIDER
+        ? booking.index.url()
+        : client.booking.index.url(),
     icon: CalendarRange,
   },
   {
@@ -36,39 +37,39 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => ([
     href: chatIndex.url(),
     icon: MessageCircleMore,
   },
-  ...accountType !== UserType.PROVIDER
-  ? [
-    {
-      title: 'Service Providers',
-      href: client.providers.index.url(),
-      icon: UserRoundCheck,
-    },
-    {
-      title: 'Favorites',
-      href: client.favorite.index.url(),
-      icon: Heart,
-    },
-  ]
-  : [
-    {
-      title: 'Clients',
-      href: client.index.url(),
-      icon: ContactRound,
-    },
-    {
-      title: 'Schedules',
-      href: schedule.index.url(),
-      icon: CalendarCheck,
-    },
-    {
-      title: 'Team Management',
-      href: team.index.url(),
-      icon: UsersRound,
-    },
-    {
-      title: 'Report',
-      href: report(),
-      icon: ChartNoAxesCombined,
-    },
-  ]
-]);
+  ...(accountType !== UserType.PROVIDER
+    ? [
+        {
+          title: 'Service Providers',
+          href: client.providers.index.url(),
+          icon: UserRoundCheck,
+        },
+        {
+          title: 'Favorites',
+          href: client.favorite.index.url(),
+          icon: Heart,
+        },
+      ]
+    : [
+        {
+          title: 'Clients',
+          href: client.index.url(),
+          icon: ContactRound,
+        },
+        {
+          title: 'Schedules',
+          href: schedule.index.url(),
+          icon: CalendarCheck,
+        },
+        {
+          title: 'Team Management',
+          href: team.index.url(),
+          icon: UsersRound,
+        },
+        {
+          title: 'Report',
+          href: report(),
+          icon: ChartNoAxesCombined,
+        },
+      ]),
+];

@@ -84,8 +84,8 @@ export default function Contact() {
               <span className="text-[#0f8a62]">lighter.</span>
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-[#6c7d7e] sm:text-lg sm:leading-8">
-              Questions, ideas, or just want to see if Book Me is a good
-              fit? We are here and happy to help.
+              Questions, ideas, or just want to see if Book Me is a good fit? We
+              are here and happy to help.
             </p>
             <div className="mt-10 flex items-center gap-3 text-sm text-[#738383]">
               <div className="flex size-10 items-center justify-center rounded-full bg-[#e3f6ee] text-[#0f8a62]">
@@ -101,7 +101,7 @@ export default function Contact() {
               </div>
             </div>
           </div>
-          
+
           <form
             className="rounded-[26px] border border-[#e0ebe5] bg-white p-6 shadow-[0_24px_55px_rgba(45,86,68,0.09)] sm:p-9"
             onSubmit={handleSubmit}
@@ -174,34 +174,30 @@ export default function Contact() {
 
       <section className="border-y border-[#e8eeeb] bg-white px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
-          {contactOptions.map(
-            ({ title, detail, note, icon: Icon, href }) => (
-              <a
-                key={title}
-                className="group rounded-[22px] border border-[#e4ece7] bg-[#fbfcfa] p-6 transition hover:-translate-y-1 hover:border-[#b8ddca] hover:bg-white hover:shadow-[0_16px_35px_rgba(45,86,68,0.08)]"
-                href={href}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex size-11 items-center justify-center rounded-2xl bg-[#e3f6ee] text-[#0f8a62]">
-                    <Icon aria-hidden="true" className="size-5" />
-                  </div>
-                  <ArrowUpRight
-                    aria-hidden="true"
-                    className="size-4 text-[#a5b2af] transition group-hover:text-[#0f8a62]"
-                  />
+          {contactOptions.map(({ title, detail, note, icon: Icon, href }) => (
+            <a
+              key={title}
+              className="group rounded-[22px] border border-[#e4ece7] bg-[#fbfcfa] p-6 transition hover:-translate-y-1 hover:border-[#b8ddca] hover:bg-white hover:shadow-[0_16px_35px_rgba(45,86,68,0.08)]"
+              href={href}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex size-11 items-center justify-center rounded-2xl bg-[#e3f6ee] text-[#0f8a62]">
+                  <Icon aria-hidden="true" className="size-5" />
                 </div>
-                <h3 className="mt-7 text-lg font-bold tracking-[-0.03em] text-[#17343c]">
-                  {title}
-                </h3>
-                <p className="mt-2 text-sm font-semibold text-[#0f8a62]">
-                  {detail}
-                </p>
-                <p className="mt-2 text-xs leading-5 text-[#7d8d8d]">
-                  {note}
-                </p>
-              </a>
-            ),
-          )}
+                <ArrowUpRight
+                  aria-hidden="true"
+                  className="size-4 text-[#a5b2af] transition group-hover:text-[#0f8a62]"
+                />
+              </div>
+              <h3 className="mt-7 text-lg font-bold tracking-[-0.03em] text-[#17343c]">
+                {title}
+              </h3>
+              <p className="mt-2 text-sm font-semibold text-[#0f8a62]">
+                {detail}
+              </p>
+              <p className="mt-2 text-xs leading-5 text-[#7d8d8d]">{note}</p>
+            </a>
+          ))}
         </div>
       </section>
 
@@ -215,8 +211,8 @@ export default function Contact() {
               You might be wondering.
             </h2>
             <p className="mt-6 max-w-sm text-base leading-7 text-[#b0c0bf]">
-              If your question is not here, send us a note. We are always
-              glad to talk it through.
+              If your question is not here, send us a note. We are always glad
+              to talk it through.
             </p>
           </div>
           <div className="grid gap-3">

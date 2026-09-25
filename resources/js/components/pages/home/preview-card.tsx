@@ -1,12 +1,12 @@
-import { Link } from "@inertiajs/react";
-import { ArrowRight, MapPin, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useInitials } from "@/hooks/use-initials";
-import { register } from "@/routes";
-import type { ServiceProvider } from "@/types/app";
+import { Link } from '@inertiajs/react';
+import { ArrowRight, MapPin, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useInitials } from '@/hooks/use-initials';
+import { register } from '@/routes';
+import type { ServiceProvider } from '@/types/app';
 
 export function ProviderCardView({ provider }: { provider: ServiceProvider }) {
-  const getInitials = useInitials()
+  const getInitials = useInitials();
 
   return (
     <article className="group overflow-hidden rounded-[22px] border border-[#e3ece7] bg-white transition duration-300 hover:-translate-y-1 hover:border-[#b9ddca] hover:shadow-[0_18px_38px_rgba(45,86,68,0.1)]">
@@ -46,10 +46,7 @@ export function ProviderCardView({ provider }: { provider: ServiceProvider }) {
           {/* <span className="font-semibold text-[#53696b]">{provider.price}</span> */}
         </div>
 
-        <Link
-          href={register()}
-          className="mt-4 block"
-        >
+        <Link href={register()} className="mt-4 block">
           <Button className="w-full" variant="default-soft">
             Book a service
             <ArrowRight aria-hidden="true" className="size-3.5" />

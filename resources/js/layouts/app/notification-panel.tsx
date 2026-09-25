@@ -45,7 +45,6 @@ function notificationDate(createdAt: string): string {
   }).format(new Date(createdAt));
 }
 
-
 export default function NotificationPanel() {
   const { unreadNotifications = [], unreadNotificationCount = 0 } =
     usePage<NotificationPanelProps>().props;

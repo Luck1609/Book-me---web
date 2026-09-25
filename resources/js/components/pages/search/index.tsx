@@ -5,14 +5,15 @@ import {
   SlidersHorizontal,
   Sparkles,
 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import Container from '@/components/container';
 import Heading from '@/components/heading';
 import { ProviderCard } from '@/components/provider-card';
 import Search from '@/components/search';
+import GuestLayout from '@/layouts/guest';
 import { cn } from '@/lib/utils';
 import { home } from '@/routes';
 import type { ServiceProvider } from '@/types/app';
-
 
 const providers: ServiceProvider[] = [
   {
@@ -117,9 +118,7 @@ const categories = [
   'Photography',
 ];
 
-
 export function SearchListing() {
-
   return (
     <>
       <Head title="Find a provider" />
@@ -147,8 +146,8 @@ export function SearchListing() {
             }
             description=""
             classNames={{
-              container: "mt-6",
-              title: "text-3xl font-bold tracking-tighter sm:text-5xl"
+              container: 'mt-6',
+              title: 'text-3xl font-bold tracking-tighter sm:text-5xl',
             }}
           />
 
@@ -159,7 +158,7 @@ export function SearchListing() {
                 type="button"
                 // onClick={() => setCategory(item)}
                 className={cn(
-                  "flex shrink-0 rounded-full border px-4 py-2.5 text-xs font-bold transition",
+                  'flex shrink-0 rounded-full border px-4 py-2.5 text-xs font-bold transition',
                   // category === item
                   //   ? 'border-[#17343c] bg-[#17343c] text-white'
                   //   : 'border-[#dceae4] bg-white text-[#607873] hover:border-[#9fcbb5] hover:text-[#0f8a62]'
@@ -172,9 +171,7 @@ export function SearchListing() {
 
           <div className="mt-8 flex flex-col gap-4 border-b border-[#e1ece6] pb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm text-[#70908a]">
-                8 providers available
-              </p>
+              <p className="text-sm text-[#70908a]">8 providers available</p>
               <h2 className="mt-1 text-2xl font-bold tracking-[-0.04em]">
                 Matching your search
                 {/* {query || category !== 'All services'
@@ -233,7 +230,6 @@ export function SearchListing() {
   );
 }
 
-
-// SearchListing.layout = {
-//   // component: <Search />
-// }
+SearchListing.layout = (page: ReactNode) => (
+  <GuestLayout component={<Search />}>{page}</GuestLayout>
+);

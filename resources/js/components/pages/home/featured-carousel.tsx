@@ -1,16 +1,26 @@
-import type { ReactNode } from 'react'
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import type { ServiceProvider } from '@/types/app'
-import { ProviderCardView } from './preview-card'
-
+import type { ReactNode } from 'react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import type { ServiceProvider } from '@/types/app';
+import { ProviderCardView } from './preview-card';
 
 type Props = {
   title: string;
   subHeading: string;
   providers: ServiceProvider[];
   action?: ReactNode;
-}
-export default function FeaturedCarousel({ providers, title, subHeading, action = <></> }: Props) {
+};
+export default function FeaturedCarousel({
+  providers,
+  title,
+  subHeading,
+  action = <></>,
+}: Props) {
   return (
     <>
       <div className="mt-14 flex items-end justify-between gap-4">
@@ -23,7 +33,7 @@ export default function FeaturedCarousel({ providers, title, subHeading, action 
           </h3>
         </div>
 
-        { action }
+        {action}
       </div>
       <Carousel opts={{ align: 'start' }} className="mt-6 px-1 sm:px-2">
         <CarouselContent className="-ml-4">
@@ -40,6 +50,5 @@ export default function FeaturedCarousel({ providers, title, subHeading, action 
         <CarouselNext className="-right-2 border-[#d9e8df] bg-white text-[#0f8a62] shadow-md hover:bg-[#f0f8f4] sm:-right-4" />
       </Carousel>
     </>
-  )
+  );
 }
-

@@ -1,4 +1,3 @@
-
 import type { InertiaFormProps } from '@inertiajs/react';
 import { Placeholder } from '@tiptap/extensions';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -6,17 +5,27 @@ import StarterKit from '@tiptap/starter-kit';
 import type { UseHttpProps } from 'node_modules/@inertiajs/react/types/useHttp';
 import { useEffect } from 'react';
 import { cn, getNestedValue, setNestedValue } from '@/lib/utils';
-import { RTHeadings, RTBold, RTItalic, RTUnorderedList, RTOrderedList } from './toolbars';
+import {
+  RTHeadings,
+  RTBold,
+  RTItalic,
+  RTUnorderedList,
+  RTOrderedList,
+} from './toolbars';
 
 type Props<T extends object> = {
   name: string;
   className?: string;
-  form?: InertiaFormProps<T> | UseHttpProps<T>
+  form?: InertiaFormProps<T> | UseHttpProps<T>;
 };
 
-export default function RichEditor<T extends object>({ name, form, className }: Props<T>) {
-  const initialContent = getNestedValue(form?.data, name)
-  
+export default function RichEditor<T extends object>({
+  name,
+  form,
+  className,
+}: Props<T>) {
+  const initialContent = getNestedValue(form?.data, name);
+
   const editor = useEditor({
     content: initialContent,
     extensions: [
@@ -34,8 +43,8 @@ export default function RichEditor<T extends object>({ name, form, className }: 
 
   useEffect(() => {
     if (!editor) {
-return;
-}
+      return;
+    }
 
     const incomingContent = initialContent || '';
 
@@ -45,7 +54,7 @@ return;
   }, [editor, initialContent]);
 
   return (
-    <div className={cn("border border-border", className)}>
+    <div className={cn('border border-border', className)}>
       {editor && (
         <div className="flex items-center gap-2 border-b p-3">
           <RTHeadings editor={editor} />

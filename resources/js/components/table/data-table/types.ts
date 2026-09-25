@@ -1,46 +1,49 @@
-import type { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table";
-import type { ReactNode } from "react";
-import type { PaginatedData } from "@/types";
+import type {
+  ColumnDef,
+  RowSelectionState,
+  Table,
+} from '@tanstack/react-table';
+import type { ReactNode } from 'react';
+import type { PaginatedData } from '@/types';
 
 export interface DataTablePaginationProps<TData> {
-  table: Table<TData>
-  meta?: PaginatedData<TData[]>
+  table: Table<TData>;
+  meta?: PaginatedData<TData[]>;
 }
-
 
 export type PaginationMeta = {
-  total: number
-  perPage: number
-  page: number
-}
+  total: number;
+  perPage: number;
+  page: number;
+};
 
 export interface DataTableProps<TData> {
-  columns: ColumnDef<TData>[]
+  columns: ColumnDef<TData>[];
   data: TData[];
   emptyState?: ReactNode;
   loader?: {
     isLoading?: boolean;
     component?: ReactNode;
-  }
+  };
   options?: {
     pagination?: {
-      show: boolean
-      type?: "client" | "server"
-    },
-    [key: string]: unknown
+      show: boolean;
+      type?: 'client' | 'server';
+    };
+    [key: string]: unknown;
   };
   rowSelection?: RowSelectionState;
   onRowSelectionChange?: (state: RowSelectionState) => void;
   getRowId?: (row: TData) => string;
   components?: {
-    header: (table: Table<TData>) => ReactNode
-  }
+    header: (table: Table<TData>) => ReactNode;
+  };
   classNames?: {
     wrapper?: string;
     table?: string;
     header?: {
-      tr?: string
-      td?: string
+      tr?: string;
+      td?: string;
     };
     cell?: {
       tr?: string;
@@ -88,11 +91,12 @@ export interface DataTableProps<TData> {
 //   // tabs?: string[];
 // }
 
-
-type Props = {
-  show: boolean;
-  url: string;
-} | undefined
+type Props =
+  | {
+      show: boolean;
+      url: string;
+    }
+  | undefined;
 
 export type ActionsData = {
   view: Props;
@@ -104,20 +108,18 @@ export type ActionsData = {
   mutate: string | undefined;
   url: string;
   name: string;
-}
+};
 
 export type DynamicButtonGroup = {
   buttonGroup?: {
     label: ReactNode;
-    action: () => void
-  }[]
-  actions?: Partial<ActionsData>
-}
-
-
+    action: () => void;
+  }[];
+  actions?: Partial<ActionsData>;
+};
 
 export type DialogAlert = {
   title: string;
   description: string;
   url: string;
-}
+};

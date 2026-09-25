@@ -1,11 +1,11 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
-import { toast } from "sonner";
-import type { FlashToast } from "@/types/ui";
+import { router, usePage } from '@inertiajs/react';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
+import type { FlashToast } from '@/types/ui';
 
 export function useFlashToast(): void {
   useEffect(() => {
-    return router.on("flash", (event) => {
+    return router.on('flash', (event) => {
       const flash = (event as CustomEvent).detail?.flash;
       const data = flash?.toast as FlashToast | undefined;
 
@@ -32,14 +32,14 @@ interface FlashData {
   warning?: FlashMessage;
 }
 
-const STORAGE_KEY = "shown_flash_ids";
+const STORAGE_KEY = 'shown_flash_ids';
 const ID_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Get shown message IDs from sessionStorage
  */
 function getShownIds(): Record<string, number> {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return {};
   }
 
@@ -72,7 +72,7 @@ function getShownIds(): Record<string, number> {
  * Save shown message ID to sessionStorage
  */
 function saveShownId(id: string): void {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
 
@@ -113,10 +113,10 @@ export function useFlashMessages(): void {
       data?: FlashMessage;
       toastFn: typeof toast.error;
     }> = [
-      { type: "error", data: flash.error, toastFn: toast.error },
-      { type: "success", data: flash.success, toastFn: toast.success },
-      { type: "info", data: flash.info, toastFn: toast.info },
-      { type: "warning", data: flash.warning, toastFn: toast.warning },
+      { type: 'error', data: flash.error, toastFn: toast.error },
+      { type: 'success', data: flash.success, toastFn: toast.success },
+      { type: 'info', data: flash.info, toastFn: toast.info },
+      { type: 'warning', data: flash.warning, toastFn: toast.warning },
     ];
 
     for (const { type, data, toastFn } of types) {
@@ -143,8 +143,8 @@ export function useFlashMessages(): void {
 
       toastFn(data.title, {
         description,
-        duration: type === "error" ? 8000 : 5000,
-        position: "top-right",
+        duration: type === 'error' ? 8000 : 5000,
+        position: 'top-right',
       });
     }
   }, [flash]);

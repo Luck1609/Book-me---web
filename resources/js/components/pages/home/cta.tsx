@@ -1,7 +1,7 @@
-import { Link } from '@inertiajs/react'
-import { ArrowRight, Zap } from 'lucide-react'
-import Container from '@/components/container'
-import { register } from '@/routes'
+import { Link } from '@inertiajs/react';
+import { ArrowRight, Zap } from 'lucide-react';
+import Container from '@/components/container';
+import { register } from '@/routes';
 
 export default function CTA() {
   return (
@@ -35,6 +35,5 @@ export default function CTA() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
-

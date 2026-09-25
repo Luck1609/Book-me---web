@@ -19,8 +19,7 @@ export type SelectOptions = {
   description?: string;
 };
 
-
 export enum UserType {
-  CLIENT = "client",
-  PROVIDER = "service_provider"
+  CLIENT = 'client',
+  PROVIDER = 'service_provider',
 }

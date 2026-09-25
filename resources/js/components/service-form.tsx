@@ -8,7 +8,6 @@ import { ServiceFields } from '@/pages/onboarding/shop/service';
 import type { ServiceFormData } from '@/pages/onboarding/types';
 import { store, update } from '@/routes/services';
 
-
 type Props = {
   service?: ServiceRecord;
 };
@@ -54,7 +53,7 @@ export default function ServiceForm({ service }: Props) {
     //   return;
     // }
 
-    form.transform((data) => ({ ...data.services[0] }))
+    form.transform((data) => ({ ...data.services[0] }));
 
     form.submit({
       forceFormData: true,

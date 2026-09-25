@@ -1,4 +1,3 @@
-
 export type ServiceFormData = {
   image: File | null;
   name: string;

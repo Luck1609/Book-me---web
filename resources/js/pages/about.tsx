@@ -56,9 +56,9 @@ export default function About() {
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-[#6c7d7e] sm:text-lg sm:leading-8">
               Book Me gives independent professionals and growing teams more
-              space to do meaningful work. We take care of the busywork
-              around every appointment, so your clients feel looked after
-              before they even walk through the door.
+              space to do meaningful work. We take care of the busywork around
+              every appointment, so your clients feel looked after before they
+              even walk through the door.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -72,8 +72,7 @@ export default function About() {
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-[#dce6e1] bg-white/70 px-7 py-3.5 text-sm font-bold text-[#53696b] transition hover:border-[#b8d8c8] hover:text-[#0f8a62]"
                 href={contact()}
               >
-                Say hello{' '}
-                <ArrowUpRight aria-hidden="true" className="size-4" />
+                Say hello <ArrowUpRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
           </div>
@@ -142,14 +141,13 @@ export default function About() {
             <p>
               We kept seeing brilliant people lose hours to the same small
               problems: messages that went unanswered, calendars that needed
-              constant tending, and clients who had to work too hard to
-              book.
+              constant tending, and clients who had to work too hard to book.
             </p>
             <p className="mt-5">
-              Book Me was created to make that part feel lighter. The
-              product is practical, but the idea behind it is simple: when
-              the details are handled thoughtfully, people have more energy
-              for the work and relationships that matter most.
+              Book Me was created to make that part feel lighter. The product is
+              practical, but the idea behind it is simple: when the details are
+              handled thoughtfully, people have more energy for the work and
+              relationships that matter most.
             </p>
           </div>
         </div>
@@ -212,8 +210,8 @@ export default function About() {
                 />
               </div>
               <p className="mt-6 text-lg leading-7 font-semibold tracking-[-0.03em] text-[#29464a]">
-                “You do not have to figure it out alone. Tell us what your
-                day looks like and we will help you make it work better.”
+                “You do not have to figure it out alone. Tell us what your day
+                looks like and we will help you make it work better.”
               </p>
               <div className="mt-6 flex items-center gap-2 text-xs font-bold text-[#e77b4d]">
                 Talk to a real human{' '}
@@ -229,16 +227,13 @@ export default function About() {
               Good software starts with listening.
             </h2>
             <p className="mt-6 max-w-lg text-base leading-7 text-[#7e7062]">
-              From the first sketch to every feature we ship, we stay close
-              to the people using Book Me every day. Their feedback keeps
-              the product grounded, useful, and pleasantly human.
+              From the first sketch to every feature we ship, we stay close to
+              the people using Book Me every day. Their feedback keeps the
+              product grounded, useful, and pleasantly human.
             </p>
             <div className="mt-8 flex items-center gap-6 text-sm text-[#6d736c]">
               <div className="flex items-center gap-2">
-                <Users
-                  aria-hidden="true"
-                  className="size-4 text-[#0f8a62]"
-                />{' '}
+                <Users aria-hidden="true" className="size-4 text-[#0f8a62]" />{' '}
                 Independent teams
               </div>
               <div className="flex items-center gap-2">
@@ -262,8 +257,8 @@ export default function About() {
               Make more room for the work you love.
             </h2>
             <p className="mx-auto mt-5 max-w-lg text-base leading-7 text-[#c5f0dc]">
-              We would love to help you make scheduling feel a little more
-              like you.
+              We would love to help you make scheduling feel a little more like
+              you.
             </p>
             <Link
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-[#0f8a62] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#f4fff9]"

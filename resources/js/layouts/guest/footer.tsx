@@ -1,11 +1,10 @@
-import { Link } from '@inertiajs/react'
-import AppLogo from '@/components/app-logo'
-import Container from '@/components/container'
-import { about, contact, login, privacy, register, terms } from '@/routes'
+import { Link } from '@inertiajs/react';
+import AppLogo from '@/components/app-logo';
+import Container from '@/components/container';
+import { about, contact, login, privacy, register, terms } from '@/routes';
 
 export default function Footer() {
   return (
-
     <footer className="border-t border-[#e6eeea] bg-[#fbfcfa] px-5 pt-12 pb-8 sm:px-8 lg:px-12">
       <Container>
         <div className="flex flex-col justify-between gap-10 md:flex-row">
@@ -100,6 +99,5 @@ export default function Footer() {
         </div>
       </Container>
     </footer>
-  )
+  );
 }
-

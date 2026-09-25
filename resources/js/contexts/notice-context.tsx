@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import { Notice } from '@/components/form/notice';
 import { Modal } from '@/components/ui/dialog';
 
-
 type NoticeClassNames = {
   container?: string;
   title?: string;
@@ -14,12 +13,12 @@ type NoticeClassNames = {
     cancelButton?: string;
     continueButton?: string;
   };
-}
+};
 
 export type NoticeModalConfig = {
   type: 'modal';
   content: ReactNode;
-  modalType?: 'default' | 'custom'
+  modalType?: 'default' | 'custom';
   classNames?: {
     trigger?: string;
     content?: string;
@@ -27,23 +26,26 @@ export type NoticeModalConfig = {
       header?: string;
       title?: string;
       description?: string;
-    }
-  }
-}
+    };
+  };
+};
 type NoticeContextConfig = {
   title?: string;
   description?: string;
-} & ({
-  type: 'notice';
-  onConfirm: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  classNames?: NoticeClassNames;
-} | NoticeModalConfig | {
-  type: 'alert';
-  classNames?: NoticeClassNames
-})
-
+} & (
+  | {
+      type: 'notice';
+      onConfirm: () => void;
+      confirmText?: string;
+      cancelText?: string;
+      classNames?: NoticeClassNames;
+    }
+  | NoticeModalConfig
+  | {
+      type: 'alert';
+      classNames?: NoticeClassNames;
+    }
+);
 
 interface NoticeContextType {
   show: (config: NoticeContextConfig) => void;
@@ -61,7 +63,7 @@ interface NoticeProviderProps {
 
 export function NoticeProvider({ children }: NoticeProviderProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<NoticeContextConfig>({
     title: '',
     description: '',
@@ -85,41 +87,44 @@ export function NoticeProvider({ children }: NoticeProviderProps) {
   };
 
   const toggleLoading = (state: boolean) => {
-    setIsLoading(state)
-  }
+    setIsLoading(state);
+  };
 
   return (
-    <NoticeContext.Provider value={{ show: showNotice, hide: hideNotice, isOpen, isLoading, toggleLoading }}>
+    <NoticeContext.Provider
+      value={{
+        show: showNotice,
+        hide: hideNotice,
+        isOpen,
+        isLoading,
+        toggleLoading,
+      }}
+    >
       {children}
 
-      {
-        config.type === 'notice' || config.type === 'alert'
-          ? (
-            <Notice
-              title={config.title}
-              description={config.description}
-              open={isOpen}
-              type={config.type}
-              toggler={hideNotice}
-              action={handleAction}
-              classNames={config.classNames}
-              isLoading={isLoading}
-            />
-
-          )
-          : (
-            <Modal
-              title={config?.title}
-              description={config.description}
-              open={isOpen}
-              dialogToggler={hideNotice}
-              classNames={config.classNames}
-              modalType={config.modalType}
-            >{config.content}</Modal>
-          )
-      }
-
-
+      {config.type === 'notice' || config.type === 'alert' ? (
+        <Notice
+          title={config.title}
+          description={config.description}
+          open={isOpen}
+          type={config.type}
+          toggler={hideNotice}
+          action={handleAction}
+          classNames={config.classNames}
+          isLoading={isLoading}
+        />
+      ) : (
+        <Modal
+          title={config?.title}
+          description={config.description}
+          open={isOpen}
+          dialogToggler={hideNotice}
+          classNames={config.classNames}
+          modalType={config.modalType}
+        >
+          {config.content}
+        </Modal>
+      )}
     </NoticeContext.Provider>
   );
 }

@@ -28,7 +28,10 @@ const typeOptions = [
   { label: 'Time off', value: 'time_off' },
 ];
 
-function TimeBlockForm({ initialType = 'break', onCancel }: TimeBlockFormProps) {
+function TimeBlockForm({
+  initialType = 'break',
+  onCancel,
+}: TimeBlockFormProps) {
   const { hide } = useNotice();
   const form = useForm<TimeBlockFormData>({
     type: initialType,

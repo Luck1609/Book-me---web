@@ -45,7 +45,6 @@ type SchedulePageProps = {
   bookings: Booking[];
 };
 
-
 const days = [
   'Sunday',
   'Monday',
@@ -145,7 +144,7 @@ function BusinessHourEditorLocal({ hour }: { hour: BusinessHour }) {
 }
 
 export default function Schedule() {
-  const [currentField, setCurrentField] = useState<number | null>(null)
+  const [currentField, setCurrentField] = useState<number | null>(null);
   const { businessHours, blocks, bookings } =
     usePage<SchedulePageProps>().props;
   const { show } = useNotice();
@@ -165,10 +164,10 @@ export default function Schedule() {
   };
 
   const handleToggle = (index?: number) => {
-    console.log('Toggled index', index)
-    setCurrentField(index ?? null)
-  }
-console.log('Business hours', businessHours)
+    console.log('Toggled index', index);
+    setCurrentField(index ?? null);
+  };
+  console.log('Business hours', businessHours);
   return (
     <>
       <Head title="Provider calendar" />
@@ -212,18 +211,16 @@ console.log('Business hours', businessHours)
                 </div>
               </div>
               <div className="mt-5 divide-y divide-[#e7f0ec] dark:divide-white/8">
-                {
-                  businessHours.map((hour, index) => (
-                    <div className="py-2" key={hour.id}>
-                      <BusinessHourEditor
-                        hour={hour}
-                        edit={currentField === index}
-                        toggle={handleToggle}
-                        index={index}
-                      />
-                    </div>
-                  ))
-                }
+                {businessHours.map((hour, index) => (
+                  <div className="py-2" key={hour.id}>
+                    <BusinessHourEditor
+                      hour={hour}
+                      edit={currentField === index}
+                      toggle={handleToggle}
+                      index={index}
+                    />
+                  </div>
+                ))}
                 {businessHours.length === 0 && (
                   <p className="py-4 text-sm text-[#70908a] dark:text-[#9cb8b1]">
                     No working hours have been configured yet.
