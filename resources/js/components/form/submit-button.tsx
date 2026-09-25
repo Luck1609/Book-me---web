@@ -21,7 +21,6 @@ export default function SubmitButton<T extends object>({ form, label = "Submit",
       type="submit"
       disabled={form.processing}
       className={cn("flex items-center", props?.className)}
-      isIconButton={false}
       {...props}
     >
       {

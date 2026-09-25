@@ -20,7 +20,7 @@ class AuthController extends Controller
   public function register(RegisterRequest $request, OtpService $otpService): JsonResponse
   {
     $data = $request->validated();
-    $user = User::query()->create([
+    $user = User::create([
       'name' => $data['name'],
       'email' => isset($data['email']) ? Str::lower($data['email']) : null,
       'phone' => $data['phone'] ?? null,
@@ -46,7 +46,7 @@ class AuthController extends Controller
     $identifier = trim($request->string('identifier')->toString());
     $column = str_contains($identifier, '@') ? 'email' : 'phone';
     $identifier = $column === 'email' ? Str::lower($identifier) : $identifier;
-    $user = User::query()->where($column, $identifier)->first();
+    $user = User::where($column, $identifier)->first();
 
     abort_unless(
       $user !== null
@@ -65,7 +65,7 @@ class AuthController extends Controller
   {
     $phone = $otpService->normalizePhone($request->string('phone')->toString());
 
-    if (User::query()->where('phone', $phone)->exists()) {
+    if (User::where('phone', $phone)->exists()) {
       $otpService->request($phone);
     }
 

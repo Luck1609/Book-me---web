@@ -8,9 +8,12 @@ use App\Services\Sms\LogSmsSender;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Passkeys\Passkeys;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\TikTok\Provider as TikTokProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Passkeys::usePasskeyModel(Passkey::class);
+
+        Event::listen(function (SocialiteWasCalled $event): void {
+            $event->extendSocialite('tiktok', TikTokProvider::class);
+        });
 
         $this->configureDefaults();
     }

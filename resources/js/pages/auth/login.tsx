@@ -9,7 +9,7 @@ import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import SocialAuthButtons, { AlternateLogin } from './social-buttons';
 
-export default function Login() {
+export default function Login({ status }: { status?: string }) {
   const form = useForm({
     email: '',
     password: '',
@@ -26,6 +26,12 @@ export default function Login() {
       <Head title="Log in" />
 
       <form className="w-full" onSubmit={handleSubmit}>
+        {status && (
+          <div className="mb-5 rounded-2xl border border-[#f3d5c6] bg-[#fff8f4] px-4 py-3 text-sm leading-5 text-[#9a5c3b]">
+            {status}
+          </div>
+        )}
+
         <div className="grid gap-5">
           <Input
             type="email"
@@ -46,7 +52,7 @@ export default function Login() {
             form={form}
           />
 
-          <div className="grid lg:grid-cols-2 gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="grid gap-3 sm:flex-row sm:items-center sm:justify-between lg:grid-cols-2">
             <Checkbox
               name="remember"
               tabIndex={3}
@@ -64,7 +70,7 @@ export default function Login() {
 
             <Link
               href={request()}
-              className="text-sm text-right font-semibold text-[#0f8a62] transition-colors hover:text-[#0b7653] hover:underline"
+              className="text-right text-sm font-semibold text-[#0f8a62] transition-colors hover:text-[#0b7653] hover:underline"
               tabIndex={4}
             >
               Forgot password?

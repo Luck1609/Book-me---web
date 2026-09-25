@@ -3,6 +3,7 @@ import google from '@/assets/images/google.webp';
 import tiktok from '@/assets/images/tiktok.webp';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { redirect as socialRedirect } from '@/routes/auth/social';
 
 const strategies = [
   {
@@ -37,9 +38,12 @@ export default function SocialAuthButtons({
           // size="icon-lg"
           aria-label={`Continue with ${strategy.label}`}
           className="border-[#dfe9e4] bg-white shadow-none hover:border-[#b5dfcb] hover:bg-[#f3faf6]"
+          asChild
         >
-          <img src={strategy.logo} alt="" className="size-5" />
-          <span className="font-medium">{ strategy.label }</span>
+          <a href={socialRedirect(strategy.value).url}>
+            <img src={strategy.logo} alt="" className="size-5" />
+            <span className="font-medium">{strategy.label}</span>
+          </a>
         </Button>
       ))}
     </div>
