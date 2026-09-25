@@ -1,29 +1,52 @@
-import { Link } from '@inertiajs/react'
-import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react'
+import { Link } from '@inertiajs/react';
+import { ArrowRight, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import AppLogo from '@/components/app-logo';
 import Container from '@/components/container';
-import { about, contact, home, login, register } from '@/routes'
+import { cn } from '@/lib/utils';
+import {
+  about,
+  contact,
+  forBusiness,
+  home,
+  login,
+  register,
+  search,
+} from '@/routes';
+import ThemeToggle from '../app/theme-toggler';
 
-export default function Navbar() {
+
+type Props = {
+  className?: string;
+  component?: ReactNode
+}
+
+export default function Navbar({ className = "", component = <></> }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="relative z-50 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md">
+    <header className={cn("relative z-50 border-b border-[#e8eeeb]/80 bg-[#fbfcfa]/90 backdrop-blur-md", className)}>
       <Container className="mx-auto flex h-19 items-center justify-between px-5 sm:px-8 lg:px-12">
         <Link href={home()} aria-label="Book Me home" onClick={closeMenu}>
           <AppLogo />
         </Link>
 
-        <nav className="hidden items-center gap-8 text-[13px] font-semibold text-[#5c7072] lg:flex">
+        {/* <nav className="hidden items-center gap-8 text-[13px] font-semibold text-[#5c7072] lg:flex">
           <a
             className="transition-colors hover:text-[#0f8a62]"
             href="#features"
           >
             Features
           </a>
+          <Link
+            className="transition-colors hover:text-[#0f8a62]"
+            href={search()}
+          >
+            Find a provider
+          </Link>
           <a
             className="transition-colors hover:text-[#0f8a62]"
             href="#how-it-works"
@@ -34,13 +57,9 @@ export default function Navbar() {
             className="flex items-center gap-1 transition-colors hover:text-[#0f8a62]"
             href="#solutions"
           >
-            Solutions{' '}
-            <ChevronDown aria-hidden="true" className="size-3.5" />
+            Solutions <ChevronDown aria-hidden="true" className="size-3.5" />
           </a>
-          <a
-            className="transition-colors hover:text-[#0f8a62]"
-            href="#stories"
-          >
+          <a className="transition-colors hover:text-[#0f8a62]" href="#stories">
             Customer stories
           </a>
           <Link
@@ -51,24 +70,35 @@ export default function Navbar() {
           </Link>
           <Link
             className="transition-colors hover:text-[#0f8a62]"
+            href={forBusiness()}
+          >
+            For business
+          </Link>
+          <Link
+            className="transition-colors hover:text-[#0f8a62]"
             href={contact()}
           >
             Contact
           </Link>
-        </nav>
+        </nav> */}
+
+        { component }
+
         <div className="hidden items-center gap-5 lg:flex">
+          <ThemeToggle />
+
           <Link
             className="text-[13px] font-bold text-[#53696b] transition-colors hover:text-[#0f8a62]"
             href={login()}
           >
             Log in
           </Link>
+
           <Link
             className="inline-flex items-center gap-2 rounded-full bg-[#0f8a62] px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_7px_16px_rgba(15,138,98,0.18)] transition hover:-translate-y-0.5 hover:bg-[#0b7653]"
             href={register()}
           >
-            Get started{' '}
-            <ArrowRight aria-hidden="true" className="size-3.5" />
+            Create account <ArrowRight aria-hidden="true" className="size-3.5" />
           </Link>
         </div>
         <button
@@ -83,13 +113,16 @@ export default function Navbar() {
           )}
         </button>
       </Container>
-      
-      {isMenuOpen && (
+
+      {/* {isMenuOpen && (
         <nav className="absolute inset-x-0 top-full border-b border-[#e5ece8] bg-[#fbfcfa] px-5 py-5 shadow-lg lg:hidden">
           <div className="flex flex-col gap-4 text-sm font-semibold text-[#5c7072]">
             <a href="#features" onClick={closeMenu}>
               Features
             </a>
+            <Link href={search()} onClick={closeMenu}>
+              Find a provider
+            </Link>
             <a href="#how-it-works" onClick={closeMenu}>
               How it works
             </a>
@@ -101,6 +134,9 @@ export default function Navbar() {
             </a>
             <Link href={about()} onClick={closeMenu}>
               About us
+            </Link>
+            <Link href={forBusiness()} onClick={closeMenu}>
+              For business
             </Link>
             <Link href={contact()} onClick={closeMenu}>
               Contact
@@ -123,8 +159,7 @@ export default function Navbar() {
             </div>
           </div>
         </nav>
-      )}
+      )} */}
     </header>
-  )
+  );
 }
-

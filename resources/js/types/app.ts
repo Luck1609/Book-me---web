@@ -14,7 +14,7 @@ export type ServiceRecord = {
   image: string | null;
 };
 
-export type ServiceProvider = {
+export type ServiceProvider = Partial<{
 	id: string;
 	name: string;
 	category: string;
@@ -35,8 +35,10 @@ export type ServiceProvider = {
   businessHours: BusinessHour[]
   slug: string;
   avatar: string | null;
+  rating: number;
+  tag: string;
 	[x: string]: unknown;
-}
+}>
 
 export type BookingRecord = {
 	id: string;

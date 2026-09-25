@@ -21,6 +21,7 @@ Route::prefix('auth')->name('auth.')->group(function (): void {
 Route::inertia('/', 'index')->name('home');
 Route::inertia('/for-business', 'for-business')->name('for-business');
 Route::inertia('/about', 'about')->name('about');
+Route::inertia('/search', 'search')->name('search');
 Route::inertia('/contact', 'contact')->name('contact');
 Route::inertia('/privacy-policy', 'privacy-policy')->name('privacy');
 Route::inertia('/terms-and-conditions', 'terms-and-conditions')->name('terms');

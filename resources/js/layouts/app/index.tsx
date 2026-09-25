@@ -3,12 +3,12 @@ import { AppContent } from '@/components/app-content';
 import AppLogo from '@/components/app-logo';
 import { AppShell } from '@/components/app-shell';
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -16,6 +16,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { NoticeProvider } from '@/contexts/notice-context';
+import { useCurrentUrl } from '@/hooks/use-current-url';
 import { mainNavItems } from '@/lib/data';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -31,8 +32,7 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   const { user } = usePage().props
-
-  console.log('Auth user details', user)
+  const { isCurrentOrParentUrl } = useCurrentUrl();
 
   return (
     <NoticeProvider>
@@ -51,7 +51,24 @@ export default function AppLayout({
           </SidebarHeader>
 
           <SidebarContent className="lg:mt-5">
-            <NavMain items={mainNavItems(user?.role)} />
+            <SidebarGroup className="px-2 py-0">
+              <SidebarMenu className="space-y-1">
+                {mainNavItems(user?.role).map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isCurrentOrParentUrl(item.href)}
+                      tooltip={{ children: item.title }}
+                    >
+                      <Link href={item.href} className="text-base" prefetch>
+                        {item.icon && <item.icon className="size-5!" />}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
           </SidebarContent>
 
           <SidebarFooter>
