@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import businessHours from '@/routes/business-hours';
 import type { BusinessHour } from '@/types/app';
 
-
 const days = [
   'Sunday',
   'Monday',
@@ -74,10 +73,10 @@ export default function BusinessHourEditor({
         form.setData({
           opens_at: inputTime(form.data.opens_at),
           closes_at: inputTime(form.data.closes_at),
-        })
+        });
 
-        toggle()
-      }
+        toggle();
+      },
     });
   };
 
@@ -100,7 +99,7 @@ export default function BusinessHourEditor({
           classNames={{
             field: {
               wrapper:
-              'border-none has-data-[state=checked]:border-none has-data-[state=checked]:bg-background',
+                'border-none has-data-[state=checked]:border-none has-data-[state=checked]:bg-background',
             },
           }}
           isBoolean
@@ -126,11 +125,11 @@ export default function BusinessHourEditor({
 
       <div className="flex items-center gap-2 lg:justify-end">
         {!edit ? (
-            <Button className="h-10" onClick={() => toggle(index)}>
-              <Edit />
-              Edit
-            </Button>
-          ) : (
+          <Button className="h-10" onClick={() => toggle(index)}>
+            <Edit />
+            Edit
+          </Button>
+        ) : (
           <>
             <Button size="icon" variant="destructive" onClick={handleToggle}>
               <X />
@@ -143,8 +142,8 @@ export default function BusinessHourEditor({
               isIconButton
             />
           </>
-          )}
-        </div>
-      </form>
-      );
+        )}
+      </div>
+    </form>
+  );
 }

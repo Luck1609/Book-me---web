@@ -1,7 +1,14 @@
-import { Link } from '@inertiajs/react'
-import { ArrowRight, ArrowUpRight, Check, CircleCheck, Play, ShieldCheck } from 'lucide-react'
-import Container from '@/components/container'
-import { register } from '@/routes'
+import { Link } from '@inertiajs/react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  CircleCheck,
+  Play,
+  ShieldCheck,
+} from 'lucide-react';
+import Container from '@/components/container';
+import { register } from '@/routes';
 
 export default function Hero() {
   return (
@@ -62,10 +69,8 @@ export default function Hero() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
-
-
 
 const appointmentTimes = ['9:00 AM', '10:30 AM', '1:00 PM', '2:30 PM'];
 

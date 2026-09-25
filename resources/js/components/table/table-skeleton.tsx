@@ -1,4 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface TableSkeletonProps {
   columns: number;
@@ -11,11 +18,8 @@ export function TableSkeleton({ columns, rows = 5 }: TableSkeletonProps) {
       <TableHeader>
         <TableRow>
           {Array.from({ length: columns }).map((_, i) => (
-            <TableHead
-              key={`header-${i}`}
-              className="border-r border-gray-200"
-            >
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+            <TableHead key={`header-${i}`} className="border-r border-gray-200">
+              <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200"></div>
             </TableHead>
           ))}
         </TableRow>
@@ -23,13 +27,16 @@ export function TableSkeleton({ columns, rows = 5 }: TableSkeletonProps) {
 
       <TableBody>
         {Array.from({ length: rows }).map((_, rowIndex) => (
-          <TableRow key={`row-${rowIndex}`} className="border-b border-gray-200">
+          <TableRow
+            key={`row-${rowIndex}`}
+            className="border-b border-gray-200"
+          >
             {Array.from({ length: columns }).map((_, colIndex) => (
               <TableCell
                 key={`cell-${rowIndex}-${colIndex}`}
-                className="px-3 py-4 border-r border-gray-200"
+                className="border-r border-gray-200 px-3 py-4"
               >
-                <div className="h-4 bg-gray-100 rounded animate-pulse"></div>
+                <div className="h-4 animate-pulse rounded bg-gray-100"></div>
               </TableCell>
             ))}
           </TableRow>

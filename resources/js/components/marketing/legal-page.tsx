@@ -50,7 +50,7 @@ export default function LegalPage({
   return (
     <>
       <Head title={title} />
-      
+
       <section className="relative isolate overflow-hidden bg-[#17343c] px-5 pt-16 pb-16 text-white sm:px-8 sm:pt-24 sm:pb-20 lg:px-12">
         <div className="pointer-events-none absolute -top-48 -right-24 -z-10 size-136 rounded-full border-42 border-white/5" />
         <div className="pointer-events-none absolute -bottom-64 -left-32 -z-10 size-120 rounded-full border-38 border-[#72d5ac]/10" />
@@ -59,8 +59,8 @@ export default function LegalPage({
             className="inline-flex items-center gap-2 text-xs font-bold text-[#9fc2bd] transition hover:text-white"
             href={home()}
           >
-            <ArrowLeft aria-hidden="true" className="size-3.5" /> Back to
-            Book Me
+            <ArrowLeft aria-hidden="true" className="size-3.5" /> Back to Book
+            Me
           </Link>
           <div className="mt-10 flex items-start gap-4">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#28555a] text-[#7de0b5]">
@@ -104,10 +104,10 @@ export default function LegalPage({
           </aside>
           <article className="max-w-3xl space-y-10 rounded-[26px] border border-[#e4ece7] bg-white p-6 shadow-[0_16px_35px_rgba(45,86,68,0.05)] sm:p-10">
             <div className="rounded-2xl border border-[#f2dfc2] bg-[#fff8ed] px-5 py-4 text-sm leading-6 text-[#806f5e]">
-              This page is a starter template for Book Me. Replace the
-              marked business details, confirm the data practices described
-              here, and have the final version reviewed for the laws that
-              apply to your business before publishing.
+              This page is a starter template for Book Me. Replace the marked
+              business details, confirm the data practices described here, and
+              have the final version reviewed for the laws that apply to your
+              business before publishing.
             </div>
             {children}
           </article>

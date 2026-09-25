@@ -9,17 +9,15 @@ import { Button } from '@/components/ui/button';
 import { logout } from '@/routes';
 import { update } from '@/routes/password';
 
-
 export default function AccountVerification() {
   const form = useForm({
-    otp: "",
-  })
-
+    otp: '',
+  });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.post(update().url)
-  }
+    e.preventDefault();
+    form.post(update().url);
+  };
 
   return (
     <>
@@ -27,13 +25,12 @@ export default function AccountVerification() {
 
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="grid gap-6">
-
           <OTP
             name="otp"
             form={form}
             classNames={{
-              container: "gap-3",
-              input: "rounded-lg border size-12"
+              container: 'gap-3',
+              input: 'rounded-lg border size-12',
             }}
           />
 
@@ -45,11 +42,15 @@ export default function AccountVerification() {
           />
         </div>
 
-        <div className="w-full mt-4">
-          <Link href={logout()} tabIndex={5} className="w-full flex items-center justify-center gap-2 text-primary hover:underline">
+        <div className="mt-4 w-full">
+          <Link
+            href={logout()}
+            tabIndex={5}
+            className="flex w-full items-center justify-center gap-2 text-primary hover:underline"
+          >
             <Button variant="ghost" className="text-primary">
               <LogOut className="size-4 stroke-destructive" />
-              <span className="uppercase text-destructive">Logout</span>
+              <span className="text-destructive uppercase">Logout</span>
             </Button>
           </Link>
         </div>
@@ -58,15 +59,14 @@ export default function AccountVerification() {
   );
 }
 
-
 AccountVerification.layout = {
   classNames: {
-    wrapper: "border rounded-xl overflow-hidden",
-    container: "sm:w-110 items-center p-5"
+    wrapper: 'border rounded-xl overflow-hidden',
+    container: 'sm:w-110 items-center p-5',
   },
   icon: <PasswordResetIcon className="size-56" />,
   asDirectChild: false,
-  title: "Email verification",
-  description: "Please verify your email address by typing in your OTP",
-  backgroundImage: background
-}
+  title: 'Email verification',
+  description: 'Please verify your email address by typing in your OTP',
+  backgroundImage: background,
+};

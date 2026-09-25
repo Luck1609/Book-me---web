@@ -983,4 +983,4 @@ export const SignupIcon = (props: SVGProps<SVGSVGElement>) => {
       </g>
     </svg>
   );
-}
+};

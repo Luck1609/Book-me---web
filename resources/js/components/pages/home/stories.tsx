@@ -1,5 +1,5 @@
-import { Star } from 'lucide-react'
-import Container from '@/components/container'
+import { Star } from 'lucide-react';
+import Container from '@/components/container';
 
 export default function Stories() {
   return (
@@ -49,9 +49,7 @@ export default function Stories() {
                 MO
               </div>
               <div>
-                <p className="text-sm font-bold text-[#29464a]">
-                  Maame Owusu
-                </p>
+                <p className="text-sm font-bold text-[#29464a]">Maame Owusu</p>
                 <p className="text-xs text-[#78908b]">
                   Founder, Maame's Beauty Bar · Accra
                 </p>
@@ -70,9 +68,7 @@ export default function Stories() {
             <p className="text-3xl font-bold tracking-[-0.06em] text-[#17343c]">
               GHS
             </p>
-            <p className="mt-1 text-xs text-[#7e8c8c]">
-              deposits made simple
-            </p>
+            <p className="mt-1 text-xs text-[#7e8c8c]">deposits made simple</p>
           </div>
           <div>
             <p className="text-3xl font-bold tracking-[-0.06em] text-[#17343c]">
@@ -89,6 +85,5 @@ export default function Stories() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
-

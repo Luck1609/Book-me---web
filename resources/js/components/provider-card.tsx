@@ -1,22 +1,25 @@
-import { Link } from "@inertiajs/react";
-import { Heart, MapPin, Sparkles, Star } from "lucide-react";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import type { ServiceProvider } from "@/types/app";
-
+import { Link } from '@inertiajs/react';
+import { Heart, MapPin, Sparkles, Star } from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { search } from '@/routes';
+import type { ServiceProvider } from '@/types/app';
 
 export function ProviderCard({ provider }: { provider: ServiceProvider }) {
   const [saved, setSaved] = useState(false);
 
   return (
-    <Link className="group overflow-hidden transition duration-300 hover:-translate-y-1">
+    <Link
+      href={search()}
+      className="group overflow-hidden transition duration-300 hover:-translate-y-1"
+    >
       <div
         className={cn(
-          "relative flex h-56 items-end bg-linear-to-br p-5 rounded-xl",
-          provider.accent as string
+          'relative flex h-56 items-end rounded-xl bg-linear-to-br p-5',
+          provider.accent as string,
         )}
       >
-        {provider.featured as boolean && (
+        {(provider.featured as boolean) && (
           <span className="absolute top-4 left-4 flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-bold text-[#56716a] backdrop-blur-sm">
             <Sparkles className="size-3 text-[#c47632]" /> Featured
           </span>
@@ -36,7 +39,7 @@ export function ProviderCard({ provider }: { provider: ServiceProvider }) {
         </button>
       </div>
 
-      <div className="p-3 space-y-1">
+      <div className="space-y-1 p-3">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="font-bold tracking-[-0.03em] text-[#17343c]">
@@ -52,14 +55,11 @@ export function ProviderCard({ provider }: { provider: ServiceProvider }) {
           <MapPin className="size-3.5 text-[#0f8a62]" /> {provider.city}
         </p>
 
-        <div className="flex gap-1 text-xs text-[#78908b] mt-1">
-          <p className="font-semibold text-[#0f8a62]">
-            {provider.category}
-          </p>
+        <div className="mt-1 flex gap-1 text-xs text-[#78908b]">
+          <p className="font-semibold text-[#0f8a62]">{provider.category}</p>
           <span>-</span>
           <span>11 reviews</span>
         </div>
-
       </div>
     </Link>
   );

@@ -1,12 +1,17 @@
 import { Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppearance } from '@/hooks/use-appearance';
 
-
 export default function ThemeToggle() {
   const { resolvedAppearance, updateAppearance } = useAppearance();
-  const isDark = resolvedAppearance === 'dark';
+  const [isMounted, setIsMounted] = useState(false);
+  const isDark = isMounted && resolvedAppearance === 'dark';
   const nextAppearance = isDark ? 'light' : 'dark';
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <Button

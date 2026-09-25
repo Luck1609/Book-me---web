@@ -1,1 +1,1 @@
-export { SearchListing as default } from "@/components/pages/search"
+export { SearchListing as default } from '@/components/pages/search';

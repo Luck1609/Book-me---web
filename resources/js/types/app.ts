@@ -1,7 +1,5 @@
-import type { User } from "./auth";
-import type { ProviderStatus } from "./enums";
-
-
+import type { User } from './auth';
+import type { ProviderStatus } from './enums';
 
 export type ServiceRecord = {
   id: string;
@@ -15,42 +13,41 @@ export type ServiceRecord = {
 };
 
 export type ServiceProvider = Partial<{
-	id: string;
-	name: string;
-	category: string;
-	region: string;
-	district: string;
-	description: string;
-	phone: string;
-	email: string;
-	address: string;
-	city: string;
-	latitude: string;
-	longitude: string;
-	status: ProviderStatus;
-	workingdays: string[];
-	worksOnHolidays: boolean
-	isAcceptingBookings: boolean;
+  id: string;
+  name: string;
+  category: string;
+  region: string;
+  district: string;
+  description: string;
+  phone: string;
+  email: string;
+  address: string;
+  city: string;
+  latitude: string;
+  longitude: string;
+  status: ProviderStatus;
+  workingdays: string[];
+  worksOnHolidays: boolean;
+  isAcceptingBookings: boolean;
   services: ServiceRecord[];
-  businessHours: BusinessHour[]
+  businessHours: BusinessHour[];
   slug: string;
   avatar: string | null;
   rating: number;
   tag: string;
-	[x: string]: unknown;
-}>
+  [x: string]: unknown;
+}>;
 
 export type BookingRecord = {
-	id: string;
-	provider: ServiceProvider;
-	service: ServiceRecord,
-	schedule: string;
-	notes: string | null;
-	client: User;
-	servant: User;
-	[x: string]: unknown;
-}
-
+  id: string;
+  provider: ServiceProvider;
+  service: ServiceRecord;
+  schedule: string;
+  notes: string | null;
+  client: User;
+  servant: User;
+  [x: string]: unknown;
+};
 
 export type BusinessHour = {
   id: string;
@@ -58,5 +55,5 @@ export type BusinessHour = {
   is_closed: boolean;
   opens_at: string | null;
   closes_at: string | null;
-	[x: string]: unknown;
+  [x: string]: unknown;
 };

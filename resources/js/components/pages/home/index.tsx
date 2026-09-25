@@ -20,7 +20,6 @@ import HowItWorks from './how-it-works';
 import Solutions from './solutions';
 import Stories from './stories';
 
-
 const features = [
   {
     title: 'Your calendar, finally calm',
@@ -51,7 +50,6 @@ const features = [
     color: 'bg-[#fff2cc] text-[#b98514]',
   },
 ];
-
 
 const featuredProviders: ServiceProvider[] = [
   {
@@ -118,8 +116,6 @@ const trendingProviders: ServiceProvider[] = [
     tag: 'Rising star',
   },
 ];
-
-
 
 export function LandingPage() {
   const [providerSearch, setProviderSearch] = useState('');

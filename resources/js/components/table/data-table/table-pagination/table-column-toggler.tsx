@@ -1,32 +1,30 @@
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import type { Table } from "@tanstack/react-table"
+import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import type { Table } from '@tanstack/react-table';
 
-import { EllipsisVertical } from 'lucide-react'
-import { Button } from "@/components/ui/button"
+import { EllipsisVertical } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
-import type { DataTablePaginationProps } from '../types'
-
+} from '@/components/ui/dropdown-menu';
+import type { DataTablePaginationProps } from '../types';
 
 export function TableSelection<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex-1 text-sm text-muted-foreground">
-      {table.getFilteredSelectedRowModel().rows.length} of{" "}
+      {table.getFilteredSelectedRowModel().rows.length} of{' '}
       {table.getFilteredRowModel().rows.length} row(s) selected.
     </div>
-  )
+  );
 }
 
-
 interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>
+  table: Table<TData>;
 }
 
 export function DataTableViewOptions<TData>({
@@ -51,7 +49,7 @@ export function DataTableViewOptions<TData>({
           .getAllColumns()
           .filter(
             (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
+              typeof column.accessorFn !== 'undefined' && column.getCanHide(),
           )
           .map((column) => {
             return (
@@ -63,9 +61,9 @@ export function DataTableViewOptions<TData>({
               >
                 {column.id}
               </DropdownMenuCheckboxItem>
-            )
+            );
           })}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

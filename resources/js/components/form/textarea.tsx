@@ -1,15 +1,17 @@
 import type { FormComponentRef } from '@inertiajs/core';
-import { useFormContext } from "@inertiajs/react"
-import type { InertiaFormProps } from "@inertiajs/react"
-import type { UseHttpPrecognitiveProps } from "node_modules/@inertiajs/react/types/useHttp"
-import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label"
-import { Textarea as TextareaComponent } from "@/components/ui/textarea";
-import { cn, handleFormData } from "@/lib/utils"
-import type { Icon } from "@/types";
+import { useFormContext } from '@inertiajs/react';
+import type { InertiaFormProps } from '@inertiajs/react';
+import type { UseHttpPrecognitiveProps } from 'node_modules/@inertiajs/react/types/useHttp';
+import { InputGroup, InputGroupAddon } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
+import { Textarea as TextareaComponent } from '@/components/ui/textarea';
+import { cn, handleFormData } from '@/lib/utils';
+import type { Icon } from '@/types';
 
-
-type Props<T extends object> = Omit<React.ComponentProps<"textarea">, 'form'> & {
+type Props<T extends object> = Omit<
+  React.ComponentProps<'textarea'>,
+  'form'
+> & {
   label?: string | React.ReactNode;
   name: string;
   classNames?: {
@@ -18,91 +20,107 @@ type Props<T extends object> = Omit<React.ComponentProps<"textarea">, 'form'> & 
     wrapper?: string;
     prefixIcon?: string;
     prependIcon?: string;
-  }
-  form: InertiaFormProps<T> | UseHttpPrecognitiveProps<T>
+  };
+  form: InertiaFormProps<T> | UseHttpPrecognitiveProps<T>;
   icons?: {
     prefixIcon?: Icon;
     prependIcon?: Icon;
-  }
-}
+  };
+};
 
+export function Textarea<T extends object>({
+  classNames,
+  label,
+  name,
+  form,
+  icons,
+  ...props
+}: Props<T>) {
+  const formContext = useFormContext() as FormComponentRef;
 
-export function Textarea<T extends object>({ classNames, label, name, form, icons, ...props }: Props<T>) {
-  const formContext = useFormContext() as FormComponentRef
-
-  let componentProps = { ...props }
+  let componentProps = { ...props };
   let error = null;
   let validate: (() => void) | undefined;
   let touch: (() => void) | undefined;
   let invalid: (() => boolean) | undefined;
 
   if (form) {
-    const { value, error: formError, handleChange: handleFormChange, validate: formValidate, touch: formTouch, invalid: formInvalid } = handleFormData(name, form) || {}
-    error = formError
-    validate = formValidate
-    touch = formTouch
-    invalid = formInvalid
+    const {
+      value,
+      error: formError,
+      handleChange: handleFormChange,
+      validate: formValidate,
+      touch: formTouch,
+      invalid: formInvalid,
+    } = handleFormData(name, form) || {};
+    error = formError;
+    validate = formValidate;
+    touch = formTouch;
+    invalid = formInvalid;
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (handleFormChange) {
-        handleFormChange(e.target.value)
+        handleFormChange(e.target.value);
       }
-    }
+    };
 
     const handleBlur = () => {
-      touch?.()
-      validate?.()
-    }
+      touch?.();
+      validate?.();
+    };
 
     componentProps = {
       value,
       onChange: handleChange,
       onBlur: handleBlur,
-      ...props
-    }
+      ...props,
+    };
   }
 
   return (
-    <div className={cn('w-full space-y-1.5 relative', classNames?.wrapper)}>
-      {
-        label ?
-          typeof (label) === 'string'
-            ? <Label htmlFor={name} className={cn('font-medium', classNames?.label)}>{label}</Label>
-            : label
-          : null
-      }
+    <div className={cn('relative w-full space-y-1.5', classNames?.wrapper)}>
+      {label ? (
+        typeof label === 'string' ? (
+          <Label
+            htmlFor={name}
+            className={cn('font-medium', classNames?.label)}
+          >
+            {label}
+          </Label>
+        ) : (
+          label
+        )
+      ) : null}
 
-      <InputGroup className="w-full min-h-16 rounded-xl p-0">
+      <InputGroup className="min-h-16 w-full rounded-xl p-0">
         <TextareaComponent
           id={name}
           name={name}
           {...componentProps}
-          className={cn("w-full rounded-xl", componentProps?.className)}
+          className={cn('w-full rounded-xl', componentProps?.className)}
           rows={componentProps.rows}
         />
 
-        {
-          icons?.prefixIcon && (
-            <InputGroupAddon align="inline-start">
-              <icons.prefixIcon className={cn('', classNames?.prefixIcon)} />
-            </InputGroupAddon>
-          )
-        }
-        {
-          icons?.prependIcon && (
-            <InputGroupAddon align="inline-end">
-              <icons.prependIcon className={cn('', classNames?.prependIcon)} />
-            </InputGroupAddon>
-          )
-        }
+        {icons?.prefixIcon && (
+          <InputGroupAddon align="inline-start">
+            <icons.prefixIcon className={cn('', classNames?.prefixIcon)} />
+          </InputGroupAddon>
+        )}
+        {icons?.prependIcon && (
+          <InputGroupAddon align="inline-end">
+            <icons.prependIcon className={cn('', classNames?.prependIcon)} />
+          </InputGroupAddon>
+        )}
       </InputGroup>
 
       {/* Validation error display */}
-      {(invalid?.() || (formContext && (formContext as FormComponentRef).invalid(name))) && error && (
-        <small className={cn("text-red-500 text-sm", classNames?.error)}>
-          {error as string}
-        </small>
-      )}
+      {(invalid?.() ||
+        (formContext && (formContext as FormComponentRef).invalid(name))) &&
+        error && (
+          <small className={cn('text-sm text-red-500', classNames?.error)}>
+            {error as string}
+          </small>
+        )}
     </div>
-  )
+  );
 }

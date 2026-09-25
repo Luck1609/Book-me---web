@@ -11,17 +11,19 @@ export default function LocationDetails({
 }: {
   form: InertiaFormProps<Record<string, any>>;
 }) {
-  const { regions } = usePage<{ regions: (SelectOptions & { districts: SelectOptions[] })[] }>().props
+  const { regions } = usePage<{
+    regions: (SelectOptions & { districts: SelectOptions[] })[];
+  }>().props;
 
   const districts = useMemo(() => {
     return regions.filter(
-      (region) => region.value === form.data.region_id
-    )?.[0]?.['districts']
+      (region) => region.value === form.data.region_id,
+    )?.[0]?.['districts'];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.data.region_id])
+  }, [form.data.region_id]);
 
-  console.log('Region list', regions)
-  console.log('District list', districts)
+  console.log('Region list', regions);
+  console.log('District list', districts);
 
   return (
     <div className="grid w-full gap-6 rounded-xl bg-card p-6 md:p-8 lg:grid-cols-2">

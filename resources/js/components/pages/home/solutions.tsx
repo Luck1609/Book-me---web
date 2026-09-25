@@ -1,7 +1,7 @@
-import { Link } from '@inertiajs/react'
-import { ArrowRight, Check, MapPin } from 'lucide-react'
-import Container from '@/components/container'
-import { register } from '@/routes'
+import { Link } from '@inertiajs/react';
+import { ArrowRight, Check, MapPin } from 'lucide-react';
+import Container from '@/components/container';
+import { register } from '@/routes';
 
 export default function Solutions() {
   return (
@@ -109,6 +109,5 @@ export default function Solutions() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
-

@@ -27,28 +27,29 @@ type Props = {
 
 const TOTAL_STEPS = 4;
 
-export default function ClientBookingForm({
-  provider,
-  service,
-}: Props) {
+export default function ClientBookingForm({ provider, service }: Props) {
   const { hide } = useNotice();
 
   const [step, setStep] = useState(1);
   const [stepError, setStepError] = useState('');
 
-  const [availabilityResult, setAvailabilityResult] = useState<AvailabilityResult>({
-    date: '',
-    slots: [],
-  });
+  const [availabilityResult, setAvailabilityResult] =
+    useState<AvailabilityResult>({
+      date: '',
+      slots: [],
+    });
 
-  const availabilityQuery = useHttp<{ service_id: string; date: string }, AvailabilityResponse>({
+  const availabilityQuery = useHttp<
+    { service_id: string; date: string },
+    AvailabilityResponse
+  >({
     service_id: service?.id ?? '',
     date: '',
   }).withPrecognition(availability(provider.slug));
 
   const form = useForm<BookingFormData>({
     provider_profile_id: provider.id,
-    service_id: service?.id ?? "",
+    service_id: service?.id ?? '',
     date: '',
     time: '',
     notes: '',
@@ -58,14 +59,13 @@ export default function ClientBookingForm({
     (providerService) => providerService.id === form.data.service_id,
   );
 
+  const availableSlots =
+    availabilityResult.date === form.data.date ? availabilityResult.slots : [];
 
-  const availableSlots = availabilityResult.date === form.data.date
-    ? availabilityResult.slots
-    : [];
-
-  const slotError = availabilityResult.date === form.data.date
-    ? availabilityResult.error
-    : undefined;
+  const slotError =
+    availabilityResult.date === form.data.date
+      ? availabilityResult.error
+      : undefined;
 
   useEffect(() => {
     if (!form.data.date || !form.data.service_id) {
@@ -77,8 +77,8 @@ export default function ClientBookingForm({
     availabilityQuery.transform((data) => ({
       ...data,
       service_id: form.data.service_id ?? service?.id,
-      date: form.data.date
-    }))
+      date: form.data.date,
+    }));
 
     availabilityQuery.submit({
       onSuccess: (response) => {
@@ -98,16 +98,13 @@ export default function ClientBookingForm({
           });
         }
       },
-    })
+    });
 
     return () => {
       isCurrentRequest = false;
       availabilityQuery.cancel();
     };
-  }, [
-    form.data.service_id,
-    form.data.date
-  ]);
+  }, [form.data.service_id, form.data.date]);
 
   const handleNext = (): void => {
     setStepError('');
@@ -150,7 +147,7 @@ export default function ClientBookingForm({
     });
   };
 
-  console.log('Provider details', provider)
+  console.log('Provider details', provider);
 
   return (
     <form className="grid gap-5" onSubmit={handleSubmit}>

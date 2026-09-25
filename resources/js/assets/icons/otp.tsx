@@ -1572,4 +1572,4 @@ export const OtpIcon = (props: SVGProps<SVGSVGElement>) => {
       </g>
     </svg>
   );
-}
+};

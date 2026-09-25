@@ -13,8 +13,6 @@ import { CalendarDays } from 'lucide-react';
 //     );
 // }
 
-
-
 export default function AppLogoIcon() {
   return (
     <span className="relative flex size-9 items-center justify-center rounded-[11px] bg-[#0f8a62] text-white shadow-[0_8px_18px_rgba(15,138,98,0.25)]">

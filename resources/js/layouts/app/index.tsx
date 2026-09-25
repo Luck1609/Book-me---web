@@ -23,7 +23,6 @@ import type { BreadcrumbItem } from '@/types';
 import NotificationPanel from './notification-panel';
 import ThemeToggle from './theme-toggler';
 
-
 export default function AppLayout({
   breadcrumbs = [],
   children,
@@ -31,7 +30,7 @@ export default function AppLayout({
   breadcrumbs?: BreadcrumbItem[];
   children: React.ReactNode;
 }) {
-  const { user } = usePage().props
+  const { user } = usePage().props;
   const { isCurrentOrParentUrl } = useCurrentUrl();
 
   return (

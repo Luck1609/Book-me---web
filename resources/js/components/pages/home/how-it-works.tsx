@@ -1,8 +1,7 @@
-import { Link } from '@inertiajs/react'
-import { ArrowUpRight, CalendarCheck2, Globe2, Sparkles } from 'lucide-react'
-import Container from '@/components/container'
-import { register } from '@/routes'
-
+import { Link } from '@inertiajs/react';
+import { ArrowUpRight, CalendarCheck2, Globe2, Sparkles } from 'lucide-react';
+import Container from '@/components/container';
+import { register } from '@/routes';
 
 const steps = [
   {
@@ -82,6 +81,5 @@ export default function HowItWorks() {
         </div>
       </Container>
     </section>
-  )
+  );
 }
-

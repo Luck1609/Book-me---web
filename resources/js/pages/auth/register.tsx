@@ -25,7 +25,6 @@ export default function Register() {
 
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="grid gap-5 sm:grid-cols-2">
-
           <Input
             name="name"
             label="Full name"
@@ -34,10 +33,10 @@ export default function Register() {
             form={form}
             tabIndex={1}
             icons={{
-              prefixIcon: User
+              prefixIcon: User,
             }}
             classNames={{
-              wrapper: "sm:col-span-2"
+              wrapper: 'sm:col-span-2',
             }}
           />
 
@@ -50,7 +49,7 @@ export default function Register() {
             form={form}
             tabIndex={2}
             classNames={{
-              wrapper: "sm:col-span-2"
+              wrapper: 'sm:col-span-2',
             }}
           />
 
@@ -62,7 +61,7 @@ export default function Register() {
             autoComplete="new-password"
             form={form}
             classNames={{
-              prependIcon: "z-1"
+              prependIcon: 'z-1',
             }}
           />
 
@@ -74,7 +73,7 @@ export default function Register() {
             autoComplete="new-password"
             form={form}
             classNames={{
-              prependIcon: "z-1"
+              prependIcon: 'z-1',
             }}
           />
 

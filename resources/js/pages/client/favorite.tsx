@@ -14,7 +14,6 @@ import client from '@/routes/client';
 import type { ServiceProvider, ServiceRecord } from '@/types/app';
 import ClientBookingForm from './providers/form';
 
-
 function currency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -24,7 +23,7 @@ function currency(amount: number): string {
 }
 
 export default function Favorite({ data }: { data: ServiceProvider[] }) {
-  const { show } = useNotice()
+  const { show } = useNotice();
   const getInitials = useInitials();
   const removeFavorite = (provider: ServiceProvider): void => {
     router.delete(client.providers.unfavorite(provider.slug), {
@@ -33,24 +32,19 @@ export default function Favorite({ data }: { data: ServiceProvider[] }) {
     });
   };
 
-
-
-  const handleToggleBookingModal = (provider: ServiceProvider, service?: ServiceRecord): void => {
+  const handleToggleBookingModal = (
+    provider: ServiceProvider,
+    service?: ServiceRecord,
+  ): void => {
     show({
       type: 'modal',
       title: 'Book an appointment',
       classNames: { content: 'sm:max-w-xl' },
-      content: (
-        <ClientBookingForm
-          provider={provider}
-          service={service}
-        />
-      ),
+      content: <ClientBookingForm provider={provider} service={service} />,
     });
   };
 
-
-  console.log('Provider details', data)
+  console.log('Provider details', data);
 
   return (
     <>
