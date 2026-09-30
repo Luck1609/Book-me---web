@@ -16,7 +16,7 @@ import ManageTwoFactor from '@/components/manage-two-factor';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { edit } from '@/routes/security';
+import settings from '@/routes/settings';
 
 type Props = {
   passwordRules: string;
@@ -37,7 +37,7 @@ function ProtectionStat({
   return (
     <div className="flex items-center gap-3 border-t border-white/10 pt-4 sm:border-t-0 sm:border-l sm:pl-5 first:sm:border-l-0 first:sm:pl-0">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#9be4c2]">
-        <Icon aria-hidden="true" className="size-[18px]" />
+        <Icon aria-hidden="true" className="size-4.5" />
       </span>
       <div className="min-w-0">
         <p className="text-xs font-medium text-[#b8c9c7]">{label}</p>
@@ -300,7 +300,7 @@ Security.layout = {
   breadcrumbs: [
     {
       title: 'Security settings',
-      href: edit(),
+      href: settings.security.edit(),
     },
   ],
 };

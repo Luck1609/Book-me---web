@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { useNotice } from '@/contexts/notice-context';
 import { ServiceFields } from '@/pages/onboarding/shop/service';
 import type { ServiceFormData } from '@/pages/onboarding/types';
-import { store, update } from '@/routes/services';
+import settings from '@/routes/settings';
+import type { ServiceRecord } from '@/types/app';
 
 type Props = {
   service?: ServiceRecord;
@@ -36,7 +37,7 @@ export default function ServiceForm({ service }: Props) {
           }
         : emptyService,
     ],
-  }).withPrecognition(!service ? store() : update(service?.id));
+  }).withPrecognition(!service ? settings.catalog.store() : settings.catalog.update(service?.id));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

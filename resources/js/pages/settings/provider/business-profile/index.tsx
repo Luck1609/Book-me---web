@@ -15,7 +15,7 @@ import { Select } from '@/components/form/select';
 import SubmitButton from '@/components/form/submit-button';
 import { Switch } from '@/components/form/switch';
 import { Textarea } from '@/components/form/textarea';
-import { edit, update } from '@/routes/business-profile';
+import settings from '@/routes/settings';
 import type { SelectOptions } from '@/types';
 
 type RegionOption = SelectOptions & {
@@ -91,7 +91,7 @@ export default function BusinessProfile() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    form.patch(update.url(), {
+    form.patch(settings.businessProfile.update().url, {
       preserveScroll: true,
       onSuccess: () => toast.success('Business profile updated.'),
     });
@@ -321,7 +321,7 @@ BusinessProfile.layout = {
   breadcrumbs: [
     {
       title: 'Business profile',
-      href: edit(),
+      href: settings.businessProfile.edit(),
     },
   ],
 };

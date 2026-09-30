@@ -18,7 +18,7 @@ import SubmitButton from '@/components/form/submit-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useInitials } from '@/hooks/use-initials';
-import { update } from '@/routes/profile';
+import settings from '@/routes/settings';
 import { send } from '@/routes/verification';
 import type { User } from '@/types';
 
@@ -35,7 +35,7 @@ type ProfileFormData = {
 };
 
 export default function Profile() {
-  const { user, mustVerifyEmail, status } = usePage<PageProps>().props;
+  const { user, status } = usePage<PageProps>().props;
   const [edit, setEdit] = useState(false);
   const getInitials = useInitials();
   const form = useForm<ProfileFormData>({
@@ -60,7 +60,7 @@ export default function Profile() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    form.patch(update.url(), {
+    form.patch(settings.profile.update().url, {
       forceFormData: true,
       preserveScroll: true,
       onSuccess: () => toast.success('Profile updated.'),
@@ -297,7 +297,7 @@ Profile.layout = {
   breadcrumbs: [
     {
       title: 'Profile settings',
-      href: update(),
+      href: settings.profile.edit().url,
     },
   ],
 };

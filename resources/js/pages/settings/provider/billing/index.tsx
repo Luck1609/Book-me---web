@@ -18,7 +18,7 @@ import type { ReactNode } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNotice } from '@/contexts/notice-context';
-import { edit } from '@/routes/subscription';
+import settings from '@/routes/settings';
 
 type PlanId = 'starter' | 'growth' | 'scale';
 
@@ -93,7 +93,7 @@ function formatPrice(price: number): string {
   return price === 0 ? 'Free' : `GHS ${price.toLocaleString('en-GH')}`;
 }
 
-export default function Subscription({
+export default function BillingSettings({
   currentPlanId: initialCurrentPlanId = 'growth',
   renewalDate = 'September 24, 2026',
   billingCycle = 'monthly',
@@ -270,11 +270,10 @@ export default function Subscription({
               return (
                 <article
                   key={plan.id}
-                  className={`relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition dark:bg-[#17221f] ${
-                    isCurrent
+                  className={`relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-[0_8px_25px_rgba(23,52,60,0.04)] transition dark:bg-[#17221f] ${isCurrent
                       ? 'border-[#0f8a62] ring-2 ring-[#0f8a62]/15 dark:border-[#52c995] dark:ring-[#52c995]/15'
                       : 'border-[#dceae4] dark:border-white/10'
-                  }`}
+                    }`}
                 >
                   {plan.recommended && (
                     <div className="bg-[#0f8a62] px-5 py-2 text-center text-[10px] font-bold tracking-[0.14em] text-white uppercase">
@@ -454,11 +453,11 @@ function UsageCard({
   );
 }
 
-Subscription.layout = {
+BillingSettings.layout = {
   breadcrumbs: [
     {
-      title: 'Subscription plan',
-      href: edit(),
+      title: 'Billing & Payment Settings',
+      href: settings.subscription.index(),
     },
   ],
 };

@@ -9,10 +9,10 @@ import {
 } from 'lucide-react';
 
 import ServiceForm from '@/components/service-form';
-import type { ServiceRecord } from '@/components/service-form';
 import { Button } from '@/components/ui/button';
 import { useNotice } from '@/contexts/notice-context';
-import { destroy, index } from '@/routes/services';
+import settings from '@/routes/settings';
+import type { ServiceRecord } from '@/types/app';
 
 type PageProps = {
   services?: ServiceRecord[];
@@ -32,7 +32,7 @@ function formatDuration(service: ServiceRecord): string {
     : `${service.min_duration}–${service.max_duration} min`;
 }
 
-export default function Services({ services = [] }: PageProps) {
+export default function CatalogSettings({ services = [] }: PageProps) {
   const { hide, show, toggleLoading } = useNotice();
   const activeServices = services.filter((service) => service.is_active).length;
 
@@ -65,7 +65,7 @@ export default function Services({ services = [] }: PageProps) {
       description: `${service.name} will be removed from your public booking profile.`,
       onConfirm: () => {
         toggleLoading(true);
-        router.delete(destroy.url(service.id), {
+        router.delete(settings.catalog.destroy(service.id).url, {
           preserveScroll: true,
           onSuccess: hide,
           onFinish: () => toggleLoading(false),
@@ -243,11 +243,11 @@ export default function Services({ services = [] }: PageProps) {
   );
 }
 
-Services.layout = {
+CatalogSettings.layout = {
   breadcrumbs: [
     {
       title: 'Services',
-      href: index(),
+      href: settings.catalog.index(),
     },
   ],
 };

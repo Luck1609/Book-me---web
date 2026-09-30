@@ -104,11 +104,11 @@ function NotificationOptionRow({
   const Icon = option.icon;
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[#fbfdfc] sm:px-6 dark:hover:bg-white/[0.02]">
+    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[#fbfdfc] sm:px-6 dark:hover:bg-white/2">
       <span
         className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${option.iconClassName}`}
       >
-        <Icon aria-hidden="true" className="size-[18px]" />
+        <Icon aria-hidden="true" className="size-4.5" />
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold text-[#17343c] dark:text-white">

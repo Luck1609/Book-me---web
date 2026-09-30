@@ -5,6 +5,7 @@ import {
   ContactRound,
   Heart,
   LayoutGrid,
+  Mail,
   MessageCircleMore,
   UserRoundCheck,
   UsersRound,
@@ -55,6 +56,11 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => [
           title: 'Clients',
           href: client.index.url(),
           icon: ContactRound,
+        },
+        {
+          title: 'Messages',
+          href: client.index.url(),
+          icon: Mail,
         },
         {
           title: 'Schedules',

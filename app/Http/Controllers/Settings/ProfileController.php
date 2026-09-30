@@ -15,56 +15,56 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    /**
-     * Show the user's profile settings page.
-     */
-    public function edit(Request $request): Response
-    {
-        return Inertia::render('settings/profile', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
-        ]);
+  /**
+   * Show the user's profile settings page.
+   */
+  public function edit(Request $request): Response
+  {
+    return Inertia::render('settings/profile', [
+      'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+      'status' => $request->session()->get('status'),
+    ]);
+  }
+
+  /**
+   * Update the user's profile information.
+   */
+  public function update(ProfileUpdateRequest $request): RedirectResponse
+  {
+    $user = $request->user();
+    $data = $request->validated();
+
+    $user->fill(Arr::except($data, ['avatar']));
+
+    if ($user->isDirty('email')) {
+      $user->email_verified_at = null;
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-        $data = $request->validated();
+    $user->save();
 
-        $user->fill(Arr::except($data, ['avatar']));
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
-
-        if ($request->hasFile('avatar')) {
-            $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
-        }
-
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
-
-        return to_route('profile.edit');
+    if ($request->hasFile('avatar')) {
+      $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
     }
 
-    /**
-     * Delete the user's profile.
-     */
-    public function destroy(ProfileDeleteRequest $request): RedirectResponse
-    {
-        $user = $request->user();
+    Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 
-        Auth::logout();
+    return to_route('profile.edit');
+  }
 
-        $user->delete();
+  /**
+   * Delete the user's profile.
+   */
+  public function destroy(ProfileDeleteRequest $request): RedirectResponse
+  {
+    $user = $request->user();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    Auth::logout();
 
-        return redirect('/');
-    }
+    $user->delete();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/');
+  }
 }

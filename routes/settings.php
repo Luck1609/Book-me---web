@@ -1,43 +1,69 @@
 <?php
 
 use App\Http\Controllers\BusinessProfileController;
+use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\Settings\BillingController;
+use App\Http\Controllers\Settings\ClientController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\RatingController;
+use App\Http\Controllers\Settings\RevenueController;
+use App\Http\Controllers\Settings\ScheduleController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\Settings\ServiceController;
 use Illuminate\Auth\Middleware\RequirePassword;
+use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->prefix('settings')->group(function () {
-    Route::redirect('/', '/settings/profile');
+Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function () {
+  Route::inertia('/', 'settings/index')->name('index');
 
-    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('business-profile', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
-    Route::patch('business-profile', [BusinessProfileController::class, 'update'])->name('business-profile.update');
-    Route::inertia('subscription', 'settings/subscription')->name('subscription.edit');
-    Route::resource('services', ServiceController::class)
-        ->only(['index', 'store', 'update', 'destroy'])
-        ->names('services');
-    Route::inertia('notifications', 'settings/notification/index')->name('notification.index');
+  Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+  Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+  Route::get('business-profile', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
+  Route::patch('business-profile', [BusinessProfileController::class, 'update'])
+    ->middleware([HandlePrecognitiveRequests::class])
+    ->name('business-profile.update');
+
+  Route::resource('subscription', BillingController::class)
+    ->only(['index', 'update']);
+
+  Route::resource('revenue', RevenueController::class)
+    ->only(['index', 'update']);
+
+  Route::resource('reviews', RatingController::class)
+    ->only(['index', 'update']);
+
+  Route::resource('client', ClientController::class)
+    ->only(['index', 'update']);
+
+  Route::resource('catalog', ServiceController::class)
+    ->only(['index', 'store', 'update', 'destroy'])
+    ->names('catalog');
+
+  Route::resource('schedule', ScheduleController::class)
+    ->only(['index', 'store', 'update', 'destroy'])
+    ->names('schedule');
+
+  Route::resource('notifications', NotificationsController::class)
+    ->only(['index', 'update']);
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::middleware(['auth', 'verified'])->as('settings.')->group(function () {
+  Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('settings/security', [SecurityController::class, 'edit'])
-        ->middleware(RequirePassword::class)
-        ->name('security.edit');
+  Route::get('settings/security', [SecurityController::class, 'edit'])
+    ->middleware(RequirePassword::class)
+    ->name('security.edit');
 
-    Route::put('settings/password', [SecurityController::class, 'update'])
-        ->middleware('throttle:6,1')
-        ->name('user-password.update');
-
-    Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+  Route::put('settings/password', [SecurityController::class, 'update'])
+    ->middleware('throttle:6,1')
+    ->name('user-password.update');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {
-    return response()->json([
-        'enroll' => route('security.edit'),
-        'manage' => route('security.edit'),
-    ]);
+  return response()->json([
+    'enroll' => route('security.edit'),
+    'manage' => route('security.edit'),
+  ]);
 })->name('well-known.passkeys');

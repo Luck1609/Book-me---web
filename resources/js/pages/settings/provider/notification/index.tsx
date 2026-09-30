@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { edit as editProfile } from '@/routes/profile';
+import settingsRoute from '@/routes/settings';
 
 type NotificationKey =
   | 'newBookings'
@@ -102,11 +102,11 @@ function NotificationOptionRow({
   const Icon = option.icon;
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[#fbfdfc] sm:px-6 dark:hover:bg-white/[0.02]">
+    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[#fbfdfc] sm:px-6 dark:hover:bg-white/2">
       <span
         className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${option.iconClassName}`}
       >
-        <Icon aria-hidden="true" className="size-[18px]" />
+        <Icon aria-hidden="true" className="size-4.5" />
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold text-[#17343c] dark:text-white">
@@ -301,7 +301,7 @@ export default function ProviderNotificationSettings() {
                 <Check aria-hidden="true" className="size-4 text-[#0f8a62]" />
               </div>
               <Link
-                href={editProfile()}
+                href={settingsRoute.profile.edit()}
                 className="mt-4 flex w-full items-center justify-between gap-3 text-left text-xs font-bold text-[#0f8a62] transition-colors hover:text-[#0b7653] dark:text-[#8fe0bb] dark:hover:text-white"
               >
                 Manage account email

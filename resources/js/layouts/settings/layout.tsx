@@ -5,49 +5,43 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
-// import { edit as editAppearance } from '@/routes/appearance';
-import { edit as editBusinessProfile } from '@/routes/business-profile';
-import notification from '@/routes/notification';
-import { edit } from '@/routes/profile';
-import { edit as editSecurity } from '@/routes/security';
-import { index as servicesIndex } from '@/routes/services';
-import { edit as editSubscription } from '@/routes/subscription';
+import settings from '@/routes/settings';
 import { UserType } from '@/types';
 import type { NavItem } from '@/types';
 
 const sidebarNavItems = (userType: UserType): NavItem[] => [
   {
     title: 'Personal Profile',
-    href: edit(),
+    href: settings.profile.edit(),
     icon: null,
   },
   ...(userType === UserType.PROVIDER
     ? [
         {
           title: 'Business Profile',
-          href: editBusinessProfile(),
+          href: settings.businessProfile.edit(),
           icon: null,
         },
         {
           title: 'Services',
-          href: servicesIndex(),
+          href: settings.catalog.index(),
           icon: null,
         },
         {
           title: 'Subscription Plan',
-          href: editSubscription(),
+          href: settings.subscription.index(),
           icon: null,
         },
       ]
     : []),
   {
     title: 'Security',
-    href: editSecurity(),
+    href: settings.security.edit(),
     icon: null,
   },
   {
     title: 'Notifications',
-    href: notification.index(),
+    href: settings.notifications.index(),
     icon: null,
   },
 ];
