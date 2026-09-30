@@ -1,32 +1,125 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import {
   Camera,
   CheckCircle2,
   Edit2,
   Mail,
+  Phone,
   ShieldCheck,
-  UserRound,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { toast } from 'sonner';
 
+import {
+  storePhone,
+  verifyPhone,
+} from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import FileUploader from '@/components/form/file-uploader';
 import { Input } from '@/components/form/input';
 import SubmitButton from '@/components/form/submit-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useNotice } from '@/contexts/notice-context';
 import { useInitials } from '@/hooks/use-initials';
 import settings from '@/routes/settings';
 import { send } from '@/routes/verification';
-import type { User } from '@/types';
+import type { PhoneNumber, User } from '@/types';
 
 type PageProps = {
   user: User;
+  phoneNumbers: PhoneNumber[];
   mustVerifyEmail: boolean;
   status?: string;
 };
+
+type AddPhoneFormData = {
+  phone: string;
+};
+
+type VerifyPhoneFormData = {
+  phone: string;
+  code: string;
+};
+
+function AddPhoneForm() {
+  const { hide } = useNotice();
+  const form = useForm<AddPhoneFormData>({ phone: '' }).withPrecognition(
+    storePhone(),
+  );
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    form.submit({
+      preserveScroll: true,
+      onSuccess: hide,
+    });
+  };
+
+  return (
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <Input
+        name="phone"
+        label="Ghanaian phone number"
+        placeholder="024 123 4567"
+        autoComplete="tel"
+        inputMode="tel"
+        form={form}
+        required
+      />
+      <p className="text-xs text-muted-foreground">
+        Use a Ghanaian mobile number, such as 024 123 4567 or +233 24 123 4567.
+      </p>
+      <div className="flex justify-end gap-3 border-t pt-5">
+        <Button type="button" variant="outline" onClick={hide}>
+          Cancel
+        </Button>
+        <SubmitButton form={form} label="Add number" />
+      </div>
+    </form>
+  );
+}
+
+function VerifyPhoneForm({ phone }: { phone: string }) {
+  const { hide } = useNotice();
+  const form = useForm<VerifyPhoneFormData>({
+    phone,
+    code: '',
+  }).withPrecognition(verifyPhone());
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    form.submit({
+      preserveScroll: true,
+      onSuccess: hide,
+    });
+  };
+
+  return (
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <Input
+        name="code"
+        label="Verification code"
+        placeholder="123456"
+        inputMode="numeric"
+        maxLength={6}
+        autoComplete="one-time-code"
+        form={form}
+        required
+      />
+      <p className="text-xs text-muted-foreground">
+        Enter the six-digit code sent to {phone}.
+      </p>
+      <div className="flex justify-end gap-3 border-t pt-5">
+        <Button type="button" variant="outline" onClick={hide}>
+          Cancel
+        </Button>
+        <SubmitButton form={form} label="Verify number" />
+      </div>
+    </form>
+  );
+}
 
 type ProfileFormData = {
   name: string;
@@ -35,14 +128,18 @@ type ProfileFormData = {
 };
 
 export default function Profile() {
-  const { user, status } = usePage<PageProps>().props;
+  const { user, phoneNumbers } = usePage<PageProps>().props;
   const [edit, setEdit] = useState(false);
   const getInitials = useInitials();
+  const { show } = useNotice();
+
   const form = useForm<ProfileFormData>({
     name: user.name,
     email: user.email,
     avatar: null,
   });
+
+  const emailVerificationForm = useForm({});
 
   const memberSince = useMemo(
     () =>
@@ -67,6 +164,38 @@ export default function Profile() {
     });
   };
 
+  const handleEmailVerification = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    emailVerificationForm.post(send().url, {
+      onSuccess: () => {
+        // toast success message
+      },
+      onError: () => {
+        // toast error message
+      },
+    });
+  };
+
+  const handleAddPhone = () => {
+    show({
+      type: 'modal',
+      title: 'Add a phone number',
+      description:
+        'Add another number to your BookMe account and verify it by SMS.',
+      content: <AddPhoneForm />,
+    });
+  };
+
+  const handleVerifyPhone = (phone: string) => {
+    show({
+      type: 'modal',
+      title: 'Verify phone number',
+      description: 'Confirm that you own this phone number.',
+      content: <VerifyPhoneForm phone={phone} />,
+    });
+  };
+
   return (
     <>
       <Head title="Profile settings" />
@@ -75,7 +204,10 @@ export default function Profile() {
         <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold tracking-[0.16em] text-[#0f8a62] uppercase dark:text-[#8fe0bb]">
-              Your account
+              Your account -{' '}
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1">
+                Member since - {memberSince}
+              </span>
             </p>
             <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#17343c] dark:text-white">
               Personal profile
@@ -95,29 +227,6 @@ export default function Profile() {
           onSubmit={handleSubmit}
           className="overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_16px_45px_rgba(23,52,60,0.06)] dark:border-white/10 dark:bg-[#17221f]"
         >
-          <div className="flex flex-col gap-5 border-b border-[#e7f0ec] bg-[#17343c] px-5 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-white/8">
-            <div className="flex items-center gap-4">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8] shadow-lg shadow-black/10">
-                <UserRound aria-hidden="true" className="size-6" />
-              </div>
-              <div>
-                <p className="text-xs font-bold tracking-[0.14em] text-[#8fe0bb] uppercase">
-                  Account details
-                </p>
-                <h2 className="mt-1 text-lg font-bold">
-                  Your personal identity
-                </h2>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-[#b8c9c7]">
-              <CheckCircle2
-                aria-hidden="true"
-                className="size-4 text-[#8fe0bb]"
-              />
-              Member since {memberSince}
-            </div>
-          </div>
-
           <div className="space-y-8 p-5 sm:p-8">
             <section className="space-y-5">
               <div className="flex items-center justify-between">
@@ -236,40 +345,66 @@ export default function Profile() {
               </div>
             </section>
 
-            {user.email_verified_at === null && (
-              <div className="flex flex-col gap-4 rounded-2xl border border-[#f3dfb7] bg-[#fffaf0] p-4 sm:flex-row sm:items-start sm:justify-between dark:border-[#80662c]/40 dark:bg-[#4d3d18]/20">
-                <div className="flex items-start gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#f9e9bd] text-[#9c6d16] dark:bg-[#80662c]/30 dark:text-[#f5d783]">
-                    <Mail aria-hidden="true" className="size-4" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-bold text-[#6f5117] dark:text-[#f5d783]">
-                      Verify your email address
-                    </p>
-                    <p className="mt-1 text-xs leading-5 text-[#8c6f34] dark:text-[#d8bd70]">
-                      Confirm your email to keep account notifications and
-                      booking updates reliable.
-                    </p>
-                  </div>
+            <section className="space-y-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-[#17343c] dark:text-white">
+                    Phone numbers
+                  </h3>
+                  <p className="mt-1 text-sm text-[#70908a] dark:text-[#9cb8b1]">
+                    Add multiple Ghanaian numbers and verify each one for
+                    account recovery.
+                  </p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
-                  className="rounded-xl border-[#e7c978] bg-transparent text-[#7c5b1b] hover:bg-[#fff4d8] dark:border-[#80662c] dark:text-[#f5d783] dark:hover:bg-[#80662c]/20"
-                  asChild
+                  onClick={handleAddPhone}
                 >
-                  <Link href={send()} method="post">
-                    Resend email
-                  </Link>
+                  <Phone className="size-4" />
+                  Add number
                 </Button>
               </div>
-            )}
 
-            {status === 'verification-link-sent' && (
-              <p className="-mt-3 text-sm font-medium text-[#0f8a62] dark:text-[#8fe0bb]">
-                A new verification link has been sent to your email address.
-              </p>
-            )}
+              <div className="space-y-3">
+                {phoneNumbers.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-[#dceae4] p-4 text-sm text-[#70908a] dark:border-white/10 dark:text-[#9cb8b1]">
+                    No phone numbers have been added yet.
+                  </p>
+                ) : (
+                  phoneNumbers.map((phoneNumber) => (
+                    <div
+                      key={phoneNumber.id ?? phoneNumber.phone}
+                      className="flex flex-col gap-3 rounded-xl border border-[#dceae4] p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 items-center justify-center rounded-lg bg-[#e9f8f0] text-[#0f6b4d] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
+                          <Phone className="size-4" />
+                        </span>
+                        <span className="text-sm font-semibold text-[#17343c] dark:text-white">
+                          {phoneNumber.phone}
+                        </span>
+                      </div>
+                      {phoneNumber.verified_at ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0f8a62] dark:text-[#8fe0bb]">
+                          <CheckCircle2 className="size-4" />
+                          Verified
+                        </span>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleVerifyPhone(phoneNumber.phone)}
+                        >
+                          Verify number
+                        </Button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
           </div>
 
           <footer className="flex flex-col gap-3 border-t border-[#e7f0ec] bg-[#fbfcfa] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-white/8 dark:bg-[#17221f]">
@@ -285,6 +420,34 @@ export default function Profile() {
               </div>
             )}
           </footer>
+        </form>
+
+        <form onSubmit={handleEmailVerification}>
+          {user.email_verified_at === null && (
+            <div className="flex flex-col gap-4 rounded-2xl border border-[#f3dfb7] bg-[#fffaf0] p-4 sm:flex-row sm:items-start sm:justify-between dark:border-[#80662c]/40 dark:bg-[#4d3d18]/20">
+              <div className="flex items-start gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#f9e9bd] text-[#9c6d16] dark:bg-[#80662c]/30 dark:text-[#f5d783]">
+                  <Mail aria-hidden="true" className="size-4" />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-[#6f5117] dark:text-[#f5d783]">
+                    Verify your email address
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-[#8c6f34] dark:text-[#d8bd70]">
+                    Confirm your email to keep account notifications and booking
+                    updates reliable.
+                  </p>
+                </div>
+              </div>
+
+              <SubmitButton
+                variant="outline"
+                className="rounded-xl border-[#e7c978] bg-transparent text-[#7c5b1b] hover:bg-[#fff4d8] dark:border-[#80662c] dark:text-[#f5d783] dark:hover:bg-[#80662c]/20"
+                label="Resend email"
+                form={emailVerificationForm}
+              />
+            </div>
+          )}
         </form>
 
         <DeleteUser />

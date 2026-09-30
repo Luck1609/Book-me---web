@@ -1,9 +1,7 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import {
-  Building2,
   CalendarCheck2,
   CheckCircle2,
-  Globe2,
   MapPin,
 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
@@ -123,9 +121,9 @@ export default function BusinessProfile() {
 
         <form
           onSubmit={handleSubmit}
-          className="overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_16px_45px_rgba(23,52,60,0.06)] dark:border-white/10 dark:bg-[#17221f]"
+          className="overflow-hidden rounded-3xl border border-[#dceae4] bg-card dark:border-white/10 dark:bg-[#17221f]"
         >
-          <div className="flex flex-col gap-5 border-b border-[#e7f0ec] bg-[#17343c] px-5 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-white/8">
+          {/* <div className="flex flex-col gap-5 border-b border-[#e7f0ec] bg-[#17343c] px-5 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-white/8">
             <div className="flex items-center gap-4">
               <div className="flex size-12 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8] shadow-lg shadow-black/10">
                 <Building2 aria-hidden="true" className="size-6" />
@@ -143,7 +141,7 @@ export default function BusinessProfile() {
               <Globe2 aria-hidden="true" className="size-4 text-[#8fe0bb]" />
               bookme.app/{providerProfile.slug}
             </div>
-          </div>
+          </div> */}
 
           <div className="space-y-8 p-5 sm:p-8">
             <section className="space-y-5">
@@ -324,4 +322,8 @@ BusinessProfile.layout = {
       href: settings.businessProfile.edit(),
     },
   ],
+  navList: [],
+  backOption: {
+    url: ""
+  }
 };

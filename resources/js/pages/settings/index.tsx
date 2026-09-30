@@ -22,8 +22,8 @@ const settingsList = [
     icon: Landmark
   },
   {
-    title: "Scheduling",
-    description: "Customize and manage your business information",
+    title: "Notifications",
+    description: "Manage your notification preference and how you reach you clients",
     url: settings.schedule.index().url,
     icon: Calendar
   },

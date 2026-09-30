@@ -1,4 +1,4 @@
-import { UserType } from '.';
+import type { UserType } from '.';
 
 export type User = {
   id: number;
@@ -11,6 +11,12 @@ export type User = {
   updated_at: string;
   role: UserType;
   [key: string]: unknown;
+};
+
+export type PhoneNumber = {
+  id: string | null;
+  phone: string;
+  verified_at: string | null;
 };
 
 export type Auth = {

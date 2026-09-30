@@ -132,4 +132,12 @@ class User extends Authenticatable implements HasMedia, PasskeyUser
     {
         return $this->hasMany(Message::class, 'sender_id');
     }
+
+    /**
+     * @return HasMany<UserPhone, $this>
+     */
+    public function phoneNumbers(): HasMany
+    {
+        return $this->hasMany(UserPhone::class);
+    }
 }

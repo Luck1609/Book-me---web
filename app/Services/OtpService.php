@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\SmsSender;
 use App\Models\OtpChallenge;
 use App\Models\User;
+use App\Models\UserPhone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -74,6 +75,43 @@ class OtpService
 
     public function normalizePhone(string $phone): string
     {
-        return Str::replaceMatches('/\s+/', '', trim($phone));
+        $normalizedPhone = Str::replaceMatches('/\s+/', '', trim($phone));
+
+        return Str::startsWith($normalizedPhone, '0')
+            ? '+233'.Str::substr($normalizedPhone, 1)
+            : $normalizedPhone;
+    }
+
+    public function verifyUserPhone(User $user, string $phone, string $code): void
+    {
+        DB::transaction(function () use ($user, $phone, $code): void {
+            $challenge = OtpChallenge::where('phone', $phone)
+                ->whereNull('verified_at')
+                ->where('expires_at', '>', now())
+                ->latest()
+                ->lockForUpdate()
+                ->first();
+
+            if ($challenge === null || $challenge->attempts >= 5) {
+                throw ValidationException::withMessages(['code' => 'The verification code is invalid or expired.']);
+            }
+
+            $challenge->increment('attempts');
+
+            if (! Hash::check($code, $challenge->code_hash)) {
+                throw ValidationException::withMessages(['code' => 'The verification code is invalid or expired.']);
+            }
+
+            $challenge->forceFill(['verified_at' => now()])->save();
+            $phoneNumber = $user->phoneNumbers()->where('phone', $phone)->first();
+
+            if ($phoneNumber instanceof UserPhone) {
+                $phoneNumber->forceFill(['verified_at' => now()])->save();
+            } elseif ($user->phone === $phone) {
+                $user->forceFill(['phone_verified_at' => now()])->save();
+            } else {
+                throw ValidationException::withMessages(['phone' => 'This phone number is not attached to your account.']);
+            }
+        });
     }
 }

@@ -46,7 +46,7 @@ const sidebarNavItems = (userType: UserType): NavItem[] => [
   },
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+export default function ClientSettingsLayout({ children }: PropsWithChildren) {
   const { isCurrentOrParentUrl } = useCurrentUrl();
   const { user } = usePage().props;
 

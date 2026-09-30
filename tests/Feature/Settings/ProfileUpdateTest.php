@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Settings;
 
+use App\Contracts\SmsSender;
 use App\Models\User;
+use App\Models\UserPhone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -17,9 +19,63 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get(route('profile.edit'));
+            ->get(route('settings.profile.edit'));
 
         $response->assertOk();
+    }
+
+    public function test_user_can_add_multiple_ghanaian_phone_numbers(): void
+    {
+        $user = User::factory()->create();
+        $sender = \Mockery::mock(SmsSender::class);
+        $sender->shouldReceive('send')->twice();
+        $this->app->instance(SmsSender::class, $sender);
+
+        $this->actingAs($user)->post(route('settings.profile.phones.store'), ['phone' => '024 123 4567'])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('settings.profile.edit'));
+        $this->actingAs($user)->post(route('settings.profile.phones.store'), ['phone' => '+233 50 123 4568'])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('settings.profile.edit'));
+
+        $this->assertCount(2, $user->phoneNumbers()->get());
+        $this->assertTrue($user->phoneNumbers()->where('phone', '+233241234567')->exists());
+        $this->assertTrue($user->phoneNumbers()->where('phone', '+233501234568')->exists());
+    }
+
+    public function test_phone_number_must_be_a_valid_ghanaian_mobile_number(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->from(route('settings.profile.edit'))
+            ->post(route('settings.profile.phones.store'), ['phone' => '+14155552671'])
+            ->assertSessionHasErrors('phone')
+            ->assertRedirect(route('settings.profile.edit'));
+
+        $this->assertDatabaseCount('user_phones', 0);
+    }
+
+    public function test_user_can_verify_an_added_phone_number(): void
+    {
+        $user = User::factory()->create();
+        $sentMessage = null;
+        $sender = \Mockery::mock(SmsSender::class);
+        $sender->shouldReceive('send')->once()->withArgs(function (string $phone, string $message) use (&$sentMessage): bool {
+            $sentMessage = $message;
+
+            return $phone === '+233241234567';
+        });
+        $this->app->instance(SmsSender::class, $sender);
+
+        $this->actingAs($user)->post(route('settings.profile.phones.store'), ['phone' => '0241234567']);
+        preg_match('/\b(\d{6})\b/', (string) $sentMessage, $matches);
+
+        $this->actingAs($user)->post(route('settings.profile.phones.verify'), [
+            'phone' => '0241234567',
+            'code' => $matches[1],
+        ])->assertSessionHasNoErrors()->assertRedirect(route('settings.profile.edit'));
+
+        $this->assertNotNull(UserPhone::where('phone', '+233241234567')->firstOrFail()->verified_at);
     }
 
     public function test_profile_information_can_be_updated(): void
