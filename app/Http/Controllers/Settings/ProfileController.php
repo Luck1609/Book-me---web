@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Enums\UserTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
@@ -18,87 +19,98 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    /**
-     * Show the user's profile settings page.
-     */
-    public function edit(Request $request): Response
-    {
-        $user = $request->user();
-        $phoneNumbers = $user->phoneNumbers->map(fn ($phone) => [
-            'id' => $phone->id,
-            'phone' => $phone->phone,
-            'verified_at' => $phone->verified_at?->toISOString(),
-        ]);
 
-        if ($user->phone !== null && ! $user->phoneNumbers->contains('phone', $user->phone)) {
-            $phoneNumbers->prepend([
-                'id' => null,
-                'phone' => $user->phone,
-                'verified_at' => $user->phone_verified_at?->toISOString(),
-            ]);
-        }
+  public function index(Request $request)
+  {
+    $user = $request->user();
 
-        return Inertia::render('settings/profile', [
-            'phoneNumbers' => $phoneNumbers->values(),
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
-        ]);
+    if ($user->hasRole(UserTypeEnum::CLIENT->value))
+      return redirect()->route('settings.profile.edit');
+
+    return inertia('settings/index');
+  }
+
+  /**
+   * Show the user's profile settings page.
+   */
+  public function edit(Request $request): Response
+  {
+    $user = $request->user();
+    $phoneNumbers = $user->phoneNumbers->map(fn($phone) => [
+      'id' => $phone->id,
+      'phone' => $phone->phone,
+      'verified_at' => $phone->verified_at?->toISOString(),
+    ]);
+
+    if ($user->phone !== null && ! $user->phoneNumbers->contains('phone', $user->phone)) {
+      $phoneNumbers->prepend([
+        'id' => null,
+        'phone' => $user->phone,
+        'verified_at' => $user->phone_verified_at?->toISOString(),
+      ]);
     }
 
-    public function storePhone(StoreUserPhoneRequest $request, OtpService $otpService): RedirectResponse
-    {
-        $phoneNumber = $request->user()->phoneNumbers()->create($request->validated());
-        $otpService->request($phoneNumber->phone);
+    return inertia('settings/profile', [
+      'phoneNumbers' => $phoneNumbers->values(),
+      'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+      'status' => $request->session()->get('status'),
+    ]);
+  }
 
-        return to_route('settings.profile.edit')->with('status', 'Phone number added. Check your messages for the verification code.');
+  public function storePhone(StoreUserPhoneRequest $request, OtpService $otpService): RedirectResponse
+  {
+    $phoneNumber = $request->user()->phoneNumbers()->create($request->validated());
+    $otpService->request($phoneNumber->phone);
+
+    return to_route('settings.profile.edit')->with('status', 'Phone number added. Check your messages for the verification code.');
+  }
+
+  public function verifyPhone(VerifyUserPhoneRequest $request, OtpService $otpService): RedirectResponse
+  {
+    $otpService->verifyUserPhone($request->user(), $request->validated('phone'), $request->validated('code'));
+
+    return to_route('settings.profile.edit')->with('status', 'Phone number verified.');
+  }
+
+  /**
+   * Update the user's profile information.
+   */
+  public function update(ProfileUpdateRequest $request): RedirectResponse
+  {
+    $user = $request->user();
+    $data = $request->validated();
+
+    $user->fill(Arr::except($data, ['avatar']));
+
+    if ($user->isDirty('email')) {
+      $user->email_verified_at = null;
     }
 
-    public function verifyPhone(VerifyUserPhoneRequest $request, OtpService $otpService): RedirectResponse
-    {
-        $otpService->verifyUserPhone($request->user(), $request->validated('phone'), $request->validated('code'));
+    $user->save();
 
-        return to_route('settings.profile.edit')->with('status', 'Phone number verified.');
+    if ($request->hasFile('avatar')) {
+      $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-        $data = $request->validated();
+    Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 
-        $user->fill(Arr::except($data, ['avatar']));
+    return to_route('settings.profile.edit');
+  }
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
+  /**
+   * Delete the user's profile.
+   */
+  public function destroy(ProfileDeleteRequest $request): RedirectResponse
+  {
+    $user = $request->user();
 
-        $user->save();
+    Auth::logout();
 
-        if ($request->hasFile('avatar')) {
-            $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
-        }
+    $user->delete();
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-        return to_route('settings.profile.edit');
-    }
-
-    /**
-     * Delete the user's profile.
-     */
-    public function destroy(ProfileDeleteRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
+    return redirect('/');
+  }
 }

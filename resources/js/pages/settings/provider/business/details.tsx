@@ -2,9 +2,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import {
   CalendarCheck2,
   CheckCircle2,
-  MapPin,
 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
 import type { FormEvent } from 'react';
 import { toast } from 'sonner';
 
@@ -15,6 +13,8 @@ import { Switch } from '@/components/form/switch';
 import { Textarea } from '@/components/form/textarea';
 import settings from '@/routes/settings';
 import type { SelectOptions } from '@/types';
+import { BusinessProfileRoutes } from '@/types/enums';
+import { businessData } from './data';
 
 type RegionOption = SelectOptions & {
   districts: SelectOptions[];
@@ -53,8 +53,8 @@ type BusinessProfileFormData = {
   is_accepting_bookings: boolean;
 };
 
-export default function BusinessProfile() {
-  const { providerProfile, categories, regions } = usePage<PageProps>().props;
+export default function BusinessDetails() {
+  const { providerProfile, categories } = usePage<PageProps>().props;
   const form = useForm<BusinessProfileFormData>({
     business_name: providerProfile.business_name,
     category_id: providerProfile.category_id,
@@ -68,36 +68,36 @@ export default function BusinessProfile() {
     is_accepting_bookings: providerProfile.is_accepting_bookings,
   });
 
-  const districts = useMemo(
-    () =>
-      regions.find((region) => region.value === form.data.region_id)
-        ?.districts ?? [],
-    [form.data.region_id, regions],
-  );
+  // const districts = useMemo(
+  //   () =>
+  //     regions.find((region) => region.value === form.data.region_id)
+  //       ?.districts ?? [],
+  //   [form.data.region_id, regions],
+  // );
 
-  useEffect(() => {
-    if (
-      !form.data.district_id ||
-      districts.some((district) => district.value === form.data.district_id)
-    ) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (
+  //     !form.data.district_id ||
+  //     districts.some((district) => district.value === form.data.district_id)
+  //   ) {
+  //     return;
+  //   }
 
-    form.setData('district_id', '');
-  }, [districts, form, form.data.district_id]);
+  //   form.setData('district_id', '');
+  // }, [districts, form, form.data.district_id]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    form.patch(settings.businessProfile.update().url, {
-      preserveScroll: true,
-      onSuccess: () => toast.success('Business profile updated.'),
-    });
+    // form.patch(settings.businessProfile.update().url, {
+    //   preserveScroll: true,
+    //   onSuccess: () => toast.success('Business profile updated.'),
+    // });
   };
 
   return (
     <>
-      <Head title="Business profile settings" />
+      <Head title="Business basic information" />
 
       <div className="space-y-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -214,7 +214,7 @@ export default function BusinessProfile() {
 
             <div className="h-px bg-[#e7f0ec] dark:bg-white/8" />
 
-            <section className="space-y-5">
+            {/* <section className="space-y-5">
               <div className="flex items-start gap-3">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#dcecf5] text-[#2d6980] dark:bg-[#2d6980]/15 dark:text-[#9bd1e4]">
                   <MapPin aria-hidden="true" className="size-4" />
@@ -259,7 +259,7 @@ export default function BusinessProfile() {
                   required
                 />
               </div>
-            </section>
+            </section> */}
 
             <div className="h-px bg-[#e7f0ec] dark:bg-white/8" />
 
@@ -315,15 +315,12 @@ export default function BusinessProfile() {
   );
 }
 
-BusinessProfile.layout = {
+BusinessDetails.layout = {
   breadcrumbs: [
     {
       title: 'Business profile',
-      href: settings.businessProfile.edit(),
+      href: settings.businessProfile.edit(BusinessProfileRoutes.Details).url,
     },
   ],
-  navList: [],
-  backOption: {
-    url: ""
-  }
+  ...businessData
 };

@@ -15,7 +15,7 @@ use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function () {
-    Route::inertia('/', 'settings/index')->name('index');
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -26,10 +26,10 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
         ->middleware([HandlePrecognitiveRequests::class])
         ->name('profile.phones.verify');
 
-    Route::get('business-profile', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
-    Route::patch('business-profile', [BusinessProfileController::class, 'update'])
+    Route::get('business/{page}', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
+    Route::patch('business', [BusinessProfileController::class, 'update'])
         ->middleware([HandlePrecognitiveRequests::class])
-        ->name('business-profile.update');
+        ->name('business.update');
 
     Route::resource('subscription', BillingController::class)
         ->only(['index', 'update']);

@@ -4,3 +4,11 @@ export enum ProviderStatus {
   Approved = 'approved',
   Suspended = 'suspended',
 }
+
+
+export enum BusinessProfileRoutes {
+  Details = 'details',
+  Location = 'location',
+  OpeningHours = 'opening_hours',
+  Breaks = 'breaks'
+}

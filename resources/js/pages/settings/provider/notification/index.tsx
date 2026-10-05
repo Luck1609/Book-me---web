@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import settingsRoute from '@/routes/settings';
@@ -167,8 +166,6 @@ export default function ProviderNotificationSettings() {
     useState<NotificationSettings>(initialSettings);
   const [saved, setSaved] = useState(false);
 
-  const enabledCount = Object.values(settings).filter(Boolean).length;
-
   const toggleSetting = (key: NotificationKey, checked: boolean) => {
     setSettings((currentSettings) => ({
       ...currentSettings,
@@ -208,37 +205,6 @@ export default function ProviderNotificationSettings() {
             {saved ? 'Changes saved' : 'Save preferences'}
           </Button>
         </header>
-
-        <section className="relative overflow-hidden rounded-3xl bg-[#17343c] text-white shadow-[0_18px_45px_rgba(23,52,60,0.14)]">
-          <div className="absolute -top-24 -right-16 size-64 rounded-full bg-[#0f8a62]/30 blur-3xl" />
-          <div className="absolute -bottom-32 left-1/3 size-72 rounded-full bg-[#78d6ae]/10 blur-3xl" />
-          <div className="relative flex flex-col gap-7 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-xl">
-              <div className="flex items-center gap-3">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8] shadow-lg shadow-black/10">
-                  <BellRing aria-hidden="true" className="size-6" />
-                </span>
-                <div>
-                  <p className="text-xs font-bold tracking-[0.14em] text-[#8fe0bb] uppercase">
-                    Your notification setup
-                  </p>
-                  <h2 className="mt-1 text-xl font-bold sm:text-2xl">
-                    {enabledCount} of {Object.keys(settings).length} alerts are
-                    on
-                  </h2>
-                </div>
-              </div>
-              <p className="mt-5 text-sm leading-6 text-[#b8c9c7]">
-                We’ll send important booking activity to your account email so
-                you never have to keep refreshing your calendar.
-              </p>
-            </div>
-            <Badge className="w-fit border-0 bg-[#d9f7e8] px-3 py-1.5 text-[#0f6b4d] hover:bg-[#d9f7e8]">
-              <span className="size-1.5 rounded-full bg-[#0f8a62]" />
-              Notifications are active
-            </Badge>
-          </div>
-        </section>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
           <div className="space-y-6">
@@ -309,7 +275,7 @@ export default function ProviderNotificationSettings() {
               </Link>
             </section>
 
-            <section className="rounded-2xl border border-[#dceae4] bg-[#f6faf8] p-5 dark:border-[#286c51] dark:bg-[#101917]">
+            <section className="bg-card rounded-2xl border border-[#dceae4] p-5 dark:border-[#286c51]">
               <div className="flex size-10 items-center justify-center rounded-xl bg-[#d9f7e8] text-[#0f6b4d] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
                 <Bell aria-hidden="true" className="size-5" />
               </div>

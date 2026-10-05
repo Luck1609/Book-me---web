@@ -1,10 +1,8 @@
 import { Form, Head } from '@inertiajs/react';
 import {
   CheckCircle2,
-  KeyRound,
   LockKeyhole,
   ShieldCheck,
-  Smartphone,
 } from 'lucide-react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
@@ -22,31 +20,6 @@ type Props = {
   passwordRules: string;
 } & ManagePasskeysProps &
   ManageTwoFactorProps;
-
-function ProtectionStat({
-  icon: Icon,
-  label,
-  value,
-  detail,
-}: {
-  icon: typeof LockKeyhole;
-  label: string;
-  value: string;
-  detail: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 border-t border-white/10 pt-4 sm:border-t-0 sm:border-l sm:pl-5 first:sm:border-l-0 first:sm:pl-0">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#9be4c2]">
-        <Icon aria-hidden="true" className="size-4.5" />
-      </span>
-      <div className="min-w-0">
-        <p className="text-xs font-medium text-[#b8c9c7]">{label}</p>
-        <p className="mt-0.5 truncate text-sm font-bold text-white">{value}</p>
-        <p className="mt-0.5 truncate text-[11px] text-[#8fa9a4]">{detail}</p>
-      </div>
-    </div>
-  );
-}
 
 export default function Security(props: Props) {
   const passwordInput = useRef<HTMLInputElement>(null);
@@ -69,7 +42,7 @@ export default function Security(props: Props) {
 
       <h1 className="sr-only">Security settings</h1>
 
-      <div className="space-y-8">
+      <div className="max-w-4xl space-y-8">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold tracking-[0.16em] text-[#0f8a62] uppercase dark:text-[#8fe0bb]">
@@ -88,70 +61,6 @@ export default function Security(props: Props) {
             {protectionLabel}
           </div>
         </header>
-
-        <section className="relative overflow-hidden rounded-3xl bg-[#17343c] text-white shadow-[0_18px_45px_rgba(23,52,60,0.14)]">
-          <div className="absolute -top-24 -right-16 size-64 rounded-full bg-[#0f8a62]/30 blur-3xl" />
-          <div className="absolute -bottom-32 left-1/3 size-72 rounded-full bg-[#78d6ae]/10 blur-3xl" />
-
-          <div className="relative p-6 sm:p-8">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-              <div className="max-w-xl">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-12 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8] shadow-lg shadow-black/10">
-                    <ShieldCheck aria-hidden="true" className="size-6" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-bold tracking-[0.14em] text-[#8fe0bb] uppercase">
-                      Your security posture
-                    </p>
-                    <h3 className="mt-1 text-xl font-bold sm:text-2xl">
-                      {activeProtections} of 3 protections active
-                    </h3>
-                  </div>
-                </div>
-                <p className="mt-5 text-sm leading-6 text-[#b8c9c7]">
-                  A strong password is your first line of defense. Add
-                  two-factor authentication or a passkey for extra peace of
-                  mind.
-                </p>
-              </div>
-
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#d9f7e8] px-3 py-1.5 text-xs font-bold text-[#0f6b4d]">
-                <span className="size-1.5 rounded-full bg-[#0f8a62]" />
-                {protectionLabel}
-              </span>
-            </div>
-
-            <div className="mt-8 grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-3">
-              <ProtectionStat
-                icon={LockKeyhole}
-                label="Password"
-                value="Protected"
-                detail="Keep it unique and private"
-              />
-              <ProtectionStat
-                icon={Smartphone}
-                label="Two-factor authentication"
-                value={twoFactorEnabled ? 'Enabled' : 'Not enabled'}
-                detail={
-                  twoFactorEnabled
-                    ? 'Extra sign-in check is active'
-                    : 'Add a second layer of protection'
-                }
-              />
-              <ProtectionStat
-                icon={KeyRound}
-                label="Passkeys"
-                value={passkeyCount ? `${passkeyCount} added` : 'Not added'}
-                detail={
-                  passkeyCount
-                    ? 'Passwordless sign-in available'
-                    : 'Use your device to sign in'
-                }
-              />
-            </div>
-          </div>
-        </section>
 
         <section className="overflow-hidden rounded-3xl border border-[#dceae4] bg-white shadow-[0_16px_45px_rgba(23,52,60,0.06)] dark:border-white/10 dark:bg-[#17221f]">
           <div className="flex flex-col gap-4 border-b border-[#e7f0ec] bg-[#fbfefc] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-white/8 dark:bg-[#17221f]">

@@ -2,14 +2,10 @@ import { Head } from '@inertiajs/react';
 import {
   ArrowDownRight,
   ArrowUpRight,
-  CalendarDays,
   Check,
   CheckCircle2,
   CreditCard,
-  Crown,
-  Gauge,
   Sparkles,
-  UsersRound,
   Zap,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -96,15 +92,15 @@ function formatPrice(price: number): string {
 export default function BillingSettings({
   currentPlanId: initialCurrentPlanId = 'growth',
   renewalDate = 'September 24, 2026',
-  billingCycle = 'monthly',
+  // billingCycle = 'monthly',
 }: PageProps) {
   const { hide, show } = useNotice();
   const [currentPlanId, setCurrentPlanId] =
     useState<PlanId>(initialCurrentPlanId);
   const currentPlan =
     plans.find((plan) => plan.id === currentPlanId) ?? plans[1];
-  const billingLabel =
-    billingCycle === 'yearly' ? 'Annual billing' : 'Monthly billing';
+  // const billingLabel =
+  //   billingCycle === 'yearly' ? 'Annual billing' : 'Monthly billing';
 
   const usage = useMemo(
     () => ({
@@ -160,69 +156,6 @@ export default function BillingSettings({
             Secure billing
           </div>
         </header>
-
-        <section className="overflow-hidden rounded-3xl bg-[#17343c] text-white shadow-[0_18px_45px_rgba(23,52,60,0.14)]">
-          <div className="relative overflow-hidden p-6 sm:p-8">
-            <div className="absolute -top-20 -right-16 size-56 rounded-full bg-[#0f8a62]/30 blur-3xl" />
-            <div className="absolute -bottom-28 left-1/3 size-64 rounded-full bg-[#78d6ae]/10 blur-3xl" />
-
-            <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <span className="flex size-12 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8] shadow-lg shadow-black/10">
-                    <Crown aria-hidden="true" className="size-6" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-bold tracking-[0.14em] text-[#8fe0bb] uppercase">
-                      Your current plan
-                    </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <h2 className="text-2xl font-bold">{currentPlan.name}</h2>
-                      <Badge className="border-0 bg-[#d9f7e8] text-[#0f6b4d] hover:bg-[#d9f7e8]">
-                        <CheckCircle2 aria-hidden="true" /> Active
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-5 max-w-lg text-sm leading-6 text-[#b8c9c7]">
-                  {currentPlan.description} Your plan includes{' '}
-                  {currentPlan.bookingLimit.toLowerCase()} and{' '}
-                  {currentPlan.teamSeats.toLowerCase()}.
-                </p>
-              </div>
-
-              <div className="flex shrink-0 flex-col gap-1 lg:items-end">
-                <p className="text-3xl font-bold">
-                  {formatPrice(currentPlan.price)}
-                  {currentPlan.price > 0 && (
-                    <span className="ml-1 text-sm font-medium text-[#b8c9c7]">
-                      / month
-                    </span>
-                  )}
-                </p>
-                <p className="text-xs text-[#b8c9c7]">{billingLabel}</p>
-              </div>
-            </div>
-
-            <div className="relative mt-8 grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-3">
-              <PlanStat
-                icon={<CalendarDays aria-hidden="true" />}
-                label="Next renewal"
-                value={renewalDate}
-              />
-              <PlanStat
-                icon={<Gauge aria-hidden="true" />}
-                label="Bookings this cycle"
-                value={usage.bookings}
-              />
-              <PlanStat
-                icon={<UsersRound aria-hidden="true" />}
-                label="Team access"
-                value={currentPlan.teamSeats}
-              />
-            </div>
-          </div>
-        </section>
 
         <section className="grid gap-4 sm:grid-cols-3" aria-label="Plan usage">
           <UsageCard
@@ -380,27 +313,27 @@ export default function BillingSettings({
   );
 }
 
-function PlanStat({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-2xl bg-white/6 px-4 py-3">
-      <span className="text-[#8fe0bb] [&>svg]:size-4">{icon}</span>
-      <div className="min-w-0">
-        <p className="truncate text-[11px] text-[#b8c9c7]">{label}</p>
-        <p className="mt-0.5 truncate text-sm font-semibold text-white">
-          {value}
-        </p>
-      </div>
-    </div>
-  );
-}
+// function PlanStat({
+//   icon,
+//   label,
+//   value,
+// }: {
+//   icon: ReactNode;
+//   label: string;
+//   value: string;
+// }) {
+//   return (
+//     <div className="flex items-center gap-3 rounded-2xl bg-white/6 px-4 py-3">
+//       <span className="text-[#8fe0bb] [&>svg]:size-4">{icon}</span>
+//       <div className="min-w-0">
+//         <p className="truncate text-[11px] text-[#b8c9c7]">{label}</p>
+//         <p className="mt-0.5 truncate text-sm font-semibold text-white">
+//           {value}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// }
 
 function UsageCard({
   icon,

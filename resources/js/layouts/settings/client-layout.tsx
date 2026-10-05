@@ -1,8 +1,8 @@
 import { Link, usePage } from '@inertiajs/react';
+import { ArrowLeft, BellRing, ShieldUser, UserCircle } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
-import Heading from '@/components/heading';
+import Container from '@/components/container';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import settings from '@/routes/settings';
@@ -13,37 +13,22 @@ const sidebarNavItems = (userType: UserType): NavItem[] => [
   {
     title: 'Personal Profile',
     href: settings.profile.edit(),
-    icon: null,
+    icon: UserCircle,
   },
-  ...(userType === UserType.PROVIDER
-    ? [
-        {
-          title: 'Business Profile',
-          href: settings.businessProfile.edit(),
-          icon: null,
-        },
-        {
-          title: 'Services',
-          href: settings.catalog.index(),
-          icon: null,
-        },
-        {
-          title: 'Subscription Plan',
-          href: settings.subscription.index(),
-          icon: null,
-        },
-      ]
-    : []),
   {
     title: 'Security',
     href: settings.security.edit(),
-    icon: null,
+    icon: ShieldUser,
   },
-  {
-    title: 'Notifications',
-    href: settings.notifications.index(),
-    icon: null,
-  },
+  ...(userType === UserType.PROVIDER
+    ? []
+    : [
+      {
+        title: 'Notifications',
+        href: settings.notifications.index(),
+        icon: BellRing,
+      },
+    ]),
 ];
 
 export default function ClientSettingsLayout({ children }: PropsWithChildren) {
@@ -51,14 +36,20 @@ export default function ClientSettingsLayout({ children }: PropsWithChildren) {
   const { user } = usePage().props;
 
   return (
-    <div className="px-4 py-6">
-      <Heading
-        title="Settings"
-        description="Manage your profile and account settings"
-      />
+    <Container className="py-10 space-y-5">
+      {
+        user.role === UserType.PROVIDER && (
+          <Link href={settings.index()} className="block">
+            <Button variant="outline">
+              <ArrowLeft />
+              Back to settings
+            </Button>
+          </Link>
+        )
+      }
 
-      <div className="flex flex-col lg:flex-row lg:space-x-12">
-        <aside className="w-full max-w-xl lg:w-48">
+      <div className="grid lg:grid-cols-5 gap-x-10">
+        <aside className={cn("bg-card p-5 rounded-xl", user.role === UserType.CLIENT ? "h-40" : "h-30")}>
           <nav
             className="flex flex-col space-y-1 space-x-0"
             aria-label="Settings"
@@ -73,8 +64,8 @@ export default function ClientSettingsLayout({ children }: PropsWithChildren) {
                   'bg-muted': isCurrentOrParentUrl(item.href),
                 })}
               >
-                <Link href={item.href}>
-                  {item.icon && <item.icon className="h-4 w-4" />}
+                <Link href={item.href} className="gap-2 py-5">
+                  {item.icon && <item.icon className="size-5" />}
                   {item.title}
                 </Link>
               </Button>
@@ -82,12 +73,8 @@ export default function ClientSettingsLayout({ children }: PropsWithChildren) {
           </nav>
         </aside>
 
-        <Separator className="my-6 lg:hidden" />
-
-        <div className="flex-1 md:max-w-4xl">
-          <section className="max-w-4xl space-y-12">{children}</section>
-        </div>
+        <div className="lg:col-span-4">{children}</div>
       </div>
-    </div>
+    </Container>
   );
 }

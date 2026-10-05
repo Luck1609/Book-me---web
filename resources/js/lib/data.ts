@@ -68,7 +68,7 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => [
           icon: CalendarCheck,
         },
         {
-          title: 'Team Management',
+          title: 'Team',
           href: team.index.url(),
           icon: UsersRound,
         },
