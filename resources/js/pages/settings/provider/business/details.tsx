@@ -46,10 +46,6 @@ type BusinessProfileFormData = {
   description: string;
   phone: string;
   email: string;
-  region_id: string;
-  district_id: string;
-  city: string;
-  address: string;
   is_accepting_bookings: boolean;
 };
 
@@ -61,38 +57,19 @@ export default function BusinessDetails() {
     description: providerProfile.description ?? '',
     phone: providerProfile.phone ?? '',
     email: providerProfile.email ?? '',
-    region_id: providerProfile.region_id,
-    district_id: providerProfile.district_id,
-    city: providerProfile.city,
-    address: providerProfile.address,
     is_accepting_bookings: providerProfile.is_accepting_bookings,
   });
 
-  // const districts = useMemo(
-  //   () =>
-  //     regions.find((region) => region.value === form.data.region_id)
-  //       ?.districts ?? [],
-  //   [form.data.region_id, regions],
-  // );
-
-  // useEffect(() => {
-  //   if (
-  //     !form.data.district_id ||
-  //     districts.some((district) => district.value === form.data.district_id)
-  //   ) {
-  //     return;
-  //   }
-
-  //   form.setData('district_id', '');
-  // }, [districts, form, form.data.district_id]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // form.patch(settings.businessProfile.update().url, {
-    //   preserveScroll: true,
-    //   onSuccess: () => toast.success('Business profile updated.'),
-    // });
+    form.transform((data) => ({...data, field: "details"}))
+
+    form.patch(settings.business.update().url, {
+      preserveScroll: true,
+      onSuccess: () => toast.success('Business profile updated.'),
+    });
   };
 
   return (
@@ -123,26 +100,6 @@ export default function BusinessDetails() {
           onSubmit={handleSubmit}
           className="overflow-hidden rounded-3xl border border-[#dceae4] bg-card dark:border-white/10 dark:bg-[#17221f]"
         >
-          {/* <div className="flex flex-col gap-5 border-b border-[#e7f0ec] bg-[#17343c] px-5 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8 dark:border-white/8">
-            <div className="flex items-center gap-4">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-[#0f8a62] text-[#d9f7e8] shadow-lg shadow-black/10">
-                <Building2 aria-hidden="true" className="size-6" />
-              </div>
-              <div>
-                <p className="text-xs font-bold tracking-[0.14em] text-[#8fe0bb] uppercase">
-                  Business details
-                </p>
-                <h2 className="mt-1 text-lg font-bold">
-                  Keep your profile clear
-                </h2>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-[#b8c9c7]">
-              <Globe2 aria-hidden="true" className="size-4 text-[#8fe0bb]" />
-              bookme.app/{providerProfile.slug}
-            </div>
-          </div> */}
-
           <div className="space-y-8 p-5 sm:p-8">
             <section className="space-y-5">
               <div>

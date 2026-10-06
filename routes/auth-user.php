@@ -41,6 +41,9 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
 
     Route::resource('availability-blocks', AvailabilityBlockController::class)
         ->only(['store', 'destroy']);
+    Route::put('business-hours', [BusinessHourController::class, 'updateMany'])
+        ->middleware([HandlePrecognitiveRequests::class])
+        ->name('business-hours.update-many');
     Route::resource('business-hours', BusinessHourController::class)
         ->only(['update'])->middleware([HandlePrecognitiveRequests::class]);
 

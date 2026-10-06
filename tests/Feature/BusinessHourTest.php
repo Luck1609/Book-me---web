@@ -63,6 +63,40 @@ class BusinessHourTest extends TestCase
         ]);
     }
 
+    public function test_provider_can_update_all_business_hours_using_the_editor_payload(): void
+    {
+        $provider = $this->createProvider();
+        $hours = BusinessHour::factory()->count(7)->sequence(
+            fn ($sequence) => ['day_of_week' => $sequence->index],
+        )->create(['provider_profile_id' => $provider->providerProfile->id]);
+
+        $payload = $hours->map(fn (BusinessHour $hour): array => [
+            'id' => $hour->id,
+            'day_of_week' => $hour->day_of_week,
+            'is_closed' => $hour->day_of_week === 0,
+            'opens_at' => '10:30',
+            'closes_at' => '19:00',
+        ])->values()->all();
+
+        $response = $this->actingAs($provider)->put(route('business-hours.update-many'), [
+            'hours' => $payload,
+        ]);
+
+        $response->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('business_hours', [
+            'id' => $hours->firstWhere('day_of_week', 0)->id,
+            'is_closed' => true,
+            'opens_at' => null,
+            'closes_at' => null,
+        ]);
+        $this->assertDatabaseHas('business_hours', [
+            'id' => $hours->firstWhere('day_of_week', 1)->id,
+            'is_closed' => false,
+            'opens_at' => '10:30',
+            'closes_at' => '19:00',
+        ]);
+    }
+
     public function test_closing_time_must_be_after_opening_time(): void
     {
         $provider = $this->createProvider();

@@ -27,6 +27,7 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
         ->name('profile.phones.verify');
 
     Route::get('business/{page}', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');
+
     Route::patch('business', [BusinessProfileController::class, 'update'])
         ->middleware([HandlePrecognitiveRequests::class])
         ->name('business.update');

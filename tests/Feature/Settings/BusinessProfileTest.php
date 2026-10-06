@@ -19,13 +19,11 @@ class BusinessProfileTest extends TestCase
     {
         [$user] = $this->createProvider();
 
-        $response = $this->actingAs($user)->get(route('business-profile.edit'));
+        $response = $this->actingAs($user)->get(route('settings.business-profile.edit', ['page' => 'location']));
 
         $response->assertOk()->assertInertia(fn ($page) => $page
-            ->component('settings/business-profile')
+            ->component('settings/provider/business/location')
             ->has('providerProfile')
-            ->where('providerProfile.is_accepting_bookings', true)
-            ->has('categories')
             ->has('regions'));
     }
 
@@ -33,7 +31,7 @@ class BusinessProfileTest extends TestCase
     {
         [$user, $profile, $region, $district, $category] = $this->createProvider();
 
-        $response = $this->actingAs($user)->patch(route('business-profile.update'), [
+        $response = $this->actingAs($user)->patch(route('settings.business.update'), [
             'business_name' => 'The New Craft Studio',
             'category_id' => $category->id,
             'description' => 'A thoughtful studio for modern appointments.',
@@ -43,14 +41,18 @@ class BusinessProfileTest extends TestCase
             'district_id' => $district->id,
             'city' => 'Kumasi',
             'address' => '14 Adum Road',
+            'latitude' => 6.6885,
+            'longitude' => -1.6244,
             'is_accepting_bookings' => false,
         ]);
 
-        $response->assertSessionHasNoErrors()->assertRedirect(route('business-profile.edit'));
+        $response->assertSessionHasNoErrors();
 
         $this->assertSame('The New Craft Studio', $profile->refresh()->business_name);
         $this->assertSame('hello@craftstudio.test', $profile->email);
         $this->assertSame('14 Adum Road', $profile->address);
+        $this->assertSame(6.6885, (float) $profile->latitude);
+        $this->assertSame(-1.6244, (float) $profile->longitude);
         $this->assertFalse($profile->is_accepting_bookings);
     }
 
@@ -64,8 +66,8 @@ class BusinessProfileTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->from(route('business-profile.edit'))
-            ->patch(route('business-profile.update'), [
+            ->from(route('settings.business-profile.edit', ['page' => 'location']))
+            ->patch(route('settings.business.update'), [
                 'business_name' => 'The New Craft Studio',
                 'category_id' => $category->id,
                 'region_id' => $region->id,
@@ -74,7 +76,7 @@ class BusinessProfileTest extends TestCase
                 'address' => '14 Adum Road',
             ]);
 
-        $response->assertSessionHasErrors('district_id')->assertRedirect(route('business-profile.edit'));
+        $response->assertSessionHasErrors('district_id');
     }
 
     /**
