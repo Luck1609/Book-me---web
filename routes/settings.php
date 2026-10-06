@@ -39,7 +39,7 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
         ->only(['index', 'update']);
 
     Route::resource('reviews', RatingController::class)
-        ->only(['index', 'update']);
+        ->only(['index', 'show', 'update']);
 
     Route::resource('client', ClientController::class)
         ->only(['index', 'update']);

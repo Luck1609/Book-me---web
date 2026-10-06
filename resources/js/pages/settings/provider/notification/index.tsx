@@ -7,6 +7,7 @@ import {
   Clock3,
   Mail,
   MessageSquareText,
+  NotebookPen,
   Smartphone,
   Sparkles,
 } from 'lucide-react';
@@ -292,4 +293,23 @@ export default function ProviderNotificationSettings() {
       </div>
     </>
   );
+}
+
+
+ProviderNotificationSettings.layout = {
+  classNames: {
+    aside: "32"
+  },
+  navList: [
+    {
+      label: "Booking",
+      icon: NotebookPen,
+      url: ""
+    },
+    {
+      label: "Booking",
+      icon: NotebookPen,
+      url: ""
+    },
+  ],
 }

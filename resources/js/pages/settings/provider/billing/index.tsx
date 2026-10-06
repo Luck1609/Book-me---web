@@ -5,6 +5,7 @@ import {
   Check,
   CheckCircle2,
   CreditCard,
+  PackageCheck,
   Sparkles,
   Zap,
 } from 'lucide-react';
@@ -391,6 +392,21 @@ BillingSettings.layout = {
     {
       title: 'Billing & Payment Settings',
       href: settings.subscription.index(),
+    },
+  ],
+  classNames: {
+    aside: "h-32"
+  },
+  navList: [
+    {
+      label: "Subscription",
+      icon: PackageCheck,
+      url: ""
+    },
+    {
+      label: "Payment methods",
+      icon: CreditCard,
+      url: ""
     },
   ],
 };

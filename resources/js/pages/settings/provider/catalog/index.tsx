@@ -2,9 +2,11 @@ import { Head, router } from '@inertiajs/react';
 import {
   Clock3,
   Edit3,
+  HandPlatter,
   PackageOpen,
   Plus,
   Scissors,
+  SlidersHorizontal,
   Trash2,
 } from 'lucide-react';
 
@@ -248,6 +250,21 @@ CatalogSettings.layout = {
     {
       title: 'Services',
       href: settings.catalog.index(),
+    },
+  ],
+  classNames: {
+    aside: "h-36"
+  },
+  navList: [
+    {
+      label: "Categories",
+      icon: SlidersHorizontal,
+      url: ""
+    },
+    {
+      label: "Services",
+      icon: HandPlatter,
+      url: ""
     },
   ],
 };

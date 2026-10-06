@@ -28,7 +28,7 @@ class RatingController extends Controller
    */
   public function show(string $id)
   {
-    //
+    return inertia('settings/provider/reviews/show', []);
   }
 
   /**
