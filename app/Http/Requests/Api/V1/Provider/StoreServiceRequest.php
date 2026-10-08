@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\V1\Provider;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreServiceRequest extends FormRequest
 {
@@ -31,6 +32,13 @@ class StoreServiceRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
             'requires_payment' => ['sometimes', 'boolean'],
             'sort_order' => ['sometimes', 'integer', 'min:0'],
+            'category_id' => [
+                'nullable',
+                'uuid',
+                Rule::exists('categories', 'id')->where(
+                    fn ($query) => $query->where('provider_profile_id', $this->user()?->providerProfile?->id),
+                ),
+            ],
         ];
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ServiceRequest extends FormRequest
 {
@@ -44,6 +45,13 @@ class ServiceRequest extends FormRequest
             'min_duration' => ['required', 'integer', 'min:1', 'max:1440'],
             'max_duration' => ['required', 'integer', 'gte:min_duration', 'max:1440'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'category_id' => [
+                'nullable',
+                'uuid',
+                Rule::exists('provider_categories', 'id')->where(
+                    fn ($query) => $query->where('provider_profile_id', $this->user()?->providerProfile?->id),
+                ),
+            ],
         ];
     }
 }

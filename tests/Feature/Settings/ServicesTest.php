@@ -27,10 +27,10 @@ class ServicesTest extends TestCase
             'max_duration_minutes' => 45,
         ]);
 
-        $response = $this->actingAs($user)->get(route('services.index'));
+        $response = $this->actingAs($user)->get(route('settings.catalog.index', ['target' => 'services']));
 
         $response->assertOk()->assertInertia(fn ($page) => $page
-            ->component('settings/services')
+            ->component('settings/provider/catalog/services')
             ->has('services', 1)
             ->where('services.0.id', $service->id)
             ->where('services.0.name', 'Premium haircut'));
@@ -40,7 +40,7 @@ class ServicesTest extends TestCase
     {
         [$user, $profile] = $this->createProvider();
 
-        $createResponse = $this->actingAs($user)->post(route('services.store'), [
+        $createResponse = $this->actingAs($user)->post(route('settings.catalog.store'), [
             'name' => 'Premium haircut',
             'description' => 'A tailored haircut and finish.',
             'price' => '80.00',
@@ -49,14 +49,14 @@ class ServicesTest extends TestCase
             'image' => UploadedFile::fake()->image('service.png'),
         ]);
 
-        $createResponse->assertSessionHasNoErrors()->assertRedirect(route('services.index'));
+        $createResponse->assertSessionHasNoErrors()->assertRedirect(route('settings.catalog.index', ['target' => 'services']));
 
         $service = $profile->services()->firstOrFail();
         $this->assertSame(30, $service->min_duration_minutes);
         $this->assertSame(45, $service->max_duration_minutes);
         $this->assertCount(1, $service->getMedia('image'));
 
-        $updateResponse = $this->actingAs($user)->put(route('services.update', $service), [
+        $updateResponse = $this->actingAs($user)->put(route('settings.catalog.update', $service), [
             'name' => 'Signature haircut',
             'description' => 'A refreshed service description.',
             'price' => '95.00',
@@ -64,13 +64,13 @@ class ServicesTest extends TestCase
             'max_duration' => '60',
         ]);
 
-        $updateResponse->assertSessionHasNoErrors()->assertRedirect(route('services.index'));
+        $updateResponse->assertSessionHasNoErrors()->assertRedirect(route('settings.catalog.index', ['target' => 'services']));
         $this->assertSame('Signature haircut', $service->refresh()->name);
         $this->assertSame('95.00', $service->price);
 
-        $deleteResponse = $this->actingAs($user)->delete(route('services.destroy', $service));
+        $deleteResponse = $this->actingAs($user)->delete(route('settings.catalog.destroy', $service));
 
-        $deleteResponse->assertSessionHasNoErrors()->assertRedirect(route('services.index'));
+        $deleteResponse->assertSessionHasNoErrors()->assertRedirect(route('settings.catalog.index', ['target' => 'services']));
         $this->assertSoftDeleted('services', ['id' => $service->id]);
     }
 
@@ -86,7 +86,7 @@ class ServicesTest extends TestCase
             'max_duration_minutes' => 30,
         ]);
 
-        $response = $this->actingAs($user)->delete(route('services.destroy', $service));
+        $response = $this->actingAs($user)->delete(route('settings.catalog.destroy', $service));
 
         $response->assertForbidden();
         $this->assertNotSoftDeleted('services', ['id' => $service->id]);

@@ -5,6 +5,7 @@ export type ServiceFormData = {
   min_duration: string;
   max_duration: string;
   description: string;
+  category_id?: string;
 };
 
 export type OnboardingFormData = {

@@ -13,7 +13,13 @@ class Category extends Model
 {
     use HasSlug, HasUuids;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['provider_profile_id', 'name', 'slug', 'description', 'parent_id'];
+
+    /** @return BelongsTo<ProviderProfile, $this> */
+    public function providerProfile(): BelongsTo
+    {
+        return $this->belongsTo(ProviderProfile::class);
+    }
 
     public function getSlugOptions(): SlugOptions
     {

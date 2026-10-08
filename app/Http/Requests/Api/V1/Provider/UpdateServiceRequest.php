@@ -5,6 +5,7 @@ namespace App\Http\Requests\Api\V1\Provider;
 use App\Models\Service;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateServiceRequest extends FormRequest
 {
@@ -35,6 +36,14 @@ class UpdateServiceRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
             'requires_payment' => ['sometimes', 'boolean'],
             'sort_order' => ['sometimes', 'integer', 'min:0'],
+            'category_id' => [
+                'sometimes',
+                'nullable',
+                'uuid',
+                Rule::exists('categories', 'id')->where(
+                    fn ($query) => $query->where('provider_profile_id', $this->user()?->providerProfile?->id),
+                ),
+            ],
         ];
     }
 }

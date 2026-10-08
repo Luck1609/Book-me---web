@@ -19,6 +19,7 @@ class Service extends Model implements HasMedia
 
     protected $fillable = [
         'provider_profile_id',
+        'category_id',
         'name',
         'description',
         'price',
@@ -59,6 +60,12 @@ class Service extends Model implements HasMedia
     public function providerProfile(): BelongsTo
     {
         return $this->belongsTo(ProviderProfile::class);
+    }
+
+    /** @return BelongsTo<ProviderCategory, $this> */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProviderCategory::class, 'category_id');
     }
 
     /** @return HasMany<Review, $this> */

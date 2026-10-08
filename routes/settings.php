@@ -3,6 +3,7 @@
 use App\Http\Controllers\BusinessProfileController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Settings\BillingController;
+use App\Http\Controllers\Settings\CategoryController;
 use App\Http\Controllers\Settings\ClientController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\RatingController;
@@ -38,7 +39,6 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
     Route::resource('revenue', RevenueController::class)
         ->only(['index', 'update']);
 
-
     Route::get('review', [RatingController::class, 'index'])->name('review.index');
     Route::resource('review', RatingController::class)
         ->only(['show', 'update']);
@@ -48,7 +48,13 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
 
     Route::resource('catalog', ServiceController::class)
         ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['catalog' => 'service'])
         ->names('catalog');
+
+    Route::resource('catalog/categories', CategoryController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->middleware([HandlePrecognitiveRequests::class])
+        ->names('catalog.categories');
 
     Route::resource('schedule', ScheduleController::class)
         ->only(['index', 'store', 'update', 'destroy'])

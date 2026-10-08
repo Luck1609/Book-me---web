@@ -86,6 +86,12 @@ class ProviderProfile extends Model implements HasMedia
         return $this->hasMany(Service::class);
     }
 
+    /** @return HasMany<ProviderCategory, $this> */
+    public function categories(): HasMany
+    {
+        return $this->hasMany(ProviderCategory::class);
+    }
+
     /**
      * @return HasMany<Booking, $this>
      */

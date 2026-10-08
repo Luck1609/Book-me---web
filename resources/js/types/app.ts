@@ -10,6 +10,15 @@ export type ServiceRecord = {
   max_duration: number;
   is_active: boolean;
   image: string | null;
+  category: string | null;
+  category_id: string | null;
+};
+
+export type ProviderCategory = {
+  id: string;
+  name: string;
+  description: string | null;
+  services_count: number;
 };
 
 export type ServiceProvider = Partial<{

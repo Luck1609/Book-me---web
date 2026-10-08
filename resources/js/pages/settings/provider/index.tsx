@@ -3,6 +3,7 @@ import { ArrowUpRight, BookOpen, Calendar, CreditCard, Landmark, ThumbsUp, UserC
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import settings from '@/routes/settings'
 import { BusinessProfileRoutes } from '@/types/enums'
+import { CatalogPageEnum } from './catalog/navigation'
 import { ReviewPagesEnum } from './reviews/navigation'
 
 
@@ -40,7 +41,11 @@ const settingsList = [
   {
     title: "Catalog",
     description: "Manage categories and services offered by you",
-    url: settings.catalog.index().url,
+    url: settings.catalog.index({
+      query: {
+        target: CatalogPageEnum.Categories
+      }
+    }).url,
     icon: BookOpen
   },
   {
