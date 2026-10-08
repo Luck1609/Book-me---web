@@ -57,3 +57,14 @@ export type BusinessHour = {
   closes_at: string | null;
   [x: string]: unknown;
 };
+
+
+export type Review = {
+  id: number;
+  client: string;
+  initials: string;
+  rating: number;
+  service: string;
+  comment: string;
+  date: string;
+};
