@@ -14,7 +14,9 @@ import {
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item';
 import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 import settingsRoute from '@/routes/settings';
 
 type NotificationKey =
@@ -94,34 +96,32 @@ function NotificationOptionRow({
   option,
   checked,
   onCheckedChange,
+  className
 }: {
   option: NotificationOption;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  className?: string;
 }) {
   const Icon = option.icon;
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[#fbfdfc] sm:px-6 dark:hover:bg-white/2">
-      <span
-        className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${option.iconClassName}`}
-      >
+    <Item className={cn("flex items-center gap-4 px-5 py-4 transition-colors hover:bg-[#fbfdfc] sm:px-6 dark:hover:bg-white/2", className)}>
+      <ItemMedia className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", option.iconClassName)}>
         <Icon aria-hidden="true" className="size-4.5" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold text-[#17343c] dark:text-white">
-          {option.title}
-        </p>
-        <p className="mt-1 text-xs leading-5 text-[#70908a] dark:text-[#9cb8b1]">
-          {option.description}
-        </p>
-      </div>
-      <Switch
-        aria-label={`${checked ? 'Disable' : 'Enable'} ${option.title}`}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-      />
-    </div>
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{option.title}</ItemTitle>
+        <ItemDescription>{option.description}</ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <Switch
+          aria-label={`${checked ? 'Disable' : 'Enable'} ${option.title}`}
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+        />
+      </ItemActions>
+    </Item>
   );
 }
 
@@ -149,12 +149,18 @@ function NotificationGroup({
         </p>
       </div>
       <div className="divide-y divide-[#e7f0ec] dark:divide-white/8">
-        {options.map((option) => (
+        {options.map((option, index) => (
           <NotificationOptionRow
             key={option.key}
             option={option}
             checked={settings[option.key]}
             onCheckedChange={(checked) => onToggle(option.key, checked)}
+            className={cn(
+              "rounded-none",
+              index + 1 === options.length
+                ? ""
+                : "border-b-[#e7f0ec]"
+            )}
           />
         ))}
       </div>
@@ -216,6 +222,7 @@ export default function ProviderNotificationSettings() {
               settings={settings}
               onToggle={toggleSetting}
             />
+
             <NotificationGroup
               title="Client communication"
               description="Be ready when clients need a quick response."
@@ -223,6 +230,7 @@ export default function ProviderNotificationSettings() {
               settings={settings}
               onToggle={toggleSetting}
             />
+
             <NotificationGroup
               title="From Book Me"
               description="Occasional ideas and updates to help your business grow."
@@ -293,23 +301,4 @@ export default function ProviderNotificationSettings() {
       </div>
     </>
   );
-}
-
-
-ProviderNotificationSettings.layout = {
-  classNames: {
-    aside: "32"
-  },
-  navList: [
-    {
-      label: "Booking",
-      icon: NotebookPen,
-      url: ""
-    },
-    {
-      label: "Booking",
-      icon: NotebookPen,
-      url: ""
-    },
-  ],
 }

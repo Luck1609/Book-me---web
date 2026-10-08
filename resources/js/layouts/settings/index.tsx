@@ -25,7 +25,7 @@ export default function SettingsLayout({ children, ...props }: Children<{
 }>) {
   const { props: {user}, url } = usePage()
 
-  if (user?.role === UserType.PROVIDER && !providerRouteExceptions.includes(url)) {
+  if (user?.role === UserType.Provider && !providerRouteExceptions.includes(url)) {
     return (
       <ProviderSettingsLayout {...props}>{children}</ProviderSettingsLayout>
     )

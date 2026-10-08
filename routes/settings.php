@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\BusinessProfileController;
-use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\CategoryController;
 use App\Http\Controllers\Settings\ClientController;
+use App\Http\Controllers\Settings\NotificationController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\RatingController;
 use App\Http\Controllers\Settings\RevenueController;
@@ -60,7 +60,7 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
         ->only(['index', 'store', 'update', 'destroy'])
         ->names('schedule');
 
-    Route::resource('notifications', NotificationsController::class)
+    Route::resource('notifications', NotificationController::class)
         ->only(['index', 'update']);
 });
 

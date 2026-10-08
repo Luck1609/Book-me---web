@@ -20,6 +20,6 @@ export type SelectOptions = {
 };
 
 export enum UserType {
-  CLIENT = 'client',
-  PROVIDER = 'service_provider',
+  Client = 'client',
+  Provider = 'service_provider',
 }

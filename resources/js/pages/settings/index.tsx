@@ -21,7 +21,7 @@ export default function SettingsPage() {
         />
 
         {
-          user.role === UserType.PROVIDER
+          user.role === UserType.Provider
             ? <ProviderSettingsPage />
             : <ClientSettingsPage />
         }

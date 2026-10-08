@@ -18,7 +18,7 @@ const settingsList = (role: UserType) => ([
     url: settings.profile.edit().url,
     icon: UserCircle
   },
-  ...role === UserType.CLIENT ? [
+  ...role === UserType.Client ? [
     {
       title: "Notifications",
       description: "Manage your notification preference and how providers can reach you",

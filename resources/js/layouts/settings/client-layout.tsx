@@ -20,7 +20,7 @@ const sidebarNavItems = (userType: UserType): NavItem[] => [
     href: settings.security.edit(),
     icon: ShieldUser,
   },
-  ...(userType === UserType.PROVIDER
+  ...(userType === UserType.Provider
     ? []
     : [
       {
@@ -38,7 +38,7 @@ export default function ClientSettingsLayout({ children }: PropsWithChildren) {
   return (
     <Container className="py-10 space-y-5">
       {
-        user.role === UserType.PROVIDER && (
+        user.role === UserType.Provider && (
           <Link href={settings.index()} className="block">
             <Button variant="outline">
               <ArrowLeft />
@@ -49,7 +49,7 @@ export default function ClientSettingsLayout({ children }: PropsWithChildren) {
       }
 
       <div className="grid lg:grid-cols-5 gap-x-10">
-        <aside className={cn("bg-card p-5 rounded-xl", user.role === UserType.CLIENT ? "h-40" : "h-30")}>
+        <aside className={cn("bg-card p-5 rounded-xl", user.role === UserType.Client ? "h-40" : "h-30")}>
           <nav
             className="flex flex-col space-y-1 space-x-0"
             aria-label="Settings"

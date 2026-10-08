@@ -28,7 +28,7 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => [
   {
     title: 'Bookings',
     href:
-      accountType === UserType.PROVIDER
+      accountType === UserType.Provider
         ? booking.index.url()
         : client.booking.index.url(),
     icon: CalendarRange,
@@ -38,7 +38,7 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => [
     href: chatIndex.url(),
     icon: MessageCircleMore,
   },
-  ...(accountType !== UserType.PROVIDER
+  ...(accountType !== UserType.Provider
     ? [
         {
           title: 'Service Providers',
