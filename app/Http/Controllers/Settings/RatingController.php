@@ -3,86 +3,49 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Review;
+use App\Services\RatingService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RatingController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
-  public function index(Request $request)
-  {
-    $page = $request->query('target');
+  public function __construct(protected RatingService $service)
+  {}
 
-    return match ($page) {
-      'breakdown' => inertia('settings/provider/reviews/breakdown', [
-        'target' => $page
-      ]),
-      default => inertia('settings/provider/reviews/index', [
-        'target' => $page
+  public function index(Request $request): Response
+  {
+    $profile = $this->service->providerProfile($request->user());
+    $reviews = $this->service->reviews($profile);
+
+    return match ($request->string('target')->toString()) {
+      'breakdown' => Inertia::render('settings/provider/reviews/breakdown', $this->service->breakdownData($profile, $reviews)),
+      default => Inertia::render('settings/provider/reviews/index', [
+        ...$this->service->summaryData($reviews),
+        'reviews' => $reviews->take(5)->map(fn(Review $review): array => $this->service->reviewData($review))->values(),
       ]),
     };
   }
 
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(Request $request)
+  public function show(Request $request, string $review): Response
   {
-    //
-  }
+    $profile = $this->service->providerProfile($request->user());
+    $service = $profile->services()->whereKey($review)->firstOrFail();
+    $rating = $request->integer('rating');
+    $reviews = $service->reviews()
+      ->whereBelongsTo($profile)
+      ->when($rating >= 1 && $rating <= 5, fn($query) => $query->where('rating', $rating))
+      ->with(['user:id,name', 'service:id,name'])
+      ->latest()
+      ->get();
 
-  /**
-   * Display the specified resource.
-   */
-  public function show(string $id)
-  {
-    return inertia('settings/provider/reviews/show', [
-      'reviews' => [
-        [
-          'id' => 1,
-          'client' => 'Ama K.',
-          'rating' => 5,
-          'service' => 'Signature facial',
-          'comment' =>
-            'The team is so welcoming and the result was exactly what I wanted. I will definitely be back.',
-          'date' => '2 weeks ago',
-        ],
-        [
-          'id' => 2,
-          'client' => 'Nana B.',
-          'rating' => 5,
-          'service' => 'Deep tissue massage',
-          'comment' =>
-            'Beautiful space, easy booking and genuinely thoughtful service from start to finish.',
-          'date' => '1 month ago',
-        ],
-        [
-          'id' => 3,
-          'client' => 'Esi A.',
-          'rating' => 4,
-          'service' => 'Glow treatment',
-          'comment' =>
-            'A lovely experience. The staff listened carefully and gave me helpful aftercare advice.',
-          'date' => '1 month ago',
-        ],
-      ]
+    return Inertia::render('settings/provider/reviews/show', [
+      'service' => ['id' => $service->id, 'name' => $service->name],
+      'rating' => $rating >= 1 && $rating <= 5 ? $rating : null,
+      'reviews' => $reviews->map(fn(Review $item): array => $this->service->reviewData($item))->values(),
     ]);
   }
 
-  /**
-   * Update the specified resource in storage.
-   */
-  public function update(Request $request, string $id)
-  {
-    //
-  }
 
-  /**
-   * Remove the specified resource from storage.
-   */
-  public function destroy(string $id)
-  {
-    //
-  }
 }

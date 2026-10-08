@@ -1,31 +1,39 @@
 import { Head, Link } from '@inertiajs/react';
+import { CheckCircle2, ChevronDown, Star, TrendingUp } from 'lucide-react';
 import {
-  CheckCircle2,
-  ChevronDown,
-  Star,
-  TrendingUp,
-} from 'lucide-react';
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from '@/components/ui/item';
 import settings from '@/routes/settings';
-import { reviewLayoutProps, ReviewPagesEnum } from '.';
+import { reviewLayoutProps, ReviewPagesEnum } from './navigation';
 
-const services = [
-  ['Signature facial', 42, 4.98, '+0.2', '1'],
-  ['Deep tissue massage', 31, 4.94, '+0.1', '2'],
-  ['Glow treatment', 28, 4.86, '+0.4', '3'],
-  ['Classic manicure', 27, 4.81, '—', '4'],
-] as const;
+type Props = {
+  averageRating: number;
+  totalReviews: number;
+  ratingBreakdown: { rating: number; count: number; percentage: number }[];
+  services: {
+    id: string;
+    name: string;
+    reviewCount: number;
+    rating: number;
+    change: number | null;
+  }[];
+  months: { label: string; rating: number }[];
+};
 
-const months = [
-  ['Apr', 4.6],
-  ['May', 4.8],
-  ['Jun', 4.7],
-  ['Jul', 4.9],
-  ['Aug', 4.9],
-  ['Sep', 4.9],
-] as const;
+export default function ReviewBreakdown({
+  averageRating,
+  totalReviews,
+  ratingBreakdown,
+  services,
+  months,
+}: Props) {
+  const fiveStarPercentage =
+    ratingBreakdown.find((item) => item.rating === 5)?.percentage ?? 0;
 
-export default function ReviewBreakdown() {
   return (
     <>
       <Head title="Rating breakdown" />
@@ -55,7 +63,9 @@ export default function ReviewBreakdown() {
           <div className="rounded-2xl border border-[#dceae4] bg-white p-6 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
             <div className="flex items-center gap-5">
               <div className="flex size-24 shrink-0 flex-col items-center justify-center rounded-2xl bg-[#fff4d9] text-[#c38518]">
-                <span className="text-3xl font-bold">4.9</span>
+                <span className="text-3xl font-bold">
+                  {averageRating.toFixed(1)}
+                </span>
                 <Star aria-hidden="true" className="size-4 fill-current" />
               </div>
               <div>
@@ -63,11 +73,12 @@ export default function ReviewBreakdown() {
                   Excellent client satisfaction
                 </p>
                 <p className="mt-1 text-sm leading-6 text-[#70908a] dark:text-[#9cb8b1]">
-                  You are in the top 10% of providers on Book Me.
+                  Based on {totalReviews} client{' '}
+                  {totalReviews === 1 ? 'review' : 'reviews'}.
                 </p>
                 <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-[#0f8a62] dark:text-[#8fe0bb]">
-                  <TrendingUp aria-hidden="true" className="size-4" /> 0.3
-                  points this year
+                  <TrendingUp aria-hidden="true" className="size-4" />{' '}
+                  {fiveStarPercentage}% are five-star reviews
                 </div>
               </div>
             </div>
@@ -77,7 +88,7 @@ export default function ReviewBreakdown() {
                   Total reviews
                 </p>
                 <p className="mt-1 text-xl font-bold text-[#17343c] dark:text-white">
-                  128
+                  {totalReviews}
                 </p>
               </div>
               <div>
@@ -85,7 +96,7 @@ export default function ReviewBreakdown() {
                   5-star reviews
                 </p>
                 <p className="mt-1 text-xl font-bold text-[#17343c] dark:text-white">
-                  77%
+                  {fiveStarPercentage}%
                 </p>
               </div>
             </div>
@@ -99,17 +110,17 @@ export default function ReviewBreakdown() {
               Your average rating has stayed strong.
             </p>
             <div className="mt-6 flex h-32 items-end gap-3">
-              {months.map(([month, rating]) => (
+              {months.map(({ label: month, rating }) => (
                 <div
                   key={month}
                   className="flex h-full flex-1 flex-col items-center justify-end gap-2"
                 >
                   <span className="text-[10px] font-semibold text-[#70908a]">
-                    {rating}
+                    {rating ? rating.toFixed(1) : '—'}
                   </span>
                   <div
                     className="w-full rounded-t-lg bg-[#a8e4c6] dark:bg-[#0f8a62]/55"
-                    style={{ height: `${rating * 18}%` }}
+                    style={{ height: `${rating ? rating * 18 : 2}%` }}
                   />
                   <span className="text-[10px] text-[#8ca49d]">{month}</span>
                 </div>
@@ -128,21 +139,24 @@ export default function ReviewBreakdown() {
             </p>
           </div>
           <div className="divide-y divide-[#e7f0ec] dark:divide-white/8">
-            {services.map(([name, reviewCount, rating, change, id], index) => (
-              <Link href={settings.review.show(id)} className="bg-rose-400" key={index.toString()}>
+            {services.map((service) => (
+              <Link href={settings.review.show(service.id)} key={service.id}>
                 <Item>
                   {/* <ItemMedia variant="icon">
                   <HomeIcon />
                 </ItemMedia> */}
                   <ItemContent className="">
-                    <ItemTitle>{name}</ItemTitle>
-                    <ItemDescription >{reviewCount} client reviews</ItemDescription>
+                    <ItemTitle>{service.name}</ItemTitle>
+                    <ItemDescription>
+                      {service.reviewCount} client{' '}
+                      {service.reviewCount === 1 ? 'review' : 'reviews'}
+                    </ItemDescription>
                   </ItemContent>
 
                   <ItemActions>
                     <div className="flex items-center gap-3">
                       <span className="flex items-center gap-1 text-sm font-bold text-[#17343c] dark:text-white">
-                        {rating.toFixed(2)}{' '}
+                        {service.rating.toFixed(2)}{' '}
                         <Star
                           aria-hidden="true"
                           className="size-3.5 fill-[#f0b75a] text-[#f0b75a]"
@@ -150,7 +164,9 @@ export default function ReviewBreakdown() {
                       </span>
                       <span className="inline-flex min-w-14 items-center justify-center gap-1 rounded-full bg-[#e9f8f0] px-2 py-1 text-xs font-semibold text-[#0f6b4d] dark:bg-[#0f8a62]/15 dark:text-[#8fe0bb]">
                         <TrendingUp aria-hidden="true" className="size-3" />{' '}
-                        {change}
+                        {service.change === null
+                          ? '—'
+                          : `${service.change > 0 ? '+' : ''}${service.change.toFixed(1)}`}
                       </span>
                     </div>
                   </ItemActions>
@@ -182,11 +198,11 @@ export default function ReviewBreakdown() {
   );
 }
 
-
 ReviewBreakdown.layout = {
   ...reviewLayoutProps,
   backOptions: {
     label: 'Back to reviews overview',
-    url: settings.review.index({query: {target: ReviewPagesEnum.Overview}}).url
-  }
-}
+    url: settings.review.index({ query: { target: ReviewPagesEnum.Overview } })
+      .url,
+  },
+};

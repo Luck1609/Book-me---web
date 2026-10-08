@@ -94,6 +94,12 @@ class ProviderProfile extends Model implements HasMedia
         return $this->hasMany(Booking::class);
     }
 
+    /** @return HasMany<Review, $this> */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     /**
      * @return BelongsToMany<User, $this>
      */

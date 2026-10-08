@@ -58,11 +58,9 @@ export type BusinessHour = {
   [x: string]: unknown;
 };
 
-
 export type Review = {
-  id: number;
+  id: string;
   client: string;
-  initials: string;
   rating: number;
   service: string;
   comment: string;

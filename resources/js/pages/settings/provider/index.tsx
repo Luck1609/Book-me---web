@@ -3,7 +3,7 @@ import { ArrowUpRight, BookOpen, Calendar, CreditCard, Landmark, ThumbsUp, UserC
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import settings from '@/routes/settings'
 import { BusinessProfileRoutes } from '@/types/enums'
-import { ReviewPagesEnum } from './reviews'
+import { ReviewPagesEnum } from './reviews/navigation'
 
 
 const settingsList = [

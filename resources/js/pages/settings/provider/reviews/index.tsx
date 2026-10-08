@@ -1,29 +1,24 @@
 import { Head } from '@inertiajs/react';
-import { LayoutDashboard, MessageSquareText, Star, TrendingUp } from 'lucide-react';
+import { MessageSquareText, Star, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import settings from '@/routes/settings';
 import type { Review } from '@/types/app';
+import { reviewLayoutProps } from './navigation';
 import { Stars } from './show';
-
 
 type PageProps = {
   averageRating?: number;
   totalReviews?: number;
   reviews?: Review[];
+  thisMonth?: number;
+  ratingBreakdown?: { rating: number; count: number; percentage: number }[];
 };
 
-const ratingBreakdown = [
-  { rating: 5, count: 98, percentage: 77 },
-  { rating: 4, count: 22, percentage: 17 },
-  { rating: 3, count: 6, percentage: 5 },
-  { rating: 2, count: 1, percentage: 1 },
-  { rating: 1, count: 1, percentage: 1 },
-];
-
-
 export default function ReviewSettings({
-  averageRating = 4.9,
-  totalReviews = 128,
+  averageRating = 0,
+  totalReviews = 0,
+  thisMonth = 0,
+  ratingBreakdown = [],
+  reviews = [],
 }: PageProps) {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
@@ -81,7 +76,7 @@ export default function ReviewSettings({
               This month
             </p>
             <p className="mt-1 text-3xl font-bold tracking-tight text-[#17343c] dark:text-white">
-              +12
+              +{thisMonth}
             </p>
             <p className="mt-1 text-xs text-[#70908a] dark:text-[#9cb8b1]">
               new reviews received
@@ -133,6 +128,45 @@ export default function ReviewSettings({
                 </span>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] sm:p-6 dark:border-white/10 dark:bg-[#17221f]">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base font-bold text-[#17343c] dark:text-white">
+                Recent reviews
+              </h2>
+              <p className="mt-1 text-sm text-[#70908a] dark:text-[#9cb8b1]">
+                Feedback from your latest clients.
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 divide-y divide-[#e7f0ec] dark:divide-white/8">
+            {reviews.length === 0 ? (
+              <p className="py-4 text-sm text-[#70908a] dark:text-[#9cb8b1]">
+                No reviews yet.
+              </p>
+            ) : (
+              reviews.map((review) => (
+                <button
+                  type="button"
+                  key={review.id}
+                  onClick={() => setSelectedReview(review)}
+                  className="flex w-full items-center justify-between gap-4 py-4 text-left hover:bg-[#f6faf8] dark:hover:bg-white/5"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold text-[#17343c] dark:text-white">
+                      {review.client}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-[#70908a] dark:text-[#9cb8b1]">
+                      {review.service} · {review.date}
+                    </p>
+                  </div>
+                  <Stars rating={review.rating} />
+                </button>
+              ))
+            )}
           </div>
         </section>
       </div>
@@ -194,32 +228,6 @@ export default function ReviewSettings({
   );
 }
 
-export enum ReviewPagesEnum {
-  Breakdown = 'breakdown',
-  Overview = 'overview'
-}
-
-
-export const reviewLayoutProps = {
-  classNames: {
-    aside: "h-32"
-  },
-  navList: [
-    {
-      label: "Overview",
-      icon: LayoutDashboard,
-      url: settings.review.index.url({ query: { target: ReviewPagesEnum.Overview } })
-    },
-    {
-      label: "Breakdown",
-      icon: Star,
-      url: settings.review.index.url({ query: { target: ReviewPagesEnum.Breakdown } })
-    },
-  ],
-}
-
 ReviewSettings.layout = {
-  ...reviewLayoutProps
-}
-
-
+  ...reviewLayoutProps,
+};
