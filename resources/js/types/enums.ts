@@ -12,3 +12,4 @@ export enum BusinessProfileRoutes {
   OpeningHours = 'opening_hours',
   Breaks = 'breaks'
 }
+

@@ -1,16 +1,10 @@
 import { Head } from '@inertiajs/react';
-import { ArrowRight, MessageSquareText, Star, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, MessageSquareText, Star, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
+import settings from '@/routes/settings';
+import type { Review } from '@/types/app';
+import { Stars } from './show';
 
-type Review = {
-  id: number;
-  client: string;
-  initials: string;
-  rating: number;
-  service: string;
-  comment: string;
-  date: string;
-};
 
 type PageProps = {
   averageRating?: number;
@@ -26,110 +20,12 @@ const ratingBreakdown = [
   { rating: 1, count: 1, percentage: 1 },
 ];
 
-const fallbackReviews: Review[] = [
-  {
-    id: 1,
-    client: 'Ama K.',
-    initials: 'AK',
-    rating: 5,
-    service: 'Signature facial',
-    comment:
-      'The team is so welcoming and the result was exactly what I wanted. I will definitely be back.',
-    date: '2 weeks ago',
-  },
-  {
-    id: 2,
-    client: 'Nana B.',
-    initials: 'NB',
-    rating: 5,
-    service: 'Deep tissue massage',
-    comment:
-      'Beautiful space, easy booking and genuinely thoughtful service from start to finish.',
-    date: '1 month ago',
-  },
-  {
-    id: 3,
-    client: 'Esi A.',
-    initials: 'EA',
-    rating: 4,
-    service: 'Glow treatment',
-    comment:
-      'A lovely experience. The staff listened carefully and gave me helpful aftercare advice.',
-    date: '1 month ago',
-  },
-];
-
-function Stars({ rating, size = 'size-4' }: { rating: number; size?: string }) {
-  return (
-    <span
-      className="flex gap-0.5 text-[#f0b75a]"
-      aria-label={`${rating} out of 5 stars`}
-    >
-      {Array.from({ length: 5 }).map((_, index) => (
-        <Star
-          key={index}
-          aria-hidden="true"
-          className={`${size} ${index < rating ? 'fill-current' : 'text-[#d8e5df]'}`}
-        />
-      ))}
-    </span>
-  );
-}
-
-function ReviewCard({
-  review,
-  onRead,
-}: {
-  review: Review;
-  onRead: (review: Review) => void;
-}) {
-  return (
-    <article className="rounded-2xl border border-[#dceae4] bg-white p-5 shadow-[0_8px_25px_rgba(23,52,60,0.04)] dark:border-white/10 dark:bg-[#17221f]">
-      <div className="flex items-start gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#d9f7e8] text-xs font-bold text-[#0f6b4d] dark:bg-[#0f8a62]/20 dark:text-[#8fe0bb]">
-          {review.initials}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-bold text-[#17343c] dark:text-white">
-                {review.client}
-              </p>
-              <p className="mt-0.5 text-xs text-[#70908a] dark:text-[#9cb8b1]">
-                {review.service}
-              </p>
-            </div>
-            <time className="shrink-0 text-xs text-[#8ca49d]">
-              {review.date}
-            </time>
-          </div>
-          <div className="mt-3">
-            <Stars rating={review.rating} size="size-3.5" />
-          </div>
-          <p className="mt-3 text-sm leading-6 text-[#6f8981] dark:text-[#abc0ba]">
-            {review.comment}
-          </p>
-          <button
-            type="button"
-            onClick={() => onRead(review)}
-            className="mt-3 text-xs font-bold text-[#0f8a62] hover:underline dark:text-[#8fe0bb]"
-          >
-            Read full review
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
 
 export default function ReviewSettings({
   averageRating = 4.9,
   totalReviews = 128,
-  reviews = fallbackReviews,
 }: PageProps) {
-  const [showAllReviews, setShowAllReviews] = useState(false);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
-  const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
 
   return (
     <>
@@ -239,41 +135,6 @@ export default function ReviewSettings({
             ))}
           </div>
         </section>
-
-        <section className="space-y-4" aria-labelledby="recent-reviews-title">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2
-                id="recent-reviews-title"
-                className="text-lg font-bold text-[#17343c] dark:text-white"
-              >
-                {showAllReviews ? 'All reviews' : 'Recent reviews'}
-              </h2>
-              <p className="mt-1 text-sm text-[#70908a] dark:text-[#9cb8b1]">
-                Read the words your clients shared after their appointments.
-              </p>
-            </div>
-            {reviews.length > 3 && (
-              <button
-                type="button"
-                onClick={() => setShowAllReviews((current) => !current)}
-                className="inline-flex items-center gap-1 text-sm font-semibold text-[#0f8a62] hover:underline dark:text-[#8fe0bb]"
-              >
-                {showAllReviews ? 'Show recent' : 'View all'}
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </button>
-            )}
-          </div>
-          <div className="grid gap-4 lg:grid-cols-2">
-            {visibleReviews.map((review) => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                onRead={setSelectedReview}
-              />
-            ))}
-          </div>
-        </section>
       </div>
 
       {selectedReview && (
@@ -332,3 +193,33 @@ export default function ReviewSettings({
     </>
   );
 }
+
+export enum ReviewPagesEnum {
+  Breakdown = 'breakdown',
+  Overview = 'overview'
+}
+
+
+export const reviewLayoutProps = {
+  classNames: {
+    aside: "h-32"
+  },
+  navList: [
+    {
+      label: "Overview",
+      icon: LayoutDashboard,
+      url: settings.review.index.url({ query: { target: ReviewPagesEnum.Overview } })
+    },
+    {
+      label: "Breakdown",
+      icon: Star,
+      url: settings.review.index.url({ query: { target: ReviewPagesEnum.Breakdown } })
+    },
+  ],
+}
+
+ReviewSettings.layout = {
+  ...reviewLayoutProps
+}
+
+
