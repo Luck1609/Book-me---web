@@ -35,7 +35,7 @@ class StoreProviderOnboardingRequest extends FormRequest
             'type' => ['required', new Enum(UserTypeEnum::class)],
         ];
 
-        if ($this->input('type') === UserTypeEnum::CLIENT->value) {
+        if ($this->input('type') === UserTypeEnum::Client->value) {
             return $rules;
         }
 

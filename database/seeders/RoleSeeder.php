@@ -13,7 +13,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create(['name' => UserTypeEnum::CLIENT]);
-        Role::create(['name' => UserTypeEnum::PROVIDER]);
+        Role::create(['name' => UserTypeEnum::Client]);
+        Role::create(['name' => UserTypeEnum::Provider]);
     }
 }

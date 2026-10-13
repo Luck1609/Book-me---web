@@ -7,7 +7,6 @@ import {
   Clock3,
   Mail,
   MessageSquareText,
-  NotebookPen,
   Smartphone,
   Sparkles,
 } from 'lucide-react';
@@ -18,6 +17,7 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import settingsRoute from '@/routes/settings';
+import { notificationLayoutProps } from './navigation';
 
 type NotificationKey =
   | 'newBookings'
@@ -302,3 +302,8 @@ export default function ProviderNotificationSettings() {
     </>
   );
 }
+
+
+ProviderNotificationSettings.layout = {
+  ...notificationLayoutProps
+};

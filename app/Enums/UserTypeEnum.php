@@ -4,14 +4,14 @@ namespace App\Enums;
 
 enum UserTypeEnum: string
 {
-    case CLIENT = 'client';
-    case PROVIDER = 'provider';
+  case Client = 'client';
+  case Provider = 'provider';
 
-    public function label(): string
-    {
-        return match ($this) {
-            self::CLIENT => 'Client',
-            self::PROVIDER => 'Provider',
-        };
-    }
+  public function label(): string
+  {
+    return match ($this) {
+      self::Client => 'Client',
+      self::Provider => 'Provider',
+    };
+  }
 }

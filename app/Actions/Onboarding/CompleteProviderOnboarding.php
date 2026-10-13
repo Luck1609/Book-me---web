@@ -19,8 +19,8 @@ class CompleteProviderOnboarding
   public function __invoke(User $user, array $data): void
   {
     DB::transaction(function () use ($user, $data): void {
-      if ($data['type'] === UserTypeEnum::CLIENT->value) {
-        $user->assignRole(Role::findOrCreate(UserTypeEnum::CLIENT->value, 'web'));
+      if ($data['type'] === UserTypeEnum::Client->value) {
+        $user->assignRole(Role::findOrCreate(UserTypeEnum::Client->value, 'web'));
         $user->update(['has_onboarded' => true]);
 
         return;

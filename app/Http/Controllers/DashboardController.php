@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         abort_unless($user instanceof User, 401);
 
-        if ($user->hasRole(UserTypeEnum::CLIENT)) {
+        if ($user->hasRole(UserTypeEnum::Client)) {
             return inertia('client/dashboard', $this->clientDashboardData($user));
         }
 

@@ -75,7 +75,7 @@ class FavoriteController extends Controller
     {
         $user = $request->user();
 
-        abort_unless($user instanceof User && $user->hasRole(UserTypeEnum::CLIENT->value), 403);
+        abort_unless($user instanceof User && $user->hasRole(UserTypeEnum::Client->value), 403);
 
         return $user;
     }

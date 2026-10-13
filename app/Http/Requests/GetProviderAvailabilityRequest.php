@@ -16,7 +16,7 @@ class GetProviderAvailabilityRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasRole(UserTypeEnum::CLIENT);
+        return $this->user()->hasRole(UserTypeEnum::Client);
     }
 
     /**

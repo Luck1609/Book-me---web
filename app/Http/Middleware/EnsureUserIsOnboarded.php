@@ -19,11 +19,11 @@ class EnsureUserIsOnboarded
     {
         $user = $request->user();
 
-        if ($user instanceof User && $user->hasRole(UserTypeEnum::CLIENT)) {
+        if ($user instanceof User && $user->hasRole(UserTypeEnum::Client)) {
             return $next($request);
         }
 
-        if ($user instanceof User && ! $user->hasRole(UserTypeEnum::CLIENT) && ! $user->providerProfile()->exists()) {
+        if ($user instanceof User && ! $user->hasRole(UserTypeEnum::Client) && ! $user->providerProfile()->exists()) {
             return to_route('onboarding');
         }
 

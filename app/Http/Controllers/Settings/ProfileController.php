@@ -24,7 +24,7 @@ class ProfileController extends Controller
   {
     $user = $request->user();
 
-    if ($user->hasRole(UserTypeEnum::CLIENT->value))
+    if ($user->hasRole(UserTypeEnum::Client->value))
       return redirect()->route('settings.profile.edit');
 
     return inertia('settings/index');

@@ -25,7 +25,7 @@ class BookingController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-        abort_unless($user->hasRole(UserTypeEnum::CLIENT), 403);
+        abort_unless($user->hasRole(UserTypeEnum::Client), 403);
         Gate::authorize('viewAny', Booking::class);
         $tab = $request->string('tab')->toString();
         $tab = in_array($tab, ['upcoming', 'past', 'cancelled'], true) ? $tab : 'upcoming';
@@ -96,7 +96,7 @@ class BookingController extends Controller
 
     public function show(Request $request, Booking $booking): Response
     {
-        abort_unless($request->user()?->hasRole(UserTypeEnum::CLIENT->value), 403);
+        abort_unless($request->user()?->hasRole(UserTypeEnum::Client->value), 403);
         Gate::authorize('view', $booking);
         $booking->load([
             'providerProfile:id,business_name,slug,address,city,phone,email',
@@ -110,7 +110,7 @@ class BookingController extends Controller
 
     public function destroy(Request $request, Booking $booking): RedirectResponse
     {
-        abort_unless($request->user()?->hasRole(UserTypeEnum::CLIENT->value), 403);
+        abort_unless($request->user()?->hasRole(UserTypeEnum::Client->value), 403);
         Gate::authorize('delete', $booking);
         $booking->update(['status' => Booking::STATUS_CANCELLED]);
 

@@ -17,7 +17,7 @@ class StoreClientBookingRequest extends FormRequest
   {
     $user = $this->user();
 
-    return $user instanceof User && $user->hasRole(UserTypeEnum::CLIENT->value);
+    return $user instanceof User && $user->hasRole(UserTypeEnum::Client->value);
   }
 
   /** @return array<string, array<int, mixed>> */
