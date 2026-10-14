@@ -1,20 +1,20 @@
 import {
-  CalendarCheck,
+  // CalendarCheck,
   CalendarRange,
   ChartNoAxesCombined,
   ContactRound,
   Heart,
   LayoutGrid,
   Mail,
-  MessageCircleMore,
+  // MessageCircleMore,
   UserRoundCheck,
   UsersRound,
 } from 'lucide-react';
-import { index as chatIndex } from '@/actions/App/Http/Controllers/ChatController';
+// import { index as chatIndex } from '@/actions/App/Http/Controllers/ChatController';
 import { dashboard, report } from '@/routes';
 import booking from '@/routes/booking';
 import client from '@/routes/client';
-import schedule from '@/routes/schedule';
+// import schedule from '@/routes/schedule';
 import team from '@/routes/team';
 import { UserType } from '@/types';
 import type { NavItem } from '@/types';
@@ -33,11 +33,11 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => [
         : client.booking.index.url(),
     icon: CalendarRange,
   },
-  {
-    title: 'Chats',
-    href: chatIndex.url(),
-    icon: MessageCircleMore,
-  },
+  // {
+  //   title: 'Chats',
+  //   href: chatIndex.url(),
+  //   icon: MessageCircleMore,
+  // },
   ...(accountType !== UserType.Provider
     ? [
         {
@@ -62,11 +62,11 @@ export const mainNavItems = (accountType?: UserType): NavItem[] => [
           href: client.index.url(),
           icon: Mail,
         },
-        {
-          title: 'Schedules',
-          href: schedule.index.url(),
-          icon: CalendarCheck,
-        },
+        // {
+        //   title: 'Schedules',
+        //   href: schedule.index.url(),
+        //   icon: CalendarCheck,
+        // },
         {
           title: 'Team',
           href: team.index.url(),

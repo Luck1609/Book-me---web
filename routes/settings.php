@@ -56,12 +56,13 @@ Route::middleware(['auth'])->as('settings.')->prefix('settings')->group(function
         ->middleware([HandlePrecognitiveRequests::class])
         ->names('catalog.categories');
 
-    Route::resource('schedule', ScheduleController::class)
-        ->only(['index', 'store', 'update', 'destroy'])
-        ->names('schedule');
+    // Route::resource('schedule', ScheduleController::class)
+    //     ->only(['index', 'store', 'update', 'destroy'])
+    //     ->names('schedule');
 
     Route::resource('notifications', NotificationController::class)
-        ->only(['index', 'update']);
+        ->only(['index', 'update'])
+        ->middleware([HandlePrecognitiveRequests::class]);
 });
 
 Route::middleware(['auth', 'verified'])->as('settings.')->group(function () {
